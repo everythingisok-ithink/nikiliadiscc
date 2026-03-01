@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com" rel="preconnect">
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double&family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
         rel="stylesheet">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
@@ -57,22 +57,11 @@
 
         /* ─── Interactive Gradient Card ─── */
         #gradient-card {
-            background: radial-gradient(circle 800px at var(--local-mx, 100%) var(--local-my, 100%), #c026d3 0%, #3b82f6 40%, #22d3ee 100%);
+            background: radial-gradient(circle 800px at var(--local-mx, 100%) var(--local-my, 100%), #c026d3 0%, #3b82f6 40%, #0891b2 100%);
             /* default fallbacks to bottom right (100% 100%) to look like the original static gradient when mouse is offscreen */
         }
 
-        /* Non-link text should not show text cursor */
-        h1,
-        h2,
-        h3,
-        p,
-        div,
-        span,
-        header,
-        main,
-        section {
-            cursor: default;
-        }
+
 
         a,
         a *,
@@ -116,8 +105,184 @@
             height: 1rem;
             color: #6366f1;
             opacity: 0.29;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.3s ease, transform 0.3s ease;
             flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        /* ─── Glyph click animations ─── */
+        @keyframes glyph-spin {
+            0% {
+                transform: rotate(0deg) scale(1);
+                opacity: 0.29;
+            }
+
+            50% {
+                transform: rotate(360deg) scale(3);
+                opacity: 1;
+                color: #22d3ee;
+            }
+
+            100% {
+                transform: rotate(720deg) scale(1);
+                opacity: 0.29;
+            }
+        }
+
+        @keyframes glyph-pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.29;
+            }
+
+            40% {
+                transform: scale(4);
+                opacity: 1;
+                color: #f472b6;
+            }
+
+            70% {
+                transform: scale(2.5);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes glyph-bounce {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 0.29;
+            }
+
+            20% {
+                transform: translateY(-25px) scale(2.5);
+                opacity: 1;
+                color: #34d399;
+            }
+
+            50% {
+                transform: translateY(5px) scale(1.5);
+                opacity: 0.7;
+            }
+
+            70% {
+                transform: translateY(-10px) scale(1.8);
+                opacity: 0.9;
+            }
+        }
+
+        @keyframes glyph-wiggle {
+
+            0%,
+            100% {
+                transform: rotate(0) scale(1);
+                opacity: 0.29;
+            }
+
+            15% {
+                transform: rotate(35deg) scale(2.5);
+                opacity: 1;
+                color: #fbbf24;
+            }
+
+            30% {
+                transform: rotate(-30deg) scale(3);
+                opacity: 1;
+            }
+
+            50% {
+                transform: rotate(25deg) scale(2);
+                opacity: 0.8;
+            }
+
+            70% {
+                transform: rotate(-15deg) scale(1.5);
+                opacity: 0.6;
+            }
+
+            85% {
+                transform: rotate(8deg) scale(1.2);
+                opacity: 0.4;
+            }
+        }
+
+        @keyframes glyph-flip {
+            0% {
+                transform: perspective(200px) rotateY(0) scale(1);
+                opacity: 0.29;
+            }
+
+            50% {
+                transform: perspective(200px) rotateY(180deg) scale(3);
+                opacity: 1;
+                color: #a78bfa;
+            }
+
+            100% {
+                transform: perspective(200px) rotateY(360deg) scale(1);
+                opacity: 0.29;
+            }
+        }
+
+        @keyframes glyph-ping {
+            0% {
+                transform: scale(1);
+                opacity: 0.29;
+            }
+
+            35% {
+                transform: scale(4);
+                opacity: 1;
+                color: #fb923c;
+            }
+
+            50% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            65% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0.29;
+            }
+        }
+
+        .glyph-animate {
+            animation-duration: 0.8s;
+            animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            animation-fill-mode: both;
+        }
+
+        .anim-spin {
+            animation-name: glyph-spin;
+        }
+
+        .anim-pulse {
+            animation-name: glyph-pulse;
+        }
+
+        .anim-bounce {
+            animation-name: glyph-bounce;
+        }
+
+        .anim-wiggle {
+            animation-name: glyph-wiggle;
+        }
+
+        .anim-flip {
+            animation-name: glyph-flip;
+        }
+
+        .anim-ping {
+            animation-name: glyph-ping;
         }
 
         .icon-row .icon-glyph svg {
@@ -146,12 +311,12 @@
             transform: scale(1.25);
         }
 
-        /* ─── Yellow Cursor Halo (text proximity effect) ─── */
-        #cursor-halo {
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            mix-blend-mode: normal;
+        /* ─── Neon Cursor Halo (text proximity effect) ─── */
+
+        .hosting-note {
+            opacity: 0.29;
+            font-size: 0.75em;
+            color: #6366f1;
         }
 
         /* ─── Game Container ─── */
@@ -187,28 +352,23 @@
     <!-- ═══════════════════════════════════════════════
      CV / PROFILE CARD
      ═══════════════════════════════════════════════ -->
-    <main
-        class="w-full max-w-6xl mx-auto p-[50px] md:p-8 flex items-center justify-center min-h-screen transition-all duration-700 ease-in-out"
+    <main class="w-full max-w-6xl mx-auto p-[50px] md:p-8 flex items-center justify-center min-h-screen"
         id="cv-content">
         <div id="gradient-card"
-            class="relative rounded-[2rem] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.6)] flex flex-col md:flex-row w-full max-w-5xl h-[calc(100vh-100px)] md:h-[650px] p-2 items-center transition-all duration-700 ease-in-out">
+            class="relative rounded-[2rem] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.6)] flex flex-col md:flex-row w-full max-w-5xl h-[calc(100vh-100px)] md:h-[650px] px-[5px] py-2 md:pt-[5px] md:pr-[5px] md:pb-[5px] md:pl-2 items-center">
 
             <!-- Left sidebar -->
             <div
-                class="w-full md:w-[20%] p-4 md:p-6 flex flex-row md:flex-col items-center justify-center md:justify-center gap-2 md:gap-0 text-center relative text-white h-auto md:h-full shrink-0 z-0 transition-all duration-700 ease-in-out">
+                class="w-full md:w-[20%] p-4 md:p-6 flex flex-row md:flex-col items-center justify-center md:justify-center gap-2 md:gap-0 text-center relative text-white h-auto md:h-full shrink-0 z-0">
                 <div class="absolute inset-0 bg-white/5 mix-blend-overlay pointer-events-none rounded-l-[1.5rem]"></div>
-                <!-- Mobile only: Name to the left -->
-                <h1
-                    class="block md:hidden text-[13px] uppercase tracking-[0.25em] font-bold text-white/90 leading-none relative z-10 w-fit text-right">
-                    Nik Iliadis</h1>
+
                 <div
-                    class="relative z-10 w-20 h-20 md:w-24 md:h-24 shrink-0 rounded-full overflow-hidden border-4 border-white/20 shadow-xl mb-4 md:mb-8 mt-4 md:mt-0 transition-all duration-700 ease-in-out">
+                    class="relative z-10 w-24 h-24 md:w-[115px] md:h-[115px] shrink-0 rounded-full overflow-hidden border-4 border-white/20 shadow-xl mb-4 md:mb-8 mt-4 md:mt-0">
                     <img alt="Nik Iliadis Portrait"
                         class="w-full h-full object-cover grayscale contrast-125 hover:grayscale-0 transition-all duration-500"
                         src="profile.jpg">
                 </div>
-                <nav
-                    class="relative z-10 flex flex-col gap-4 w-fit md:w-full items-start md:items-center transition-all duration-700 ease-in-out">
+                <nav class="hidden md:flex relative z-10 flex-1 basis-0 min-w-0 flex-col gap-4 items-center">
                     <a class="text-[13px] uppercase tracking-[0.25em] font-bold text-white/90 hover:text-white transition-colors pb-1 border-b border-white/20 hover:border-white w-fit"
                         href="https://linkedin.com/in/nik-iliadis">LinkedIn</a>
                     <a class="text-[13px] uppercase tracking-[0.25em] font-bold text-white/90 hover:text-white transition-colors pb-1 border-b border-white/20 hover:border-white w-fit"
@@ -264,7 +424,7 @@
             </div>
 
             <div
-                class="w-full md:w-[80%] grow md:grow-0 h-auto md:h-full bg-[#111827] rounded-[1.75rem] shadow-2xl border border-gray-700/50 p-8 md:p-16 flex flex-col justify-start relative overflow-hidden z-10 ml-0 md:-ml-2 my-2 md:my-0 transition-all duration-700 ease-in-out">
+                class="w-full md:w-[calc(80%+8px)] grow md:grow-0 h-auto md:h-full bg-[#111827] rounded-[1.75rem] shadow-2xl border border-gray-700/50 p-8 md:p-16 flex flex-col justify-start relative overflow-hidden z-10 ml-0 md:-ml-2 my-2 md:my-0">
                 <div
                     class="absolute top-0 right-0 w-96 h-96 bg-blue-600/5 blur-[100px] rounded-full pointer-events-none">
                 </div>
@@ -272,32 +432,38 @@
                     class="absolute bottom-0 left-0 w-64 h-64 bg-fuchsia-600/5 blur-[80px] rounded-full pointer-events-none">
                 </div>
 
-                <div class="max-w-3xl relative z-10 pt-4 md:pt-8 pb-14 md:pb-0 transition-all duration-700 ease-in-out">
-                    <h1
-                        class="hidden md:block text-5xl md:text-8xl font-sans font-bold text-white mb-6 tracking-tighter leading-none transition-all duration-700 ease-in-out">
+                <div class="max-w-3xl relative z-10 pt-4 md:pt-8 pb-14 md:pb-0">
+                    <h1 class="text-5xl md:text-8xl text-white mb-6 tracking-tighter leading-none"
+                        style="font-family: 'Bitcount Grid Double', sans-serif;">
                         Nik Iliadis</h1>
                     <div
-                        class="hidden md:block h-1.5 w-24 bg-gradient-to-r from-cyan-500 to-blue-600 mb-10 rounded-full shadow-[0_0_15px_rgba(6,182,212,0.5)]">
+                        class="h-1.5 w-24 bg-gradient-to-r from-cyan-500 to-blue-600 mb-10 rounded-full shadow-[0_0_15px_rgba(6,182,212,0.5)]">
                     </div>
                     <p class="text-xl md:text-3xl font-sans font-light leading-snug text-gray-400">I build technology
-                        organizations <i>that deliver.</i> Veteran. Father. Tinkerer.</p>
+                        organizations <i>that deliver.</i></p>
+                    <div class="mt-4 md:mt-6 space-y-1 md:space-y-2 opacity-[0.67]">
+                        <p class="text-lg md:text-2xl font-sans font-semibold text-gray-300 tracking-wide">Veteran.</p>
+                        <p class="text-lg md:text-2xl font-sans italic text-gray-400">Father.</p>
+                        <p class="text-lg md:text-2xl font-sans font-light text-gray-500 tracking-[0.15em]">Tinkerer.
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Icon row: decorative glyphs with egg hidden at position 4 -->
                 <div class="icon-row">
-                    <span style="opacity:0.29;font-size:0.75em;color:#6366f1;">hosted on github pages - </span>
+                    <span class="hosting-note">hosted on github pages - </span>
                     <!-- Diamond -->
-                    <span class="icon-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"
+                    <span class="icon-glyph" aria-hidden="true" data-anim="spin"><svg viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg">
                             <polygon points="12,2 22,12 12,22 2,12" />
                         </svg></span>
                     <!-- Four-pointed star -->
-                    <span class="icon-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"
+                    <span class="icon-glyph" aria-hidden="true" data-anim="pulse"><svg viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 2 L13.5 10.5 L22 12 L13.5 13.5 L12 22 L10.5 13.5 L2 12 L10.5 10.5 Z" />
                         </svg></span>
                     <!-- Hexagon -->
-                    <span class="icon-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"
+                    <span class="icon-glyph" aria-hidden="true" data-anim="bounce"><svg viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg">
                             <polygon points="12,2 20.66,7 20.66,17 12,22 3.34,17 3.34,7" />
                         </svg></span>
@@ -307,18 +473,18 @@
                                 <ellipse cx="12" cy="17" rx="9.5" ry="13" />
                             </svg></span></span>
                     <!-- Triangle -->
-                    <span class="icon-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"
+                    <span class="icon-glyph" aria-hidden="true" data-anim="wiggle"><svg viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg">
                             <polygon points="12,3 22,21 2,21" />
                         </svg></span>
                     <!-- Cross / plus -->
-                    <span class="icon-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"
+                    <span class="icon-glyph" aria-hidden="true" data-anim="flip"><svg viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg">
                             <rect x="10" y="2" width="4" height="20" rx="1" />
                             <rect x="2" y="10" width="20" height="4" rx="1" />
                         </svg></span>
                     <!-- Circle with dot -->
-                    <span class="icon-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"
+                    <span class="icon-glyph" aria-hidden="true" data-anim="ping"><svg viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg">
                             <circle cx="12" cy="12" r="10" />
                             <circle cx="12" cy="12" r="3" style="fill:#020617" />
@@ -326,8 +492,16 @@
                 </div>
             </div>
 
-            <!-- Baltimore footer: mobile only (below dark card) -->
+            <!-- Mobile footer: links + Baltimore (below dark card) -->
             <div class="block md:hidden w-full text-center pt-4 pb-3 text-white">
+                <!-- Horizontal links -->
+                <nav class="flex items-center justify-center gap-3 mb-4">
+                    <a class="text-[11px] uppercase tracking-[0.2em] font-bold text-white/70 hover:text-white transition-colors"
+                        href="https://linkedin.com/in/nik-iliadis">LinkedIn</a>
+                    <span class="text-white/30 text-[11px]">|</span>
+                    <a class="text-[11px] uppercase tracking-[0.2em] font-bold text-white/70 hover:text-white transition-colors"
+                        href="https://github.com/everythingisok-ithink">GitHub</a>
+                </nav>
                 <svg viewBox="0 0 200 48" xmlns="http://www.w3.org/2000/svg"
                     class="w-full max-w-[130px] mx-auto opacity-30 mb-1" aria-hidden="true"
                     preserveAspectRatio="xMidYMax meet">
@@ -415,6 +589,24 @@
     <!-- ═══════════════════════════════════════════════
      SCRIPTS
      ═══════════════════════════════════════════════ -->
+
+    <!-- ── Glyph Click Animations ──────────────────────────────────────────────── -->
+    <script>
+        document.querySelectorAll('.icon-glyph[data-anim]').forEach(glyph => {
+            glyph.addEventListener('click', () => {
+                const anim = glyph.dataset.anim;
+                // Remove to allow re-trigger
+                glyph.classList.remove('glyph-animate', 'anim-' + anim);
+                // Force reflow
+                void glyph.offsetWidth;
+                glyph.classList.add('glyph-animate', 'anim-' + anim);
+            });
+            glyph.addEventListener('animationend', () => {
+                glyph.classList.remove('glyph-animate', 'anim-' + glyph.dataset.anim);
+            });
+        });
+    </script>
+
     <script>
         // ── Pixel Dissolve + Game Launch ──────────────────────────────────────────
         (() => {
@@ -580,6 +772,7 @@
             projectiles.push({ x: player.x, y: player.y - 15, speed: 12, radius: 3 });
         });
 
+        /** Single descending diamond-shaped enemy. */
         class Enemy {
             constructor() {
                 this.size = Math.random() * 20 + 10;
@@ -603,6 +796,7 @@
             }
         }
 
+        /** Spawn particle burst at (x, y). */
         function createExplosion(x, y, color) {
             for (let i = 0; i < 8; i++) {
                 particles.push({
@@ -698,6 +892,7 @@
             if (gameActive) animFrameId = requestAnimationFrame(animate);
         }
 
+        /** Reset state and start the game loop. */
         function initGame() {
             score = 0;
             gameActive = true;
@@ -716,17 +911,18 @@
             animFrameId = requestAnimationFrame(animate);
         }
 
+        /** Halt the game loop. */
         function stopGame() {
             gameActive = false;
             if (animFrameId) cancelAnimationFrame(animFrameId);
         }
     </script>
 
-    <!-- ── Pink Cursor Text Halo ──────────────────────────────────────────── -->
+    <!-- ── Neon Cursor Text Halo ──────────────────────────────────────────── -->
     <script>
         (() => {
-            const RADIUS = 55;           // effect radius in px
-            const PINK = [234, 255, 0]; // neon yellow
+            const RADIUS = 55;              // effect radius in px
+            const HALO_COLOR = [234, 255, 0]; // neon yellow-green
 
             // We walk the text nodes under #cv-content and colour characters
             // near the cursor hot-pink, fading to normal outside the radius.
@@ -739,6 +935,7 @@
             const textSelectors = ['h1', 'p', 'a', 'div > p', 'nav a'];
             const spans = [];
 
+            /** Recursively wrap each text character in a <span> for per-char halo coloring. */
             function wrapTextNodes(el) {
                 // Walk child nodes; wrap text nodes char-by-char
                 const childNodes = Array.from(el.childNodes);
@@ -772,6 +969,7 @@
                 my = e.clientY;
             });
 
+            /** Per-frame: color text, glyphs, and skyline near the cursor with the halo color. */
             function haloTick() {
                 if (document.getElementById('game-container').style.display === 'block') {
                     requestAnimationFrame(haloTick);
@@ -784,18 +982,18 @@
                     const d = Math.hypot(mx - cx, my - cy);
                     if (d < RADIUS) {
                         const t = 1 - d / RADIUS;
-                        const [pr, pg, pb] = PINK;
+                        const [hr, hg, hb] = HALO_COLOR;
                         const alpha = t * t; // quadratic falloff
-                        // Lerp from white (255,255,255) → neon yellow — always full opacity,
+                        // Lerp from white (255,255,255) → halo color — always full opacity,
                         // so text is never dark or illegible at the edges of the halo
-                        const r = Math.round(255 + (pr - 255) * alpha) | 0;
-                        const g = Math.round(255 + (pg - 255) * alpha) | 0;
-                        const b = Math.round(255 + (pb - 255) * alpha) | 0;
+                        const r = Math.round(255 + (hr - 255) * alpha) | 0;
+                        const g = Math.round(255 + (hg - 255) * alpha) | 0;
+                        const b = Math.round(255 + (hb - 255) * alpha) | 0;
                         s.style.color = `rgb(${r},${g},${b})`;
-                        // Glow: pure yellow shadow, blur scales with proximity
+                        // Glow shadow, blur scales with proximity
                         s.style.textShadow = alpha > 0.1 ? [
-                            `0 0 ${6 * alpha}px rgba(${pr},${pg},${pb},${alpha})`,
-                            `0 0 ${16 * alpha}px rgba(${pr},${pg},${pb},${alpha * 0.6})`
+                            `0 0 ${6 * alpha}px rgba(${hr},${hg},${hb},${alpha})`,
+                            `0 0 ${16 * alpha}px rgba(${hr},${hg},${hb},${alpha * 0.6})`
                         ].join(',') : '';
                     } else {
                         s.style.color = '';
@@ -805,7 +1003,7 @@
                 // Glyph halo — treat each .icon-glyph like a text span
                 // Base color: indigo #6366f1 = [99, 102, 241]
                 // SVGs inside use fill:currentColor, so changing `color` cascades through
-                const BASE_G = [99, 102, 241];
+                const BASE_ICON_COLOR = [99, 102, 241];
                 const BASE_OPACITY = 0.29;
                 document.querySelectorAll('.icon-glyph').forEach(g => {
                     const gr = g.getBoundingClientRect();
@@ -815,14 +1013,14 @@
                     if (gd < RADIUS) {
                         const gt = 1 - gd / RADIUS;
                         const ga = gt * gt;
-                        const [pr, pg, pb] = PINK;
-                        const gr2 = Math.round(BASE_G[0] + (pr - BASE_G[0]) * ga) | 0;
-                        const gg = Math.round(BASE_G[1] + (pg - BASE_G[1]) * ga) | 0;
-                        const gb = Math.round(BASE_G[2] + (pb - BASE_G[2]) * ga) | 0;
+                        const [hr, hg, hb] = HALO_COLOR;
+                        const gr2 = Math.round(BASE_ICON_COLOR[0] + (hr - BASE_ICON_COLOR[0]) * ga) | 0;
+                        const gg = Math.round(BASE_ICON_COLOR[1] + (hg - BASE_ICON_COLOR[1]) * ga) | 0;
+                        const gb = Math.round(BASE_ICON_COLOR[2] + (hb - BASE_ICON_COLOR[2]) * ga) | 0;
                         g.style.color = `rgb(${gr2},${gg},${gb})`;
                         g.style.opacity = BASE_OPACITY + (1 - BASE_OPACITY) * ga;
                         g.style.filter = ga > 0.1
-                            ? `drop-shadow(0 0 ${5 * ga}px rgba(${pr},${pg},${pb},${ga}))`
+                            ? `drop-shadow(0 0 ${5 * ga}px rgba(${hr},${hg},${hb},${ga}))`
                             : '';
                     } else {
                         g.style.color = '';
@@ -840,13 +1038,13 @@
                     if (pd < SKYLINE_R) {
                         const pt = 1 - pd / SKYLINE_R;
                         const pa = pt * pt;
-                        const [pr, pg, pb] = PINK;
-                        const sr = Math.round(255 + (pr - 255) * pa) | 0;
-                        const sg = Math.round(255 + (pg - 255) * pa) | 0;
-                        const sb = Math.round(255 + (pb - 255) * pa) | 0;
+                        const [hr, hg, hb] = HALO_COLOR;
+                        const sr = Math.round(255 + (hr - 255) * pa) | 0;
+                        const sg = Math.round(255 + (hg - 255) * pa) | 0;
+                        const sb = Math.round(255 + (hb - 255) * pa) | 0;
                         poly.setAttribute('stroke', `rgb(${sr},${sg},${sb})`);
                         if (pa > 0.05) {
-                            poly.style.filter = `drop-shadow(0 0 ${4 * pa}px rgba(${pr},${pg},${pb},${pa}))`;
+                            poly.style.filter = `drop-shadow(0 0 ${4 * pa}px rgba(${hr},${hg},${hb},${pa}))`;
                         } else {
                             poly.style.filter = '';
                         }
