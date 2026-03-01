@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Nik Iliadis | Digital Architect</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <style>
+        /* ─── Base ─── */
+        body {
+            background: #0d0d0d;
+            color: #e5e5e5;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            cursor: default;
+            user-select: none;
+        }
+
+        /* ─── Two-layer background ─── */
+        #bg-gray,
+        #bg-color {
+            position: fixed;
+            inset: 0;
+            background: url('bg.jpg') top left / auto repeat;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        #bg-gray {
+            filter: grayscale(1) contrast(0.45);
+            opacity: 0.22;
+        }
+
+        #bg-color {
+            /* color layer is revealed through a radial mask centered on cursor */
+            filter: brightness(0.7);
+            -webkit-mask-image: radial-gradient(circle 280px at var(--mx, -999px) var(--my, -999px),
+                    black 0%,
+                    transparent 100%);
+            mask-image: radial-gradient(circle 280px at var(--mx, -999px) var(--my, -999px),
+                    black 0%,
+                    transparent 100%);
+        }
+
+        /* Non-link text should not show text cursor */
+        h1,
+        h2,
+        h3,
+        p,
+        div,
+        span,
+        header,
+        main,
+        section {
+            cursor: default;
+        }
+
+        a,
+        a *,
+        button,
+        [role="button"],
+        #easter-egg-trigger {
+            cursor: pointer;
+        }
+
+        /* ─── Pixel Dissolve Overlay ─── */
+        #pixel-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            pointer-events: none;
+        }
+
+        #pixel-overlay canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+        }
+
+        /* ─── Icon row (easter egg hidden among decorative icons) ─── */
+        .icon-row {
+            position: absolute;
+            bottom: 1.1rem;
+            right: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            z-index: 20;
+        }
+
+        .icon-row .icon-glyph {
+            width: 1rem;
+            height: 1rem;
+            color: #6366f1;
+            opacity: 0.29;
+            transition: opacity 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .icon-row .icon-glyph svg {
+            width: 100%;
+            height: 100%;
+            fill: currentColor;
+        }
+
+        #easter-egg-trigger {
+            display: inline-flex;
+            width: 1rem;
+            height: 1rem;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        #easter-egg-trigger .icon-glyph {
+            width: 100%;
+            height: 100%;
+            opacity: 0.29;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        #easter-egg-trigger:hover .icon-glyph {
+            opacity: 0.55;
+            transform: scale(1.25);
+        }
+
+        /* ─── Pink Cursor Halo (text proximity effect) ─── */
+        #cursor-halo {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: normal;
+        }
+
+        /* ─── Game Container ─── */
+        #game-container {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            overflow: hidden;
+            background-color: #020617;
+        }
+
+        #gameCanvas {
+            display: block;
+        }
+
+        .neon-text {
+            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #0ea5e9, 0 0 30px #0ea5e9;
+        }
+
+        .glow-canvas {
+            filter: drop-shadow(0 0 8px rgba(14, 165, 233, 0.8));
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Background layers: grayscale base + full-color spotlight layer -->
+    <div id="bg-gray"></div>
+    <div id="bg-color"></div>
+
+    <!-- ═══════════════════════════════════════════════
+     CV / PROFILE CARD
+     ═══════════════════════════════════════════════ -->
+    <main class="w-full max-w-6xl mx-auto p-4 md:p-8 flex items-center justify-center min-h-screen" id="cv-content">
+        <div
+            class="relative bg-gradient-to-br from-cyan-400 via-blue-500 to-fuchsia-600 rounded-[2rem] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.6)] flex flex-col md:flex-row w-full max-w-5xl md:h-[650px] p-2 items-center">
+
+            <!-- Left sidebar -->
+            <div
+                class="w-full md:w-[20%] p-6 flex flex-col items-center justify-center text-center relative text-white h-full z-0">
+                <div class="absolute inset-0 bg-white/5 mix-blend-overlay pointer-events-none rounded-l-[1.5rem]"></div>
+                <div
+                    class="relative z-10 w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border-4 border-white/20 shadow-xl mb-8 mt-4 md:mt-0">
+                    <img alt="Nik Iliadis Portrait"
+                        class="w-full h-full object-cover grayscale contrast-125 hover:grayscale-0 transition-all duration-500"
+                        src="profile.png">
+                </div>
+                <nav class="relative z-10 flex flex-col gap-4 w-full items-center">
+                    <a class="text-[9px] uppercase tracking-[0.25em] font-bold text-white/90 hover:text-white transition-colors pb-1 border-b border-white/20 hover:border-white w-fit"
+                        href="https://linkedin.com/in/nik-iliadis">LinkedIn</a>
+                    <a class="text-[9px] uppercase tracking-[0.25em] font-bold text-white/90 hover:text-white transition-colors pb-1 border-b border-white/20 hover:border-white w-fit"
+                        href="#">GitHub</a>
+                </nav>
+                <div class="relative z-10 mt-auto w-full">
+                    <!-- Baltimore skyline silhouette — single roofline stroke -->
+                    <svg viewBox="0 0 200 48" xmlns="http://www.w3.org/2000/svg" class="w-full opacity-30 mb-1"
+                        aria-hidden="true" preserveAspectRatio="xMidYMax meet">
+                        <!-- Roofline: left waterfront → medium blocks → Transamerica pyramid
+                             → 100 Light St (tallest) → One WTC stepped crown
+                             → Legg Mason slab → right waterfront -->
+                        <polyline points="
+                                0,47
+                                6,47  6,40
+                                10,40 10,44
+                                14,44 14,34
+                                20,34 20,44
+                                24,44 24,28
+                                30,28 30,38
+                                34,38
+                                34,22
+                                36,14
+                                38,8
+                                40,14
+                                42,22
+                                44,22 44,5
+                                52,5  52,10
+                                54,10 54,5
+                                60,5  60,18
+                                64,18 64,10
+                                70,10 70,22
+                                74,22 74,14
+                                80,14 80,26
+                                86,26 86,18
+                                96,18 96,28
+                                104,28 104,20
+                                114,20 114,30
+                                124,30 124,22
+                                136,22 136,34
+                                148,34 148,40
+                                160,40 160,44
+                                180,44 180,47
+                                200,47
+                            " fill="none" stroke="white" stroke-width="1.2" stroke-linejoin="miter"
+                            id="skyline-poly" />
+                    </svg>
+                    <div class="pb-4 text-[8px] uppercase tracking-widest text-white/50 font-semibold">
+                        MADE IN BALTIMORE
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dark blue main card — text top-aligned -->
+            <div
+                class="w-full md:w-[80%] h-full bg-[#111827] rounded-[1.75rem] shadow-2xl border border-gray-700/50 p-8 md:p-16 flex flex-col justify-start relative overflow-hidden z-10 ml-0 md:-ml-2 my-2 md:my-0">
+                <div
+                    class="absolute top-0 right-0 w-96 h-96 bg-blue-600/5 blur-[100px] rounded-full pointer-events-none">
+                </div>
+                <div
+                    class="absolute bottom-0 left-0 w-64 h-64 bg-fuchsia-600/5 blur-[80px] rounded-full pointer-events-none">
+                </div>
+
+                <div class="max-w-3xl relative z-10 pt-4 md:pt-8">
+                    <h1 class="text-5xl md:text-8xl font-sans font-bold text-white mb-6 tracking-tighter leading-none">
+                        Nik Iliadis</h1>
+                    <div
+                        class="h-1.5 w-24 bg-gradient-to-r from-cyan-500 to-blue-600 mb-10 rounded-full shadow-[0_0_15px_rgba(6,182,212,0.5)]">
+                    </div>
+                    <p class="text-xl md:text-3xl font-sans font-light leading-snug text-gray-400">Building technology
+                        organizations that deliver. Veteran. Father. Tinkerer.</p>
+                </div>
+
+                <!-- Icon row: decorative glyphs with egg hidden at position 4 -->
+                <div class="icon-row">
+                    <!-- Diamond -->
+                    <span class="icon-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="12,2 22,12 12,22 2,12" />
+                        </svg></span>
+                    <!-- Four-pointed star -->
+                    <span class="icon-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2 L13.5 10.5 L22 12 L13.5 13.5 L12 22 L10.5 13.5 L2 12 L10.5 10.5 Z" />
+                        </svg></span>
+                    <!-- Hexagon -->
+                    <span class="icon-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="12,2 20.66,7 20.66,17 12,22 3.34,17 3.34,7" />
+                        </svg></span>
+                    <!-- Egg (the easter egg trigger) -->
+                    <span id="easter-egg-trigger" title=""><span class="icon-glyph"><svg viewBox="0 0 24 30"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <ellipse cx="12" cy="17" rx="9.5" ry="13" />
+                            </svg></span></span>
+                    <!-- Triangle -->
+                    <span class="icon-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="12,3 22,21 2,21" />
+                        </svg></span>
+                    <!-- Cross / plus -->
+                    <span class="icon-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <rect x="10" y="2" width="4" height="20" rx="1" />
+                            <rect x="2" y="10" width="20" height="4" rx="1" />
+                        </svg></span>
+                    <!-- Circle with dot -->
+                    <span class="icon-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" />
+                            <circle cx="12" cy="12" r="3" style="fill:#020617" />
+                        </svg></span>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Pixel dissolve overlay -->
+    <div id="pixel-overlay"><canvas id="dissolve-canvas"></canvas></div>
+
+    <!-- ═══════════════════════════════════════════════
+     GAME CONTAINER (hidden until easter egg fires)
+     ═══════════════════════════════════════════════ -->
+    <div id="game-container">
+
+        <!-- HUD -->
+        <header class="absolute top-0 left-0 w-full p-6 flex justify-between items-start pointer-events-none z-10"
+            style="font-family:'JetBrains Mono',monospace;">
+            <div>
+                <p class="text-xs uppercase tracking-widest text-sky-400 opacity-70">Mission Score</p>
+                <h2 class="text-4xl font-bold neon-text" id="game-score">000000</h2>
+            </div>
+            <div class="pointer-events-auto">
+                <button id="return-btn"
+                    class="px-6 py-2 border-2 border-sky-500 text-sky-400 hover:bg-sky-500 hover:text-white transition-all duration-300 uppercase text-sm tracking-widest font-bold flex items-center gap-2 group"
+                    style="font-family:'JetBrains Mono',monospace;">
+                    <span class="group-hover:-translate-x-1 transition-transform">←</span> Return
+                </button>
+            </div>
+        </header>
+
+        <!-- Instructions (fades out on first mouse move) -->
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-1000 z-10"
+            id="game-instructions">
+            <div class="text-center space-y-4" style="font-family:'JetBrains Mono',monospace;">
+                <p class="text-sky-300 text-lg tracking-widest animate-pulse uppercase">Warping Completed</p>
+                <p class="text-slate-500 text-sm uppercase">[ Move: Mouse ]&nbsp;&nbsp;&nbsp;[ Fire: Click ]</p>
+            </div>
+        </div>
+
+        <!-- Game canvas (fills full screen) -->
+        <canvas class="glow-canvas" id="gameCanvas"></canvas>
+
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════════════ -->
+    <script>
+        // ── Pixel Dissolve + Game Launch ──────────────────────────────────────────
+        (() => {
+            const trigger = document.getElementById('easter-egg-trigger');
+            const overlay = document.getElementById('pixel-overlay');
+            const dissolveC = document.getElementById('dissolve-canvas');
+            const dCtx = dissolveC.getContext('2d');
+            const cvContent = document.getElementById('cv-content');
+            const gameEl = document.getElementById('game-container');
+            const returnBtn = document.getElementById('return-btn');
+
+            const PIXEL = 6;
+            const DURATION = 1100;
+            let animating = false;
+
+            // ── Launch: dissolve → show game ──
+            trigger.addEventListener('click', () => {
+                if (animating) return;
+                animating = true;
+
+                dissolveC.width = window.innerWidth;
+                dissolveC.height = window.innerHeight;
+
+                const cols = Math.ceil(dissolveC.width / PIXEL);
+                const rows = Math.ceil(dissolveC.height / PIXEL);
+                const total = cols * rows;
+
+                // Shuffled block indices
+                const indices = Array.from({ length: total }, (_, i) => i);
+                for (let i = indices.length - 1; i > 0; i--) {
+                    const j = (Math.random() * (i + 1)) | 0;
+                    [indices[i], indices[j]] = [indices[j], indices[i]];
+                }
+
+                overlay.style.display = 'block';
+                const colours = ['#0f172a', '#111827', '#0d1117', '#020617', '#0a0a1a'];
+                const start = performance.now();
+
+                function step(now) {
+                    const progress = Math.min((now - start) / DURATION, 1);
+                    const reveal = (progress * total) | 0;
+                    const prev = (Math.max(0, progress - 16 / DURATION) * total) | 0;
+
+                    for (let i = prev; i < reveal; i++) {
+                        if (i >= total) break;
+                        const idx = indices[i];
+                        const col = idx % cols;
+                        const row = (idx / cols) | 0;
+                        dCtx.fillStyle = colours[(Math.random() * colours.length) | 0];
+                        dCtx.fillRect(col * PIXEL, row * PIXEL, PIXEL, PIXEL);
+                    }
+
+                    if (progress < 1) {
+                        requestAnimationFrame(step);
+                    } else {
+                        // Fully dark — switch views
+                        cvContent.style.display = 'none';
+                        overlay.style.display = 'none';
+                        gameEl.style.display = 'block';
+                        initGame();
+                        animating = false;
+                    }
+                }
+
+                requestAnimationFrame(step);
+            });
+
+            // ── Exit dissolve: fill dark overlay, swap views behind it, then pixel-clear to reveal CV ──
+            function dissolveExit() {
+                dissolveC.width = window.innerWidth;
+                dissolveC.height = window.innerHeight;
+                const cols = Math.ceil(dissolveC.width / PIXEL);
+                const rows = Math.ceil(dissolveC.height / PIXEL);
+                const total = cols * rows;
+
+                // 1. Paint the overlay fully dark — covers the game instantly
+                dCtx.fillStyle = '#020617';
+                dCtx.fillRect(0, 0, dissolveC.width, dissolveC.height);
+                // overlay z-index sits above both CV and game
+                overlay.style.display = 'block';
+
+                // 2. Now that the dark overlay hides everything, swap the layers:
+                //    hide game, show CV — neither is visible yet
+                gameEl.style.display = 'none';
+                cvContent.style.display = '';
+
+                // 3. Shuffle block indices
+                const indices = Array.from({ length: total }, (_, i) => i);
+                for (let i = indices.length - 1; i > 0; i--) {
+                    const j = (Math.random() * (i + 1)) | 0;
+                    [indices[i], indices[j]] = [indices[j], indices[i]];
+                }
+
+                const REVEAL_DUR = 950;
+                const start = performance.now();
+
+                // 4. Clear (erase) blocks to reveal the CV below
+                function stepOut(now) {
+                    const progress = Math.min((now - start) / REVEAL_DUR, 1);
+                    const reveal = (progress * total) | 0;
+                    const prev = (Math.max(0, progress - 16 / REVEAL_DUR) * total) | 0;
+                    for (let i = prev; i < reveal; i++) {
+                        if (i >= total) break;
+                        const idx = indices[i];
+                        const col = idx % cols;
+                        const row = (idx / cols) | 0;
+                        dCtx.clearRect(col * PIXEL, row * PIXEL, PIXEL, PIXEL);
+                    }
+                    if (progress < 1) {
+                        requestAnimationFrame(stepOut);
+                    } else {
+                        overlay.style.display = 'none';
+                    }
+                }
+                requestAnimationFrame(stepOut);
+            }
+
+            // ── Return: stop game → dissolve exit ──
+            returnBtn.addEventListener('click', () => {
+                stopGame();
+                dissolveExit();
+            });
+        })();
+
+        // ── Space Shooter Game Engine ─────────────────────────────────────────────
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('game-score');
+        const instructions = document.getElementById('game-instructions');
+
+        let width, height;
+        let score = 0;
+        let gameActive = false;
+        let animFrameId;
+
+        const player = { x: 0, y: 0, size: 20, color: '#0ea5e9' };
+        let projectiles = [];
+        let enemies = [];
+        let particles = [];
+
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            player.x = width / 2;
+            player.y = height - 100;
+        }
+
+        window.addEventListener('resize', resize);
+
+        // Mouse tracking
+        window.addEventListener('mousemove', (e) => {
+            if (!gameActive) return;
+            player.x = e.clientX;
+            player.y = e.clientY;
+            if (instructions.style.opacity !== '0') instructions.style.opacity = '0';
+        });
+
+        // Shooting
+        window.addEventListener('mousedown', () => {
+            if (!gameActive) return;
+            projectiles.push({ x: player.x, y: player.y - 15, speed: 12, radius: 3 });
+        });
+
+        class Enemy {
+            constructor() {
+                this.size = Math.random() * 20 + 10;
+                this.x = Math.random() * width;
+                this.y = -this.size;
+                this.speed = Math.random() * 2 + 1;
+                this.points = (this.size * 10) | 0;
+                this.color = '#ef4444';
+            }
+            update() { this.y += this.speed; }
+            draw() {
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y - this.size);
+                ctx.lineTo(this.x + this.size, this.y);
+                ctx.lineTo(this.x, this.y + this.size);
+                ctx.lineTo(this.x - this.size, this.y);
+                ctx.closePath();
+                ctx.stroke();
+            }
+        }
+
+        function createExplosion(x, y, color) {
+            for (let i = 0; i < 8; i++) {
+                particles.push({
+                    x, y,
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: (Math.random() - 0.5) * 10,
+                    alpha: 1, color
+                });
+            }
+        }
+
+        function updateScore() {
+            scoreEl.innerText = score.toString().padStart(6, '0');
+        }
+
+        function animate() {
+            // Background with trail
+            ctx.fillStyle = 'rgba(2, 6, 23, 0.3)';
+            ctx.fillRect(0, 0, width, height);
+
+            // Starfield
+            ctx.fillStyle = 'rgba(255,255,255,0.1)';
+            for (let i = 0; i < 10; i++) {
+                ctx.fillRect(Math.random() * width, Math.random() * height, 1, 1);
+            }
+
+            // Player ship
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = player.color;
+            ctx.strokeStyle = player.color;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(player.x, player.y - 20);
+            ctx.lineTo(player.x + 15, player.y + 15);
+            ctx.lineTo(player.x, player.y + 5);
+            ctx.lineTo(player.x - 15, player.y + 15);
+            ctx.closePath();
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // Projectiles
+            projectiles.forEach((p, i) => {
+                p.y -= p.speed;
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+                if (p.y < 0) projectiles.splice(i, 1);
+            });
+
+            // Enemies
+            enemies.forEach((enemy, eIdx) => {
+                enemy.update();
+                enemy.draw();
+
+                // Bullet collision
+                projectiles.forEach((p, pIdx) => {
+                    if (Math.hypot(p.x - enemy.x, p.y - enemy.y) < enemy.size + p.radius) {
+                        createExplosion(enemy.x, enemy.y, enemy.color);
+                        score += enemy.points;
+                        updateScore();
+                        enemies.splice(eIdx, 1);
+                        projectiles.splice(pIdx, 1);
+                    }
+                });
+
+                // Player collision
+                if (Math.hypot(player.x - enemy.x, player.y - enemy.y) < enemy.size + 15) {
+                    score = Math.max(0, score - 500);
+                    updateScore();
+                    createExplosion(player.x, player.y, '#fff');
+                    enemies.splice(eIdx, 1);
+                }
+
+                if (enemy.y > height + 50) enemies.splice(eIdx, 1);
+            });
+
+            // Spawn
+            if (Math.random() < 0.03) enemies.push(new Enemy());
+
+            // Particles
+            particles.forEach((part, i) => {
+                part.x += part.vx;
+                part.y += part.vy;
+                part.alpha -= 0.02;
+                ctx.globalAlpha = part.alpha;
+                ctx.fillStyle = part.color;
+                ctx.fillRect(part.x, part.y, 2, 2);
+                ctx.globalAlpha = 1;
+                if (part.alpha <= 0) particles.splice(i, 1);
+            });
+
+            if (gameActive) animFrameId = requestAnimationFrame(animate);
+        }
+
+        function initGame() {
+            score = 0;
+            gameActive = true;
+            projectiles = [];
+            enemies = [];
+            particles = [];
+            instructions.style.opacity = '1';
+
+            resize();
+            updateScore();
+
+            // Clear canvas
+            ctx.fillStyle = '#020617';
+            ctx.fillRect(0, 0, width, height);
+
+            animFrameId = requestAnimationFrame(animate);
+        }
+
+        function stopGame() {
+            gameActive = false;
+            if (animFrameId) cancelAnimationFrame(animFrameId);
+        }
+    </script>
+
+    <!-- ── Pink Cursor Text Halo ──────────────────────────────────────────── -->
+    <script>
+        (() => {
+            const RADIUS = 55;           // effect radius in px
+            const PINK = [234, 255, 0]; // neon yellow
+
+            // We walk the text nodes under #cv-content and colour characters
+            // near the cursor hot-pink, fading to normal outside the radius.
+            // Technique: wrap every character in a <span>, then on mousemove
+            // update their color based on distance.
+
+            const root = document.getElementById('cv-content');
+
+            // Gather all text-bearing leaf nodes we want to affect
+            const textSelectors = ['h1', 'p', 'a', 'div > p', 'nav a'];
+            const spans = [];
+
+            function wrapTextNodes(el) {
+                // Walk child nodes; wrap text nodes char-by-char
+                const childNodes = Array.from(el.childNodes);
+                childNodes.forEach(node => {
+                    if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+                        const frag = document.createDocumentFragment();
+                        [...node.textContent].forEach(ch => {
+                            const s = document.createElement('span');
+                            s.className = 'halo-char';
+                            s.textContent = ch;
+                            s.style.transition = 'color 0.08s linear';
+                            s.style.display = 'inline';
+                            frag.appendChild(s);
+                            spans.push(s);
+                        });
+                        node.replaceWith(frag);
+                    } else if (node.nodeType === Node.ELEMENT_NODE &&
+                        !node.closest('#easter-egg-trigger') &&
+                        node.tagName !== 'IMG') {
+                        wrapTextNodes(node);
+                    }
+                });
+            }
+
+            wrapTextNodes(root);
+
+            let mx = -9999, my = -9999;
+
+            document.addEventListener('mousemove', e => {
+                mx = e.clientX;
+                my = e.clientY;
+            });
+
+            function haloTick() {
+                if (document.getElementById('game-container').style.display === 'block') {
+                    requestAnimationFrame(haloTick);
+                    return;
+                }
+                spans.forEach(s => {
+                    const r = s.getBoundingClientRect();
+                    const cx = r.left + r.width / 2;
+                    const cy = r.top + r.height / 2;
+                    const d = Math.hypot(mx - cx, my - cy);
+                    if (d < RADIUS) {
+                        const t = 1 - d / RADIUS;
+                        const [pr, pg, pb] = PINK;
+                        const alpha = t * t; // quadratic falloff
+                        // Lerp from white (255,255,255) → neon yellow — always full opacity,
+                        // so text is never dark or illegible at the edges of the halo
+                        const r = Math.round(255 + (pr - 255) * alpha) | 0;
+                        const g = Math.round(255 + (pg - 255) * alpha) | 0;
+                        const b = Math.round(255 + (pb - 255) * alpha) | 0;
+                        s.style.color = `rgb(${r},${g},${b})`;
+                        // Glow: pure yellow shadow, blur scales with proximity
+                        s.style.textShadow = alpha > 0.1 ? [
+                            `0 0 ${6 * alpha}px rgba(${pr},${pg},${pb},${alpha})`,
+                            `0 0 ${16 * alpha}px rgba(${pr},${pg},${pb},${alpha * 0.6})`
+                        ].join(',') : '';
+                    } else {
+                        s.style.color = '';
+                        s.style.textShadow = '';
+                    }
+                });
+                // Also tint the Baltimore skyline polyline stroke
+                const poly = document.getElementById('skyline-poly');
+                if (poly) {
+                    const pr2 = poly.getBoundingClientRect();
+                    const pcx = pr2.left + pr2.width / 2;
+                    const pcy = pr2.top + pr2.height / 2;
+                    const pd = Math.hypot(mx - pcx, my - pcy);
+                    const SKYLINE_R = RADIUS * 3; // wider reach for the whole SVG
+                    if (pd < SKYLINE_R) {
+                        const pt = 1 - pd / SKYLINE_R;
+                        const pa = pt * pt;
+                        const [pr, pg, pb] = PINK;
+                        const sr = Math.round(255 + (pr - 255) * pa) | 0;
+                        const sg = Math.round(255 + (pg - 255) * pa) | 0;
+                        const sb = Math.round(255 + (pb - 255) * pa) | 0;
+                        poly.setAttribute('stroke', `rgb(${sr},${sg},${sb})`);
+                        if (pa > 0.05) {
+                            poly.style.filter = `drop-shadow(0 0 ${4 * pa}px rgba(${pr},${pg},${pb},${pa}))`;
+                        } else {
+                            poly.style.filter = '';
+                        }
+                    } else {
+                        poly.setAttribute('stroke', 'white');
+                        poly.style.filter = '';
+                    }
+                }
+                requestAnimationFrame(haloTick);
+            }
+
+            requestAnimationFrame(haloTick);
+        })();
+    </script>
+    <!-- Background color-reveal: update CSS custom props on mouse move -->
+    <script>
+        (() => {
+            const bgColor = document.getElementById('bg-color');
+            document.addEventListener('mousemove', e => {
+                bgColor.style.setProperty('--mx', e.clientX + 'px');
+                bgColor.style.setProperty('--my', e.clientY + 'px');
+            });
+            // Hide spotlight when mouse leaves the window
+            document.addEventListener('mouseleave', () => {
+                bgColor.style.setProperty('--mx', '-999px');
+                bgColor.style.setProperty('--my', '-999px');
+            });
+        })();
+    </script>
+
+</body>
+
+</html>
