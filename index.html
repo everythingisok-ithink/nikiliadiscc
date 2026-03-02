@@ -864,6 +864,64 @@
      SCRIPTS
      ═══════════════════════════════════════════════ -->
 
+    <!-- ── Sound Effects (Web Audio API) ─────────────────────────────────────── -->
+    <script>
+        const Sfx = (() => {
+            let audioCtx = null;
+            function init() {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+            }
+            function play(type) {
+                if (!audioCtx) return;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                const t = audioCtx.currentTime;
+
+                if (type === 'shoot') {
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(880, t);
+                    osc.frequency.exponentialRampToValueAtTime(110, t + 0.1);
+                    gain.gain.setValueAtTime(0.05, t);
+                    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+                    osc.start(t);
+                    osc.stop(t + 0.1);
+                } else if (type === 'hit') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(100, t);
+                    osc.frequency.exponentialRampToValueAtTime(10, t + 0.2);
+                    gain.gain.setValueAtTime(0.1, t);
+                    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+                    osc.start(t);
+                    osc.stop(t + 0.2);
+                } else if (type === 'playerHit') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, t);
+                    osc.frequency.exponentialRampToValueAtTime(40, t + 0.4);
+                    gain.gain.setValueAtTime(0.2, t);
+                    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
+                    osc.start(t);
+                    osc.stop(t + 0.4);
+                } else if (type === 'achievement') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, t);
+                    osc.frequency.setValueAtTime(554.37, t + 0.1);
+                    osc.frequency.setValueAtTime(659.25, t + 0.2);
+                    osc.frequency.setValueAtTime(880, t + 0.3);
+                    gain.gain.setValueAtTime(0, t);
+                    gain.gain.linearRampToValueAtTime(0.1, t + 0.05);
+                    gain.gain.setValueAtTime(0.1, t + 0.3);
+                    gain.gain.linearRampToValueAtTime(0, t + 0.8);
+                    osc.start(t);
+                    osc.stop(t + 0.8);
+                }
+            }
+            return { init, play };
+        })();
+    </script>
+
     <!-- ── Glyph Click Animations ──────────────────────────────────────────────── -->
     <script>
         document.querySelectorAll('.icon-glyph[data-anim]').forEach(glyph => {
@@ -899,6 +957,7 @@
             // ── Launch: dissolve → show game ──
             trigger.addEventListener('click', () => {
                 if (animating) return;
+                Sfx.init();
                 animating = true;
 
                 dissolveC.width = window.innerWidth;
@@ -1057,7 +1116,7 @@
         /** Render persisted achievement states into the HUD icons. */
         function renderAchievements() {
             gameData.achievements.forEach(id => {
-                const icon = document.querySelector(`.achievement-icon[data-id="${id}"]`);
+                const icon = document.querySelector(`#achievements-row .achievement-icon[data-id="${id}"]`);
                 if (icon && !icon.classList.contains('unlocked')) {
                     icon.classList.add('unlocked');
                 }
@@ -1066,6 +1125,7 @@
 
         /** Show a toast notification for a newly unlocked achievement. */
         function showAchievementToast(name) {
+            Sfx.play('achievement');
             const toast = document.createElement('div');
             toast.className = 'achievement-toast';
             toast.textContent = `★ ${name} Unlocked`;
@@ -1079,7 +1139,7 @@
             gameData.achievements.push(id);
             saveGameData();
 
-            const icon = document.querySelector(`.achievement-icon[data-id="${id}"]`);
+            const icon = document.querySelector(`#achievements-row .achievement-icon[data-id="${id}"]`);
             if (icon) icon.classList.add('unlocked');
 
             showAchievementToast(ACHIEVEMENTS[id].name);
@@ -1122,6 +1182,7 @@
         // Shooting
         window.addEventListener('mousedown', () => {
             if (!gameActive) return;
+            Sfx.play('shoot');
             projectiles.push({ x: player.x, y: player.y - 15, speed: 12, radius: 3 });
         });
 
@@ -1209,6 +1270,7 @@
                 projectiles.forEach((p, pIdx) => {
                     if (Math.hypot(p.x - enemy.x, p.y - enemy.y) < enemy.size + p.radius) {
                         createExplosion(enemy.x, enemy.y, enemy.color);
+                        Sfx.play('hit');
                         score += enemy.points;
                         sessionKills++;
                         gameData.totalKills++;
@@ -1222,6 +1284,7 @@
                 // Player collision
                 if (Math.hypot(player.x - enemy.x, player.y - enemy.y) < enemy.size + 15) {
                     score = Math.max(0, score - 500);
+                    Sfx.play('playerHit');
                     updateScore();
                     createExplosion(player.x, player.y, '#fff');
                     enemies.splice(eIdx, 1);
@@ -1307,7 +1370,7 @@
                 tooltip.innerHTML = '';
 
                 gameData.achievements.forEach((id, i) => {
-                    const srcIcon = document.querySelector(`.achievement-icon[data-id="${id}"]`);
+                    const srcIcon = document.querySelector(`#achievements-row .achievement-icon[data-id="${id}"]`);
                     if (srcIcon) {
                         const iconEl = srcIcon.cloneNode(true);
                         iconEl.classList.remove('unlocked');
