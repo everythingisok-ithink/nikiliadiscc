@@ -621,11 +621,15 @@
             color: #4ade80;
             overflow: hidden;
             pointer-events: none;
-            transition: top 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            opacity: 0;
+            visibility: hidden;
+            transition: top 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease, visibility 0.3s ease;
         }
 
         #retro-terminal.active {
             top: 40px;
+            opacity: 1;
+            visibility: visible;
         }
 
         #retro-terminal::before {
@@ -670,11 +674,15 @@
             align-items: flex-end;
             gap: 15px;
             pointer-events: none;
-            transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            visibility: hidden;
+            transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease, visibility 0.3s ease;
         }
 
         #ai-assistant.visible {
             bottom: 40px;
+            opacity: 1;
+            visibility: visible;
         }
 
         .ai-robot {
@@ -819,6 +827,28 @@
             opacity: 0.7;
             font-style: italic;
         }
+
+        /* ─── Profile Picture Red Pulse ─── */
+        .profile-red-pulse {
+            animation: profile-red-pulse-anim 0.3s ease-out;
+        }
+
+        @keyframes profile-red-pulse-anim {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+                border-color: rgba(239, 68, 68, 1);
+            }
+
+            70% {
+                box-shadow: 0 0 0 20px rgba(239, 68, 68, 0);
+                border-color: rgba(239, 68, 68, 0.5);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+                border-color: rgba(255, 255, 255, 0.2);
+            }
+        }
     </style>
 </head>
 
@@ -845,8 +875,8 @@
                 <div class="w-1/3 md:w-auto flex justify-center">
                     <div
                         class="relative z-10 w-[76px] h-[76px] md:w-[115px] md:h-[115px] shrink-0 rounded-full overflow-hidden border-4 border-white/20 shadow-xl mb-0 md:mb-8">
-                        <img alt="Nik Iliadis Portrait"
-                            class="w-full h-full object-cover grayscale contrast-125 hover:grayscale-0 transition-all duration-500"
+                        <img id="trigger-profile" alt="Nik Iliadis Portrait"
+                            class="w-full h-full object-cover grayscale contrast-125 hover:grayscale-0 transition-all duration-500 cursor-pointer"
                             src="profile.jpg">
                     </div>
                 </div>
@@ -1342,7 +1372,7 @@
 
     <!-- ── Easter Egg Tracker ───────────────────────────────────────────── -->
     <script>
-        const TOTAL_EGGS = 11;
+        const TOTAL_EGGS = 12;
         const desktopCounter = document.getElementById('egg-counter-desktop');
         const mobileCounter = document.getElementById('egg-counter-mobile');
 
@@ -2644,12 +2674,19 @@
 
         document.body.appendChild(assistantEl);
 
-        aiTrigger.addEventListener('click', () => {
+        window.triggerAIAssistant = function (customQuote = null, isAngry = false) {
             if (aiActive) return;
             aiActive = true;
             trackEasterEgg('ai');
 
-            speechEl.innerText = aiQuotes[Math.floor(Math.random() * aiQuotes.length)];
+            if (isAngry) {
+                robotEl.classList.add('angry');
+            } else {
+                robotEl.classList.remove('angry');
+            }
+
+            const quote = customQuote || aiQuotes[Math.floor(Math.random() * aiQuotes.length)];
+            speechEl.innerText = quote;
             assistantEl.classList.add('visible');
 
             if (typeof Sfx !== 'undefined' && Sfx.play) {
@@ -2660,8 +2697,15 @@
 
             setTimeout(() => {
                 assistantEl.classList.remove('visible');
-                setTimeout(() => { aiActive = false; }, 600);
+                setTimeout(() => {
+                    aiActive = false;
+                    robotEl.classList.remove('angry');
+                }, 600);
             }, 6000);
+        };
+
+        aiTrigger.addEventListener('click', () => {
+            window.triggerAIAssistant();
         });
     </script>
 
@@ -2673,9 +2717,9 @@
 
         upgradeScreen.innerHTML = `
             <div class="win-spinner"></div>
-            <div class="win-text-large">Configuring updates for Windows 10</div>
+            <div class="win-text-large">Configuring updates.</div>
             <div class="win-text-small"><span id="win-progress">0</span>% complete</div>
-            <div class="win-text-small">Do not turn off your computer.</div>
+            <div class="win-text-small">Do not turn off your device.</div>
             <div class="win-snarky">You didn't need to be productive today, right?</div>
         `;
         document.body.appendChild(upgradeScreen);
@@ -2770,6 +2814,42 @@
                 btn.classList.remove("is-morphed");
             }, 3000);
         }
+    </script>
+
+    <!-- ── Annoyed Profile Picture Easter Egg ─────────────────────────────── -->
+    <script>
+        const profileImg = document.getElementById('trigger-profile');
+        const profileContainer = profileImg.parentElement;
+        let profileClickCount = 0;
+
+        profileImg.addEventListener('click', () => {
+            profileClickCount++;
+
+            // Remove animation to retrigger
+            profileContainer.classList.remove('profile-red-pulse');
+            // Trigger reflow
+            void profileContainer.offsetWidth;
+
+            // Add red pulse effect
+            profileContainer.classList.add('profile-red-pulse');
+
+            if (typeof Sfx !== 'undefined' && Sfx.play) {
+                Sfx.init();
+                // Using playerHit since it works well as an annoyed beep
+                Sfx.play('playerHit');
+            }
+
+            if (profileClickCount === 5) {
+                profileClickCount = 0; // Reset
+                trackEasterEgg('profile');
+
+                if (window.triggerAIAssistant) {
+                    setTimeout(() => {
+                        window.triggerAIAssistant("STOP CLICKING MY FACE!", true);
+                    }, 300);
+                }
+            }
+        });
     </script>
 
 </body>
