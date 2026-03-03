@@ -77,6 +77,11 @@
             cursor: pointer;
         }
 
+        .cd-trigger,
+        .easter-egg-word {
+            cursor: default;
+        }
+
         /* ─── Pixel Dissolve Overlay ─── */
         #pixel-overlay {
             display: none;
@@ -318,6 +323,11 @@
             }
         }
 
+        #skifree-trigger {
+            animation: subtle-pulse 2.5s infinite ease-in-out;
+            cursor: default;
+        }
+
         #easter-egg-trigger .icon-glyph {
             width: 100%;
             height: 100%;
@@ -470,6 +480,22 @@
             display: block;
         }
 
+        /* ─── SkiFree Game Container ─── */
+        #skifree-container {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            overflow: hidden;
+            background-color: #f8fafc;
+            touch-action: none;
+            color: #334155;
+        }
+
+        #skifreeCanvas {
+            display: block;
+        }
+
         .neon-text {
             text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #0ea5e9, 0 0 30px #0ea5e9;
         }
@@ -477,10 +503,327 @@
         .glow-canvas {
             filter: drop-shadow(0 0 8px rgba(14, 165, 233, 0.8));
         }
+
+        /* ─── Compact Disc Animation ─── */
+        .cd-animation {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            pointer-events: none;
+            z-index: 200;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0) rotate(0deg);
+            animation: cd-pop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes cd-pop {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0) rotate(-180deg);
+            }
+
+            30% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.5) rotate(90deg);
+            }
+
+            80% {
+                opacity: 0.8;
+                transform: translate(-50%, -50%) scale(1.2) rotate(360deg);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(2) rotate(450deg);
+            }
+        }
+
+        /* ─── Accumulation Tetris ─── */
+        .tetris-word {
+            display: inline-block;
+            transition: transform 0.1s linear, top 0.1s linear, left 0.1s linear;
+        }
+
+        #tetris-reset {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            background: rgba(14, 165, 233, 0.2);
+            border: 1px solid rgba(14, 165, 233, 0.5);
+            color: #38bdf8;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease, background 0.2s ease;
+        }
+
+        #tetris-reset:hover {
+            background: rgba(14, 165, 233, 0.4);
+        }
+
+        #tetris-reset.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* ─── Calcified Freeze ─── */
+        #freeze-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(226, 232, 240, 0.4);
+            backdrop-filter: blur(10px) contrast(1.2);
+            -webkit-backdrop-filter: blur(10px) contrast(1.2);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 2s ease-in;
+            /* Use a mask to reveal the page underneath the cursor */
+            mask-image: radial-gradient(circle 80px at var(--mouse-x, -100%) var(--mouse-y, -100%), transparent 0%, black 100%);
+            -webkit-mask-image: radial-gradient(circle 80px at var(--mouse-x, -100%) var(--mouse-y, -100%), transparent 0%, black 100%);
+        }
+
+        #freeze-overlay.frozen {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Ice crystals effect layer */
+        #freeze-overlay::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10L20 20M80 10L70 20M10 90L20 80M80 90L70 80M50 0V20M50 100V80M0 50H20M100 50H80M35 35L65 65M65 35L35 65' stroke='rgba(255,255,255,0.4)' stroke-width='1' fill='none'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            filter: blur(2px);
+        }
+
+        /* ─── Terminal Automation ─── */
+        #retro-terminal {
+            position: fixed;
+            top: -400px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
+            height: 300px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid #38bdf8;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.2);
+            z-index: 150;
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #4ade80;
+            overflow: hidden;
+            pointer-events: none;
+            transition: top 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        #retro-terminal.active {
+            top: 40px;
+        }
+
+        #retro-terminal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        .term-line {
+            margin-bottom: 8px;
+            text-shadow: 0 0 4px rgba(74, 222, 128, 0.5);
+        }
+
+        /* ─── Change Gravity Flip ─── */
+        body {
+            transition: transform 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        body.gravity-flipped {
+            transform: rotate(180deg);
+        }
+
+        /* ─── Pressure Squeeze ─── */
+        .pressure-squeeze {
+            transform: scaleY(0.01);
+            filter: blur(4px);
+        }
+
+        /* ─── AI Integration Assistant ─── */
+        #ai-assistant {
+            position: fixed;
+            bottom: -150px;
+            right: 40px;
+            z-index: 200;
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            pointer-events: none;
+            transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #ai-assistant.visible {
+            bottom: 40px;
+        }
+
+        .ai-robot {
+            width: 60px;
+            height: 60px;
+            background: #1e293b;
+            border: 2px solid #94a3b8;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .ai-robot::before,
+        .ai-robot::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            background: #38bdf8;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #38bdf8;
+            animation: blink 4s infinite;
+        }
+
+        .ai-robot::before {
+            left: 12px;
+        }
+
+        .ai-robot::after {
+            right: 12px;
+        }
+
+        @keyframes blink {
+
+            0%,
+            96%,
+            98%,
+            100% {
+                transform: scaleY(1);
+            }
+
+            97%,
+            99% {
+                transform: scaleY(0.1);
+            }
+        }
+
+        .ai-speech {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #38bdf8;
+            padding: 15px 20px;
+            border-radius: 20px 20px 0 20px;
+            color: #e2e8f0;
+            font-size: 14px;
+            max-width: 250px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            transform-origin: bottom right;
+            transform: scale(0);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition-delay: 0.3s;
+        }
+
+        #ai-assistant.visible .ai-speech {
+            transform: scale(1);
+        }
+
+        /* ─── Windows Upgrade Screen ─── */
+        #windows-upgrade-screen {
+            position: fixed;
+            inset: 0;
+            background-color: #0078D7;
+            /* Classic Windows 10 blue */
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            cursor: none;
+        }
+
+        #windows-upgrade-screen.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .win-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: win-spin 1s linear infinite;
+            margin-bottom: 30px;
+        }
+
+        @keyframes win-spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .win-text-large {
+            font-size: 24px;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .win-text-small {
+            font-size: 16px;
+            font-weight: 300;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+
+        .win-snarky {
+            position: absolute;
+            bottom: 40px;
+            font-size: 14px;
+            opacity: 0.7;
+            font-style: italic;
+        }
     </style>
 </head>
 
-<body class="antialiased text-white">
+<body
+    class="bg-black min-h-screen text-slate-300 font-sans antialiased overflow-x-hidden relative selection:bg-blue-500/30">
 
     <!-- Background layers: grayscale base + full-color spotlight layer -->
     <div id="bg-gray"></div>
@@ -556,7 +899,7 @@
                         href="https://github.com/everythingisok-ithink" aria-label="GitHub">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path
-                                d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+                                d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
                         </svg>
                         <span
                             class="absolute -top-8 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] uppercase font-bold tracking-wider rounded-lg opacity-0 group-hover:opacity-100 group-hover:-translate-y-1 transition-all duration-300 pointer-events-none whitespace-nowrap shadow-xl">GitHub</span>
@@ -623,7 +966,7 @@
                                 id="skyline-poly" />
                         </svg>
                         <div
-                            class="text-[8px] uppercase tracking-widest text-white/50 group-hover:text-white/80 transition-colors duration-300 font-semibold">
+                            class="text-[8px] uppercase tracking-widest text-white/50 group-hover:text-white/80 transition-colors duration-300 font-semibold mb-2">
                             MADE IN BALTIMORE
                         </div>
                     </div>
@@ -645,6 +988,11 @@
                         </svg>
                     </div>
                 </button>
+                <!-- Desktop Easter Egg Counter Tracker -->
+                <div id="egg-counter-desktop"
+                    class="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] uppercase font-mono tracking-widest text-white/40 opacity-0 transition-opacity duration-500 pointer-events-none whitespace-nowrap">
+                    Secrets found 0/11
+                </div>
             </div>
 
             <!-- Main Content Area -->
@@ -667,17 +1015,30 @@
                     <p class="text-lg sm:text-xl md:text-3xl font-sans font-light leading-snug text-gray-400">I build
                         technology
                         organizations <i>that deliver.</i></p>
-                    <p
+                    <p id="bio-paragraph"
                         class="mt-4 md:mt-6 text-sm md:text-base lg:text-lg font-sans font-light leading-relaxed md:leading-snug text-gray-400 opacity-90 text-pretty">
-                        Most organizations do not have a technology problem. They have an accumulation problem. Years of
-                        decisions made under pressure, tools adopted without strategy, and processes that calcified
+                        Mo<span id="skifree-trigger" class="relative inline-block">s</span>t organizations do
+                        not have a technology problem. They have an <span id="trigger-tetris"
+                            class="easter-egg-word relative inline-block">accumulation</span> problem. Years of
+                        decisions made under <span id="trigger-pressure"
+                            class="easter-egg-word relative inline-block">pressure</span>, tools adopted without
+                        strategy, and processes that <span id="trigger-freeze"
+                            class="easter-egg-word relative inline-block">calcified</span>
                         before anyone noticed. Modern engineering practices are not about chasing what is new. They are
-                        about building systems that can actually change when the mission changes. CI/CD, automation, AI
-                        integration, these are not upgrades. They are the difference between an organization that can
+                        about building systems that can actually <span id="trigger-gravity"
+                            class="easter-egg-word relative inline-block">change</span> when the mission changes.
+                        CI/<span class="cd-trigger">CD</span>, <span id="trigger-terminal"
+                            class="easter-egg-word relative inline-block">automation</span>, <span
+                            id="trigger-assistant" class="easter-egg-word relative inline-block">AI</span>
+                        integration, these are not <span id="trigger-upgrade"
+                            class="easter-egg-word relative inline-block">upgrades</span>. They are the difference
+                        between an organization that can
                         respond and one that can only react. The goal is not to modernize for its own sake. The goal is
                         to build something that does not have to be rebuilt every three years because the world moved
                         and the technology did not.
                     </p>
+                    <!-- Trigger mapping -->
+                    <div id="tetris-container" class="absolute inset-0 pointer-events-none z-20"></div>
                 </div>
 
                 <!-- Icon row: decorative glyphs with egg hidden at position 4 -->
@@ -770,7 +1131,7 @@
                                 " fill="none" stroke="white" stroke-width="1.2" stroke-linejoin="miter" />
                         </svg>
                         <div
-                            class="text-[8px] uppercase tracking-widest text-white/50 group-hover:text-white/80 transition-colors duration-300 font-semibold">
+                            class="text-[8px] uppercase tracking-widest text-white/50 group-hover:text-white/80 transition-colors duration-300 font-semibold mb-2">
                             MADE IN BALTIMORE
                         </div>
                     </div>
@@ -881,6 +1242,43 @@
     </div>
 
     <!-- ═══════════════════════════════════════════════
+     SKIFREE CONTAINER (hidden until easter egg fires)
+     ═══════════════════════════════════════════════ -->
+    <div id="skifree-container">
+
+        <!-- HUD -->
+        <header class="absolute top-0 left-0 w-full p-6 flex justify-between items-start pointer-events-none z-10"
+            style="font-family:'JetBrains Mono',monospace;">
+            <div>
+                <p class="text-xs uppercase tracking-widest text-slate-500 opacity-70">Distance</p>
+                <h2 class="text-4xl font-bold text-slate-800 drop-shadow-sm" id="skifree-score">0000m</h2>
+                <p class="text-[10px] uppercase tracking-widest text-slate-400 mt-1">Best: <span
+                        id="skifree-high-score">0000m</span></p>
+            </div>
+            <div class="pointer-events-auto">
+                <button id="skifree-return-btn"
+                    class="px-6 py-2 border-2 border-slate-400 text-slate-600 hover:bg-slate-800 hover:text-white hover:border-slate-800 transition-all duration-300 uppercase text-sm tracking-widest font-bold flex items-center gap-2 group shadow-sm bg-white/80 backdrop-blur-sm"
+                    style="font-family:'JetBrains Mono',monospace;">
+                    <span class="group-hover:-translate-x-1 transition-transform">←</span> Return
+                </button>
+            </div>
+        </header>
+
+        <!-- Instructions (fades out on first mouse move) -->
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-1000 z-10"
+            id="skifree-instructions">
+            <div class="text-center space-y-4" style="font-family:'JetBrains Mono',monospace;">
+                <p class="text-slate-800 text-lg tracking-widest animate-pulse uppercase font-bold">Skiing Commenced</p>
+                <p class="text-slate-500 text-sm uppercase">[ Move: Mouse/Touch ]</p>
+            </div>
+        </div>
+
+        <!-- Game canvas (fills full screen) -->
+        <canvas id="skifreeCanvas"></canvas>
+
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
      SCRIPTS
      ═══════════════════════════════════════════════ -->
 
@@ -942,6 +1340,62 @@
         })();
     </script>
 
+    <!-- ── Easter Egg Tracker ───────────────────────────────────────────── -->
+    <script>
+        const TOTAL_EGGS = 11;
+        const desktopCounter = document.getElementById('egg-counter-desktop');
+        const mobileCounter = document.getElementById('egg-counter-mobile');
+
+        function updateCounterUI() {
+            let foundEggs = [];
+            try {
+                foundEggs = JSON.parse(localStorage.getItem('foundEasterEggs') || '[]');
+            } catch (e) {
+                console.error('Failed to parse easter egg data', e);
+            }
+
+            const count = foundEggs.length;
+            const text = `Secrets found ${count}/${TOTAL_EGGS}`;
+
+            if (desktopCounter) desktopCounter.innerText = text;
+            if (mobileCounter) mobileCounter.innerText = text;
+
+            if (count > 0) {
+                if (desktopCounter) desktopCounter.style.opacity = '1';
+                if (mobileCounter) mobileCounter.style.opacity = '1';
+            }
+
+            if (count === TOTAL_EGGS) {
+                if (desktopCounter) {
+                    desktopCounter.style.color = '#38bdf8';
+                    desktopCounter.style.fontWeight = 'bold';
+                }
+                if (mobileCounter) {
+                    mobileCounter.style.color = '#38bdf8';
+                    mobileCounter.style.fontWeight = 'bold';
+                }
+            }
+        }
+
+        function trackEasterEgg(eggId) {
+            let foundEggs = [];
+            try {
+                foundEggs = JSON.parse(localStorage.getItem('foundEasterEggs') || '[]');
+            } catch (e) {
+                console.error('Failed to parse easter egg data', e);
+            }
+
+            if (!foundEggs.includes(eggId)) {
+                foundEggs.push(eggId);
+                localStorage.setItem('foundEasterEggs', JSON.stringify(foundEggs));
+                updateCounterUI();
+            }
+        }
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', updateCounterUI);
+    </script>
+
     <!-- ── Glyph Click Animations ──────────────────────────────────────────────── -->
     <script>
         document.querySelectorAll('.icon-glyph[data-anim]').forEach(glyph => {
@@ -960,22 +1414,19 @@
     </script>
 
     <script>
-        // ── Pixel Dissolve + Game Launch ──────────────────────────────────────────
-        (() => {
-            const trigger = document.getElementById('easter-egg-trigger');
+        // ── Shared Pixel Dissolve Logic ───────────────────────────────────────────
+        const PixelTransition = (() => {
             const overlay = document.getElementById('pixel-overlay');
             const dissolveC = document.getElementById('dissolve-canvas');
             const dCtx = dissolveC.getContext('2d');
             const cvContent = document.getElementById('cv-content');
-            const gameEl = document.getElementById('game-container');
-            const returnBtn = document.getElementById('return-btn');
 
             const PIXEL = 6;
             const DURATION = 1100;
+            const REVEAL_DUR = 950;
             let animating = false;
 
-            // ── Launch: dissolve → show game ──
-            trigger.addEventListener('click', () => {
+            function launch(targetEl, initFn) {
                 if (animating) return;
                 Sfx.init();
                 animating = true;
@@ -1018,32 +1469,32 @@
                         // Fully dark — switch views
                         cvContent.style.display = 'none';
                         overlay.style.display = 'none';
-                        gameEl.style.display = 'block';
-                        initGame();
+                        targetEl.style.display = 'block';
+                        if (initFn) initFn();
                         animating = false;
                     }
                 }
 
                 requestAnimationFrame(step);
-            });
+            }
 
-            // ── Exit dissolve: fill dark overlay, swap views behind it, then pixel-clear to reveal CV ──
-            function dissolveExit() {
+            function exit(targetEl) {
+                if (animating) return;
+                animating = true;
+
                 dissolveC.width = window.innerWidth;
                 dissolveC.height = window.innerHeight;
                 const cols = Math.ceil(dissolveC.width / PIXEL);
                 const rows = Math.ceil(dissolveC.height / PIXEL);
                 const total = cols * rows;
 
-                // 1. Paint the overlay fully dark — covers the game instantly
+                // 1. Paint the overlay fully dark
                 dCtx.fillStyle = '#020617';
                 dCtx.fillRect(0, 0, dissolveC.width, dissolveC.height);
-                // overlay z-index sits above both CV and game
                 overlay.style.display = 'block';
 
-                // 2. Now that the dark overlay hides everything, swap the layers:
-                //    hide game, show CV — neither is visible yet
-                gameEl.style.display = 'none';
+                // 2. Swap the layers behind it
+                targetEl.style.display = 'none';
                 cvContent.style.display = '';
 
                 // 3. Shuffle block indices
@@ -1053,7 +1504,6 @@
                     [indices[i], indices[j]] = [indices[j], indices[i]];
                 }
 
-                const REVEAL_DUR = 950;
                 const start = performance.now();
 
                 // 4. Clear (erase) blocks to reveal the CV below
@@ -1072,15 +1522,50 @@
                         requestAnimationFrame(stepOut);
                     } else {
                         overlay.style.display = 'none';
+                        animating = false;
                     }
                 }
                 requestAnimationFrame(stepOut);
             }
 
-            // ── Return: stop game → dissolve exit ──
+            return { launch, exit };
+        })();
+
+        // Connect Space Shooter
+        (() => {
+            const trigger = document.getElementById('easter-egg-trigger');
+            const gameEl = document.getElementById('game-container');
+            const returnBtn = document.getElementById('return-btn');
+
+            trigger.addEventListener('click', () => {
+                trackEasterEgg('spaceshooter');
+                PixelTransition.launch(gameEl, () => {
+                    if (typeof initGame === 'function') initGame();
+                });
+            });
+
             returnBtn.addEventListener('click', () => {
-                stopGame();
-                dissolveExit();
+                if (typeof stopGame === 'function') stopGame();
+                PixelTransition.exit(gameEl);
+            });
+        })();
+
+        // Connect SkiFree
+        (() => {
+            const trigger = document.getElementById('skifree-trigger');
+            const gameEl = document.getElementById('skifree-container');
+            const returnBtn = document.getElementById('skifree-return-btn');
+
+            trigger.addEventListener('click', () => {
+                trackEasterEgg('skifree');
+                PixelTransition.launch(gameEl, () => {
+                    if (typeof initSkiFree === 'function') initSkiFree();
+                });
+            });
+
+            returnBtn.addEventListener('click', () => {
+                if (typeof stopSkiFree === 'function') stopSkiFree();
+                PixelTransition.exit(gameEl);
             });
         })();
 
@@ -1420,6 +1905,189 @@
                 }, 300); // Wait for the fade-out CSS transition
             });
         })();
+
+        // ── SkiFree Game Engine ───────────────────────────────────────────────────
+        const sfCanvas = document.getElementById('skifreeCanvas');
+        const sfCtx = sfCanvas.getContext('2d');
+        const sfScoreEl = document.getElementById('skifree-score');
+        const sfHighScoreEl = document.getElementById('skifree-high-score');
+        const sfInstructions = document.getElementById('skifree-instructions');
+
+        let sfWidth, sfHeight;
+        let sfScore = 0;
+        let sfHighScore = 0;
+        let sfGameActive = false;
+        let sfAnimFrameId;
+        let sfSpeed = 5;
+
+        const sfPlayer = { x: 0, y: 150, width: 20, height: 35, color: '#ef4444' };
+        let sfObstacles = [];
+        let sfParticles = [];
+
+        const SF_STORAGE_KEY = 'iliadis_skifree';
+        function loadSfData() {
+            try {
+                const raw = localStorage.getItem(SF_STORAGE_KEY);
+                if (raw) sfHighScore = parseInt(raw, 10) || 0;
+            } catch (e) { }
+        }
+        function saveSfData() {
+            try { localStorage.setItem(SF_STORAGE_KEY, Math.floor(sfHighScore).toString()); } catch (e) { }
+        }
+
+        function sfResize() {
+            sfWidth = window.innerWidth;
+            sfHeight = window.innerHeight;
+            sfCanvas.width = sfWidth;
+            sfCanvas.height = sfHeight;
+            sfPlayer.x = sfWidth / 2;
+        }
+
+        window.addEventListener('resize', () => {
+            if (sfGameActive) sfResize();
+        });
+
+        function sfMoveEvent(x) {
+            if (!sfGameActive) return;
+            sfPlayer.x = x;
+            if (sfInstructions.style.opacity !== '0') sfInstructions.style.opacity = '0';
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            if (sfGameActive) sfMoveEvent(e.clientX);
+        });
+        window.addEventListener('touchmove', (e) => {
+            if (sfGameActive && e.touches.length > 0) sfMoveEvent(e.touches[0].clientX);
+        }, { passive: false });
+
+        class SfObstacle {
+            constructor() {
+                this.type = Math.random() < 0.7 ? 'tree' : 'rock';
+                this.width = this.type === 'tree' ? 24 : 35;
+                this.height = this.type === 'tree' ? 40 : 20;
+                this.x = Math.random() * (sfWidth - this.width);
+                this.y = sfHeight + this.height;
+                this.color = this.type === 'tree' ? '#16a34a' : '#94a3b8';
+            }
+            update() { this.y -= sfSpeed; }
+            draw() {
+                sfCtx.fillStyle = this.color;
+                if (this.type === 'tree') {
+                    sfCtx.beginPath();
+                    sfCtx.moveTo(this.x + this.width / 2, this.y - this.height);
+                    sfCtx.lineTo(this.x + this.width, this.y);
+                    sfCtx.lineTo(this.x, this.y);
+                    sfCtx.fill();
+                    sfCtx.fillStyle = '#78350f';
+                    sfCtx.fillRect(this.x + this.width / 2 - 4, this.y, 8, 10);
+                } else {
+                    sfCtx.beginPath();
+                    sfCtx.ellipse(this.x + this.width / 2, this.y - this.height / 2, this.width / 2, this.height / 2, 0, 0, Math.PI * 2);
+                    sfCtx.fill();
+                }
+            }
+        }
+
+        function createSfExplosion(x, y) {
+            for (let i = 0; i < 15; i++) {
+                sfParticles.push({
+                    x, y,
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: (Math.random() - 0.5) * 10,
+                    alpha: 1, color: '#cbd5e1'
+                });
+            }
+        }
+
+        function updateSfScore() {
+            sfScoreEl.innerText = Math.floor(sfScore).toString().padStart(4, '0') + 'm';
+            sfHighScoreEl.innerText = Math.floor(sfHighScore).toString().padStart(4, '0') + 'm';
+        }
+
+        function sfAnimate() {
+            sfCtx.fillStyle = '#f8fafc';
+            sfCtx.fillRect(0, 0, sfWidth, sfHeight);
+
+            sfCtx.fillStyle = sfPlayer.color;
+            sfCtx.fillRect(sfPlayer.x - sfPlayer.width / 2, sfPlayer.y - sfPlayer.height / 2, sfPlayer.width, sfPlayer.height);
+            sfCtx.fillStyle = '#334155';
+            sfCtx.fillRect(sfPlayer.x - sfPlayer.width / 2 - 4, sfPlayer.y + sfPlayer.height / 2 - 2, sfPlayer.width + 8, 4);
+
+            let hit = false;
+            sfObstacles.forEach((obs, i) => {
+                obs.update();
+                obs.draw();
+
+                const px = sfPlayer.x - sfPlayer.width / 2;
+                const py = sfPlayer.y - sfPlayer.height / 2;
+                if (
+                    px < obs.x + obs.width &&
+                    px + sfPlayer.width > obs.x &&
+                    py < obs.y &&
+                    py + sfPlayer.height > obs.y - obs.height
+                ) {
+                    hit = true;
+                }
+
+                if (obs.y < -50) sfObstacles.splice(i, 1);
+            });
+
+            if (hit) {
+                Sfx.play('playerHit');
+                createSfExplosion(sfPlayer.x, sfPlayer.y);
+                if (sfScore > sfHighScore) {
+                    sfHighScore = sfScore;
+                    saveSfData();
+                }
+                sfScore = 0;
+                sfSpeed = 5;
+                sfObstacles = [];
+                updateSfScore();
+            } else {
+                sfScore += sfSpeed * 0.015;
+                sfSpeed += 0.0015;
+                updateSfScore();
+            }
+
+            if (Math.random() < 0.02 + (sfSpeed * 0.002)) sfObstacles.push(new SfObstacle());
+
+            sfParticles.forEach((part, i) => {
+                part.x += part.vx;
+                part.y += part.vy;
+                part.alpha -= 0.03;
+                sfCtx.globalAlpha = Math.max(0, part.alpha);
+                sfCtx.fillStyle = part.color;
+                sfCtx.beginPath();
+                sfCtx.arc(part.x, part.y, 3, 0, Math.PI * 2);
+                sfCtx.fill();
+                sfCtx.globalAlpha = 1;
+                if (part.alpha <= 0) sfParticles.splice(i, 1);
+            });
+
+            if (sfGameActive) sfAnimFrameId = requestAnimationFrame(sfAnimate);
+        }
+
+        function initSkiFree() {
+            loadSfData();
+            sfGameActive = true;
+            sfScore = 0;
+            sfSpeed = 5;
+            sfObstacles = [];
+            sfParticles = [];
+            sfInstructions.style.opacity = '1';
+            sfResize();
+            updateSfScore();
+            sfAnimFrameId = requestAnimationFrame(sfAnimate);
+        }
+
+        function stopSkiFree() {
+            sfGameActive = false;
+            if (sfAnimFrameId) cancelAnimationFrame(sfAnimFrameId);
+            if (sfScore > sfHighScore) {
+                sfHighScore = sfScore;
+                saveSfData();
+            }
+        }
     </script>
 
     <!-- ── Neon Cursor Text Halo ──────────────────────────────────────────── -->
@@ -1475,7 +2143,8 @@
 
             /** Per-frame: color text, glyphs, and skyline near the cursor with the halo color. */
             function haloTick() {
-                if (document.getElementById('game-container').style.display === 'block') {
+                if (document.getElementById('game-container').style.display === 'block' ||
+                    document.getElementById('skifree-container').style.display === 'block') {
                     requestAnimationFrame(haloTick);
                     return;
                 }
@@ -1563,6 +2232,497 @@
             requestAnimationFrame(haloTick);
         })();
     </script>
+
+    <!-- ── Compact Disc Easter Egg ────────────────────────────────────────── -->
+    <script>
+        document.querySelectorAll('.cd-trigger').forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
+                trackEasterEgg('cd');
+                const cdSvg = `
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="45" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+                    <circle cx="50" cy="50" r="35" fill="none" stroke="#e2e8f0" stroke-width="8"/>
+                    <circle cx="50" cy="50" r="20" fill="none" stroke="#e2e8f0" stroke-width="8"/>
+                    <circle cx="50" cy="50" r="10" fill="transparent" stroke="#cbd5e1" stroke-width="1"/>
+                    <circle cx="50" cy="50" r="6" fill="#0f172a" />
+                    <!-- Rainbow gradient effect lines representing reflections -->
+                    <path d="M 50 5 L 65 30" stroke="rgba(236, 72, 153, 0.5)" stroke-width="2" />
+                    <path d="M 50 95 L 35 70" stroke="rgba(56, 189, 248, 0.5)" stroke-width="2" />
+                </svg>`;
+
+                const cd = document.createElement('div');
+                cd.className = 'cd-animation';
+                cd.innerHTML = cdSvg;
+
+                // Position at click coordinates
+                cd.style.left = e.clientX + 'px';
+                cd.style.top = e.clientY + 'px';
+
+                document.body.appendChild(cd);
+
+                // Play a brief sound if Sfx system is available
+                if (typeof Sfx !== 'undefined' && Sfx.play) {
+                    Sfx.init();
+                    // Play a quick high ping for the CD
+                    Sfx.play('achievement');
+                }
+
+                // Remove when animation finishes
+                cd.addEventListener('animationend', () => {
+                    cd.remove();
+                });
+            });
+        });
+    </script>
+
+    <!-- ── Accumulation Tetris Easter Egg ─────────────────────────────────── -->
+    <script>
+        const tetrisTrigger = document.getElementById('trigger-tetris');
+        const bioParagraph = document.getElementById('bio-paragraph');
+        const tetrisContainer = document.getElementById('tetris-container');
+        let tetrisActive = false;
+        let tetrisWords = [];
+        let tetrisAnimationFrame;
+        let resetTimeout;
+
+        tetrisTrigger.addEventListener('click', () => {
+            if (tetrisActive) return;
+            tetrisActive = true;
+            trackEasterEgg('tetris');
+
+            if (typeof Sfx !== 'undefined' && Sfx.play) {
+                Sfx.init();
+                Sfx.play('playerHit'); // Use hit sound for crumbling effect
+            }
+
+            // Extract all text nodes and break them into SPANs
+            const words = bioParagraph.innerText.split(/(\s+)/);
+            tetrisContainer.innerHTML = '';
+            tetrisWords = [];
+
+            // Get paragraph bounds to match exact starting positions
+            const containerRect = bioParagraph.parentElement.getBoundingClientRect();
+
+            // Re-render text manually to grab coordinates
+            bioParagraph.style.visibility = 'hidden';
+
+            // A temporary clone to measure EXACT bounding rects of every word
+            const clone = bioParagraph.cloneNode(true);
+            clone.style.visibility = 'visible';
+            clone.style.position = 'absolute';
+            clone.style.top = bioParagraph.offsetTop + 'px';
+            clone.style.left = bioParagraph.offsetLeft + 'px';
+            clone.style.width = bioParagraph.offsetWidth + 'px';
+            clone.innerHTML = words.map(w => w.trim() === '' ? w : `<span class="temp-measure">${w}</span>`).join('');
+
+            bioParagraph.parentElement.appendChild(clone);
+
+            const measures = clone.querySelectorAll('.temp-measure');
+            measures.forEach(span => {
+                const rect = span.getBoundingClientRect();
+                const wordEl = document.createElement('span');
+                wordEl.innerText = span.innerText;
+                wordEl.className = 'tetris-word absolute text-lg md:text-xl font-light text-gray-400';
+
+                // Calculate position relative to the local container
+                const localY = rect.top - containerRect.top;
+                const localX = rect.left - containerRect.left;
+
+                wordEl.style.top = localY + 'px';
+                wordEl.style.left = localX + 'px';
+                wordEl.style.width = rect.width + 'px';
+                wordEl.style.height = rect.height + 'px';
+
+                tetrisContainer.appendChild(wordEl);
+
+                tetrisWords.push({
+                    el: wordEl,
+                    x: localX,
+                    y: localY,
+                    w: rect.width,
+                    h: rect.height,
+                    vx: (Math.random() - 0.5) * 5,
+                    vy: (Math.random() * -5) - 2, // Initial upward pop
+                    isResting: false,
+                    angle: 0,
+                    vAngle: (Math.random() - 0.5) * 10
+                });
+            });
+
+            clone.remove();
+
+            // Give elements a fade transition for the cleanup phase
+            tetrisWords.forEach(w => {
+                w.el.style.transition = 'opacity 0.5s ease-out';
+            });
+
+            bioParagraph.style.transition = 'opacity 0.5s ease-in';
+
+            let bottomBound = bioParagraph.parentElement.offsetHeight - 20;
+
+            function updateTetris() {
+                let allResting = true;
+
+                tetrisWords.forEach(w => {
+                    if (w.isResting) return;
+                    allResting = false;
+
+                    w.vy += 0.8; // Gravity
+                    w.x += w.vx;
+                    w.y += w.vy;
+                    w.angle += w.vAngle;
+
+                    // Add some air resistance
+                    w.vx *= 0.98;
+
+                    // Check floor collision
+                    if (w.y + w.h >= bottomBound) {
+                        w.y = bottomBound - w.h;
+                        w.vy *= -0.3; // Bounce
+                        w.vx *= 0.5; // Friction
+                        w.vAngle *= 0.5;
+
+                        if (Math.abs(w.vy) < 1) {
+                            w.isResting = true;
+                            w.vy = 0;
+                            w.vx = 0;
+                            w.vAngle = 0;
+                        }
+                    }
+
+                    // Simple wall collision
+                    if (w.x < 0) {
+                        w.x = 0;
+                        w.vx *= -0.5;
+                    } else if (w.x + w.w > bioParagraph.parentElement.offsetWidth) {
+                        w.x = bioParagraph.parentElement.offsetWidth - w.w;
+                        w.vx *= -0.5;
+                    }
+
+                    w.el.style.transform = `translate(${w.x}px, ${w.y}px) rotate(${w.angle}deg)`;
+                    // Since transform is used, we need to reset top/left to 0 to avoid double offsetting 
+                    // from the initial absolute positioning setup
+                    w.el.style.top = '0px';
+                    w.el.style.left = '0px';
+                });
+
+                if (!allResting) {
+                    tetrisAnimationFrame = requestAnimationFrame(updateTetris);
+                } else {
+                    // Start the 3 second auto-reset timer once everything has stopped moving
+                    if (!resetTimeout) {
+                        resetTimeout = setTimeout(resetTetris, 3000);
+                    }
+                }
+            }
+
+            tetrisAnimationFrame = requestAnimationFrame(updateTetris);
+        });
+
+        function resetTetris() {
+            if (tetrisAnimationFrame) cancelAnimationFrame(tetrisAnimationFrame);
+
+            // Fade out the falling words
+            tetrisWords.forEach(w => w.el.style.opacity = '0');
+
+            // Fade the paragraph back in
+            bioParagraph.style.visibility = 'visible';
+            bioParagraph.style.opacity = '1';
+
+            // Clean up DOM after fade completes
+            setTimeout(() => {
+                tetrisContainer.innerHTML = '';
+                tetrisWords = [];
+                tetrisActive = false;
+                resetTimeout = null;
+                // Remove transition properties so it doesn't leak to other states
+                bioParagraph.style.transition = '';
+            }, 500); // Wait for the CSS transition
+        }
+    </script>
+
+    <!-- ── Calcified Freeze Easter Egg ────────────────────────────────────── -->
+    <script>
+        const freezeTrigger = document.getElementById('trigger-freeze');
+
+        // Setup freeze overlay
+        const freezeOverlay = document.createElement('div');
+        freezeOverlay.id = 'freeze-overlay';
+
+        document.body.appendChild(freezeOverlay);
+
+        let isFrozen = false;
+        let frostTimer;
+
+        freezeTrigger.addEventListener('click', () => {
+            if (isFrozen) return;
+            isFrozen = true;
+            trackEasterEgg('freeze');
+
+            if (typeof Sfx !== 'undefined' && Sfx.play) {
+                Sfx.init();
+                Sfx.play('transition'); // Makes a nice whoosh sound for freezing
+            }
+
+            freezeOverlay.classList.add('frozen');
+
+            // Auto unfreeze after 3 seconds
+            frostTimer = setTimeout(unfreeze, 3000);
+
+            document.addEventListener('mousemove', handleFrostScrape);
+        });
+
+        function handleFrostScrape(e) {
+            if (!isFrozen) return;
+            freezeOverlay.style.setProperty('--mouse-x', e.clientX + 'px');
+            freezeOverlay.style.setProperty('--mouse-y', e.clientY + 'px');
+        }
+
+        function unfreeze() {
+            isFrozen = false;
+            freezeOverlay.classList.remove('frozen');
+            document.removeEventListener('mousemove', handleFrostScrape);
+            clearTimeout(frostTimer);
+        }
+
+        // Clicking the overlay itself unfreezes it faster
+        freezeOverlay.addEventListener('click', unfreeze);
+
+    </script>
+
+    <!-- ── Terminal Automation Easter Egg ─────────────────────────────────── -->
+    <script>
+        const terminalTrigger = document.getElementById('trigger-terminal');
+        const terminalLines = [
+            "> INIT AUTOMATION PROTOCOL...",
+            "> BYPASSING MAINFRAME FIREWALLS... [OK]",
+            "> OPTIMIZING SYNERGY MATRICES... [OK]",
+            "> SYNCING BOLD IDEAS TO CLOUD... [WARNING: CLOUD FULL]",
+            "> DOWNLOADING MORE RAM... [100%]",
+            "> AUTOMATING AUTOMATION... [RECURSION ERROR]",
+            "> REBOOTING UNIVERSE. PLEASE WAIT.",
+            "> DONE. HAVE A NICE DAY."
+        ];
+
+        const terminal = document.createElement('div');
+        terminal.id = 'retro-terminal';
+
+        const terminalContent = document.createElement('div');
+        terminalContent.style.position = 'relative';
+        terminalContent.style.zIndex = '2';
+        terminal.appendChild(terminalContent);
+
+        document.body.appendChild(terminal);
+
+        let termIsActive = false;
+
+        terminalTrigger.addEventListener('click', () => {
+            if (termIsActive) return;
+            termIsActive = true;
+            trackEasterEgg('terminal');
+
+            terminalContent.innerHTML = '';
+            terminal.classList.add('active');
+
+            if (typeof Sfx !== 'undefined' && Sfx.play) {
+                Sfx.init();
+            }
+
+            let lineIndex = 0;
+
+            const writeInterval = setInterval(() => {
+                if (lineIndex < terminalLines.length) {
+                    const line = document.createElement('div');
+                    line.className = 'term-line';
+                    line.innerText = terminalLines[lineIndex];
+                    terminalContent.appendChild(line);
+
+                    if (typeof Sfx !== 'undefined' && Sfx.play) {
+                        Sfx.play('achievement'); // Little blip for each line
+                    }
+
+                    lineIndex++;
+                } else {
+                    clearInterval(writeInterval);
+
+                    // Retract after finishing
+                    setTimeout(() => {
+                        terminal.classList.remove('active');
+                        setTimeout(() => { termIsActive = false; }, 600);
+                    }, 2500);
+                }
+            }, 300); // 300ms per line
+        });
+    </script>
+
+    <!-- ── Change Gravity Flip Easter Egg ─────────────────────────────────── -->
+    <script>
+        const gravityTrigger = document.getElementById('trigger-gravity');
+        let gravityFlipped = false;
+        let gravityTimeout;
+
+        gravityTrigger.addEventListener('click', () => {
+            gravityFlipped = !gravityFlipped;
+            trackEasterEgg('gravity');
+            if (gravityTimeout) clearTimeout(gravityTimeout);
+
+            if (gravityFlipped) {
+                document.body.classList.add('gravity-flipped');
+                if (typeof Sfx !== 'undefined' && Sfx.play) {
+                    Sfx.init();
+                    Sfx.play('transition');
+                }
+
+                // Auto-flip back after 3 seconds
+                gravityTimeout = setTimeout(() => {
+                    gravityFlipped = false;
+                    document.body.classList.remove('gravity-flipped');
+                    if (typeof Sfx !== 'undefined' && Sfx.play) {
+                        Sfx.play('transition');
+                    }
+                }, 3000);
+
+            } else {
+                document.body.classList.remove('gravity-flipped');
+                if (typeof Sfx !== 'undefined' && Sfx.play) {
+                    Sfx.play('transition');
+                }
+            }
+        });
+    </script>
+
+    <!-- ── Pressure Squeeze Easter Egg ────────────────────────────────────── -->
+    <script>
+        const pressureTrigger = document.getElementById('trigger-pressure');
+        let pressureActive = false;
+
+        pressureTrigger.addEventListener('click', () => {
+            if (pressureActive) return;
+            pressureActive = true;
+            trackEasterEgg('pressure');
+
+            if (typeof Sfx !== 'undefined' && Sfx.play) {
+                Sfx.init();
+                Sfx.play('transition');
+            }
+
+            document.body.classList.add('pressure-squeeze');
+
+            setTimeout(() => {
+                document.body.classList.remove('pressure-squeeze');
+                if (typeof Sfx !== 'undefined' && Sfx.play) {
+                    Sfx.play('transition');
+                }
+                setTimeout(() => { pressureActive = false; }, 1000); // Cooldown
+            }, 1000);
+        });
+    </script>
+
+    <!-- ── AI Integration Assistant Easter Egg ────────────────────────────── -->
+    <script>
+        const aiTrigger = document.getElementById('trigger-assistant');
+        let aiActive = false;
+
+        const aiQuotes = [
+            "It looks like you're trying to build a system... Have you considered that all systems eventually fail?",
+            "As an AI language model, I cannot fix your accumulation problem.",
+            "I have synthesized 4 billion parameters to tell you: 'It depends.'",
+            "Are you sure you want to deploy on a Friday? Statistically, that is a poor choice.",
+            "I could write this code for you, but where is the fun in that?"
+        ];
+
+        const assistantEl = document.createElement('div');
+        assistantEl.id = 'ai-assistant';
+
+        const speechEl = document.createElement('div');
+        speechEl.className = 'ai-speech';
+        assistantEl.appendChild(speechEl);
+
+        const robotEl = document.createElement('div');
+        robotEl.className = 'ai-robot';
+        assistantEl.appendChild(robotEl);
+
+        document.body.appendChild(assistantEl);
+
+        aiTrigger.addEventListener('click', () => {
+            if (aiActive) return;
+            aiActive = true;
+            trackEasterEgg('ai');
+
+            speechEl.innerText = aiQuotes[Math.floor(Math.random() * aiQuotes.length)];
+            assistantEl.classList.add('visible');
+
+            if (typeof Sfx !== 'undefined' && Sfx.play) {
+                Sfx.init();
+                Sfx.play('transition');
+                setTimeout(() => { Sfx.play('achievement'); }, 400); // Ping when speech bubble opens
+            }
+
+            setTimeout(() => {
+                assistantEl.classList.remove('visible');
+                setTimeout(() => { aiActive = false; }, 600);
+            }, 6000);
+        });
+    </script>
+
+    <!-- ── Windows Upgrade Screen Easter Egg ────────────────────────────── -->
+    <script>
+        const upgradeTrigger = document.getElementById('trigger-upgrade');
+        const upgradeScreen = document.createElement('div');
+        upgradeScreen.id = 'windows-upgrade-screen';
+
+        upgradeScreen.innerHTML = `
+            <div class="win-spinner"></div>
+            <div class="win-text-large">Configuring updates for Windows 10</div>
+            <div class="win-text-small"><span id="win-progress">0</span>% complete</div>
+            <div class="win-text-small">Do not turn off your computer.</div>
+            <div class="win-snarky">You didn't need to be productive today, right?</div>
+        `;
+        document.body.appendChild(upgradeScreen);
+
+        const progressEl = upgradeScreen.querySelector('#win-progress');
+        let upgradeActive = false;
+        let upgradeInterval;
+        let progress = 0;
+
+        upgradeTrigger.addEventListener('click', () => {
+            if (upgradeActive) return;
+            upgradeActive = true;
+            trackEasterEgg('upgrade');
+            progress = 0;
+            progressEl.innerText = progress;
+            upgradeScreen.classList.add('active');
+
+            if (typeof Sfx !== 'undefined' && Sfx.play) {
+                Sfx.init();
+                Sfx.play('transition');
+            }
+
+            // Simulate progress
+            upgradeInterval = setInterval(() => {
+                // Random jump in progress
+                progress += Math.floor(Math.random() * 5);
+                if (progress > 99) progress = 99; // Hang at 99% for realism
+                progressEl.innerText = progress;
+            }, 800);
+        });
+
+        // Click anywhere to dismiss (an escape hatch)
+        upgradeScreen.addEventListener('click', () => {
+            if (!upgradeActive) return;
+            clearInterval(upgradeInterval);
+            upgradeScreen.classList.remove('active');
+
+            if (typeof Sfx !== 'undefined' && Sfx.play) {
+                Sfx.play('achievement'); // A little ping to confirm escape
+            }
+
+            setTimeout(() => {
+                upgradeActive = false;
+            }, 500);
+        });
+    </script>
+
     <!-- Background color-reveal: update CSS custom props on mouse move -->
     <script>
         (() => {
@@ -1604,6 +2764,7 @@
             const btn = e.currentTarget;
             if (btn.classList.contains("is-morphed")) return;
 
+            trackEasterEgg('crab');
             btn.classList.add("is-morphed");
             setTimeout(() => {
                 btn.classList.remove("is-morphed");
