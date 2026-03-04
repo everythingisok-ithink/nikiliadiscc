@@ -1229,7 +1229,9 @@
 
                     <p id="bio-paragraph"
                         class="good-twin mt-4 md:mt-6 text-sm md:text-base lg:text-lg font-sans font-light leading-relaxed md:leading-snug text-gray-400 opacity-90 text-pretty">
-                        Mo<span id="skifree-trigger" class="relative inline-block">s</span>t organizations do
+                        Mo<span id="skifree-trigger" class="relative inline-block group">s<span id="sf-egg-tooltip"
+                                class="absolute -top-10 left-1/2 -translate-x-1/2 flex gap-1.5 p-1.5 bg-[#020617]/80 backdrop-blur-md border border-sky-400/30 rounded-lg opacity-0 group-hover:opacity-100 group-hover:-translate-y-1 transition-all duration-300 pointer-events-none shadow-[0_0_15px_rgba(14,165,233,0.3)] z-50"
+                                style="display: none;"></span></span>t organizations do
                         not have a technology problem. They have an <span id="trigger-tetris"
                             class="easter-egg-word relative inline-block">accumulation</span> problem. Years of
                         decisions made under <span class="whitespace-nowrap"><span id="trigger-pressure"
@@ -1480,6 +1482,25 @@
                 <h2 class="text-4xl font-bold text-slate-800 drop-shadow-sm" id="skifree-score">0000m</h2>
                 <p class="text-[10px] uppercase tracking-widest text-slate-400 mt-1">Best: <span
                         id="skifree-high-score">0000m</span></p>
+                <!-- SkiFree Achievement icons -->
+                <div class="flex gap-2 mt-3" id="sf-achievements-row">
+                    <svg class="achievement-icon" data-id="ski_novice" viewBox="0 0 24 24" fill="none" stroke="#38bdf8"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="8" r="7" />
+                        <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+                    </svg>
+                    <svg class="achievement-icon" data-id="ski_pro" viewBox="0 0 24 24" fill="none" stroke="#f472b6"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon
+                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                    <svg class="achievement-icon" data-id="ski_legend" viewBox="0 0 24 24" fill="none" stroke="#fbbf24"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5Z" />
+                        <path d="M2 17l10 5 10-5" />
+                        <path d="M2 12l10 5 10-5" />
+                    </svg>
+                </div>
             </div>
             <div class="pointer-events-auto">
                 <button id="skifree-return-btn"
@@ -1821,6 +1842,9 @@
             survivor: { name: 'Survivor', check: (s) => s.score >= 5000 },
             ace: { name: 'Ace', check: (s) => s.score >= 25000 },
             legend: { name: 'Legend', check: (s) => s.score >= 100000 },
+            ski_novice: { name: 'Ski Novice', check: (s) => s.sfScore >= 1000 },
+            ski_pro: { name: 'Ski Pro', check: (s) => s.sfScore >= 5000 },
+            ski_legend: { name: 'Ski Legend', check: (s) => s.sfScore >= 10000 },
         };
 
         let sessionKills = 0;
@@ -1847,9 +1871,13 @@
         /** Render persisted achievement states into the HUD icons. */
         function renderAchievements() {
             gameData.achievements.forEach(id => {
-                const icon = document.querySelector(`#achievements-row .achievement-icon[data-id="${id}"]`);
-                if (icon && !icon.classList.contains('unlocked')) {
-                    icon.classList.add('unlocked');
+                const icon1 = document.querySelector(`#achievements-row .achievement-icon[data-id="${id}"]`);
+                if (icon1 && !icon1.classList.contains('unlocked')) {
+                    icon1.classList.add('unlocked');
+                }
+                const icon2 = document.querySelector(`#sf-achievements-row .achievement-icon[data-id="${id}"]`);
+                if (icon2 && !icon2.classList.contains('unlocked')) {
+                    icon2.classList.add('unlocked');
                 }
             });
         }
@@ -1860,7 +1888,10 @@
             const toast = document.createElement('div');
             toast.className = 'achievement-toast';
             toast.textContent = `★ ${name} Unlocked`;
-            document.getElementById('game-container').appendChild(toast);
+            const container = (typeof sfGameActive !== 'undefined' && sfGameActive)
+                ? document.getElementById('skifree-container')
+                : document.getElementById('game-container');
+            container.appendChild(toast);
             toast.addEventListener('animationend', () => toast.remove());
         }
 
@@ -1870,15 +1901,17 @@
             gameData.achievements.push(id);
             saveGameData();
 
-            const icon = document.querySelector(`#achievements-row .achievement-icon[data-id="${id}"]`);
-            if (icon) icon.classList.add('unlocked');
+            const icon1 = document.querySelector(`#achievements-row .achievement-icon[data-id="${id}"]`);
+            if (icon1) icon1.classList.add('unlocked');
+            const icon2 = document.querySelector(`#sf-achievements-row .achievement-icon[data-id="${id}"]`);
+            if (icon2) icon2.classList.add('unlocked');
 
             showAchievementToast(ACHIEVEMENTS[id].name);
         }
 
         /** Check all achievement conditions against current state. */
         function checkAchievements() {
-            const state = { sessionKills, totalKills: gameData.totalKills, score };
+            const state = { sessionKills, totalKills: gameData.totalKills, score, sfScore: (typeof sfScore !== 'undefined' ? sfScore : 0) };
             for (const [id, def] of Object.entries(ACHIEVEMENTS)) {
                 if (!gameData.achievements.includes(id) && def.check(state)) {
                     unlockAchievement(id);
@@ -2132,6 +2165,58 @@
             });
         })();
 
+        // ── Hover Tooltip for SkiFree Achievements ──
+        (() => {
+            const sfTrigger = document.getElementById('skifree-trigger');
+            const sfTooltip = document.getElementById('sf-egg-tooltip');
+
+            sfTrigger.addEventListener('mouseenter', () => {
+                loadGameData();
+                const skiAchievements = gameData.achievements ? gameData.achievements.filter(id => id.startsWith('ski_')) : [];
+                if (skiAchievements.length === 0) {
+                    sfTooltip.style.display = 'none';
+                    return;
+                }
+
+                if (sfTooltip.style.display === 'none') {
+                    sfTooltip.style.display = 'flex';
+                    void sfTooltip.offsetWidth;
+                }
+
+                sfTooltip.innerHTML = '';
+
+                skiAchievements.forEach((id, i) => {
+                    const srcIcon = document.querySelector(`#sf-achievements-row .achievement-icon[data-id="${id}"]`);
+                    if (srcIcon) {
+                        const iconEl = srcIcon.cloneNode(true);
+                        iconEl.classList.remove('unlocked');
+                        Object.assign(iconEl.style, {
+                            width: '18px',
+                            height: '18px',
+                            opacity: '0',
+                            transform: 'translateY(10px) scale(0.8)',
+                            filter: 'grayscale(0) drop-shadow(0 0 4px currentColor)',
+                            transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                        });
+                        sfTooltip.appendChild(iconEl);
+
+                        setTimeout(() => {
+                            iconEl.style.opacity = '1';
+                            iconEl.style.transform = 'translateY(0) scale(1)';
+                        }, i * 60 + 50);
+                    }
+                });
+            });
+
+            sfTrigger.addEventListener('mouseleave', () => {
+                setTimeout(() => {
+                    if (!sfTrigger.matches(':hover')) {
+                        sfTooltip.style.display = 'none';
+                    }
+                }, 300);
+            });
+        })();
+
         // ── SkiFree Game Engine ───────────────────────────────────────────────────
         const sfCanvas = document.getElementById('skifreeCanvas');
         const sfCtx = sfCanvas.getContext('2d');
@@ -2146,9 +2231,16 @@
         let sfAnimFrameId;
         let sfSpeed = 5;
 
-        const sfPlayer = { x: 0, y: 150, width: 20, height: 35, color: '#ef4444' };
+        const sfPlayer = { x: 0, lastX: 0, y: 150, width: 24, height: 36, color: '#ef4444' };
         let sfObstacles = [];
         let sfParticles = [];
+
+        const sfImgStraight = new Image();
+        sfImgStraight.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="4" fill="%23ef4444"/><path d="M12 10v6 M8 22l4-4 4 4" stroke="%23ef4444"/><path d="M5 14l7-4 7 4" stroke="%23ef4444"/><path d="M6 21l12 0" stroke="%23334155" stroke-width="3"/></svg>';
+        const sfImgLeft = new Image();
+        sfImgLeft.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="6" r="4" fill="%23ef4444"/><path d="M10 10l-2 6 M4 20l4-4 6 2" stroke="%23ef4444"/><path d="M3 12l7-2 5 6" stroke="%23ef4444"/><path d="M4 19l10 5" stroke="%23334155" stroke-width="3"/></svg>';
+        const sfImgRight = new Image();
+        sfImgRight.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="14" cy="6" r="4" fill="%23ef4444"/><path d="M14 10l2 6 M20 20l-4-4-6 2" stroke="%23ef4444"/><path d="M21 12l-7-2-5 6" stroke="%23ef4444"/><path d="M20 19l-10 5" stroke="%23334155" stroke-width="3"/></svg>';
 
         const SF_STORAGE_KEY = 'iliadis_skifree';
         function loadSfData() {
@@ -2234,10 +2326,15 @@
             sfCtx.fillStyle = '#f8fafc';
             sfCtx.fillRect(0, 0, sfWidth, sfHeight);
 
-            sfCtx.fillStyle = sfPlayer.color;
-            sfCtx.fillRect(sfPlayer.x - sfPlayer.width / 2, sfPlayer.y - sfPlayer.height / 2, sfPlayer.width, sfPlayer.height);
-            sfCtx.fillStyle = '#334155';
-            sfCtx.fillRect(sfPlayer.x - sfPlayer.width / 2 - 4, sfPlayer.y + sfPlayer.height / 2 - 2, sfPlayer.width + 8, 4);
+            // Determine image based on movement
+            let currentImg = sfImgStraight;
+            if (sfPlayer.x < sfPlayer.lastX - 2) currentImg = sfImgLeft;
+            else if (sfPlayer.x > sfPlayer.lastX + 2) currentImg = sfImgRight;
+
+            // Draw skier
+            sfCtx.drawImage(currentImg, sfPlayer.x - sfPlayer.width / 2, sfPlayer.y - sfPlayer.height / 2, sfPlayer.width, sfPlayer.height);
+
+            sfPlayer.lastX = sfPlayer.x;
 
             let hit = false;
             sfObstacles.forEach((obs, i) => {
@@ -2261,6 +2358,7 @@
             if (hit) {
                 Sfx.play('playerHit');
                 createSfExplosion(sfPlayer.x, sfPlayer.y);
+                checkAchievements();
                 if (sfScore > sfHighScore) {
                     sfHighScore = sfScore;
                     saveSfData();
@@ -2273,9 +2371,10 @@
                 sfScore += sfSpeed * 0.015;
                 sfSpeed += 0.0015;
                 updateSfScore();
+                if (Math.random() < 0.05) checkAchievements();
             }
 
-            if (Math.random() < 0.02 + (sfSpeed * 0.002)) sfObstacles.push(new SfObstacle());
+            if (Math.random() < 0.03 + Math.max(0, (sfSpeed - 5) * 0.015)) sfObstacles.push(new SfObstacle());
 
             sfParticles.forEach((part, i) => {
                 part.x += part.vx;
@@ -3072,6 +3171,41 @@
                 konamiIndex = 0; // Reset if sequence is broken
             }
         });
+
+        // Touch support for Konami Mobile
+        document.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            const x = touch.clientX;
+            const y = touch.clientY;
+            let key = '';
+
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+
+            if (y < h / 3) key = 'ArrowUp';
+            else if (y > (h * 2) / 3) key = 'ArrowDown';
+            else if (x < w / 3) key = 'ArrowLeft';
+            else if (x > (w * 2) / 3) key = 'ArrowRight';
+
+            if (key === konamiCode[konamiIndex]) {
+                konamiIndex++;
+                if (konamiIndex === konamiCode.length) {
+                    konamiIndex = 0;
+                    document.body.classList.toggle('win95-theme');
+                    const isActive = document.body.classList.contains('win95-theme');
+
+                    if (isActive) {
+                        trackEasterEgg('konami');
+                        if (typeof Sfx !== 'undefined' && Sfx.play) {
+                            Sfx.init();
+                            Sfx.play('achievement');
+                        }
+                    }
+                }
+            } else {
+                konamiIndex = 0;
+            }
+        }, { passive: true });
 
         // Make the Win95 close buttons dynamically revert the theme
         document.querySelectorAll('.win95-close').forEach(btn => {
