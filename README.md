@@ -1,1 +1,1 @@
-This is my website.
+Just my place for things.
