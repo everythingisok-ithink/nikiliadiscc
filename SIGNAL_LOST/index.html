@@ -376,6 +376,272 @@
   @keyframes fadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 
   .stagger-in { opacity: 0; animation: fadein 0.4s ease forwards; }
+  #ending-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    text-align: center;
+    gap: 0;
+    padding: 60px 24px;
+  }
+
+  .ending-line {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    color: var(--text-dim);
+    margin: 6px 0;
+    opacity: 0;
+    animation: fadein 0.8s ease forwards;
+  }
+
+  .ending-gap {
+    height: 40px;
+    opacity: 0;
+    animation: fadein 0.1s ease forwards;
+  }
+
+  .ending-main {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.6rem, 5vw, 3rem);
+    color: var(--cyan);
+    text-shadow: var(--glow-cyan);
+    margin: 8px 0;
+    opacity: 0;
+    animation: fadein 1.2s ease forwards;
+    letter-spacing: -0.01em;
+  }
+
+  .ending-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--text);
+    line-height: 2;
+    margin: 12px 0;
+    opacity: 0;
+    animation: fadein 1s ease forwards;
+  }
+
+  .ending-small {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+    margin: 4px 0;
+    opacity: 0;
+    animation: fadein 0.8s ease forwards;
+  }
+
+  .ending-restart {
+    margin-top: 40px;
+    opacity: 0;
+    animation: fadein 1s ease forwards;
+  }
+
+  .ending-restart button {
+    background: transparent;
+    border: 1px solid var(--magenta);
+    color: var(--magenta);
+    padding: 14px 44px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-shadow: var(--glow-magenta);
+    transition: box-shadow 0.2s;
+  }
+
+  .ending-restart button:hover {
+    box-shadow: var(--glow-magenta);
+  }
+  /* LOGBOOK */
+  #logbook-toggle {
+    margin-left: auto;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    padding: 2px 8px;
+    transition: color 0.2s;
+    white-space: nowrap;
+    position: relative;
+  }
+
+  #logbook-toggle:hover { color: var(--cyan); }
+
+  #logbook-toggle .log-count {
+    color: var(--yellow);
+    text-shadow: 0 0 6px rgba(255,224,0,0.5);
+  }
+
+  #logbook-toggle.has-new::after {
+    content: '';
+    position: absolute;
+    top: 2px; right: 2px;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--yellow);
+    box-shadow: 0 0 6px rgba(255,224,0,0.8);
+    animation: pulse-dot 1.2s ease infinite;
+  }
+
+  #logbook-panel {
+    display: none;
+    border: 1px solid var(--dim);
+    background: var(--bg2);
+    padding: 0;
+    margin-bottom: 24px;
+    max-height: 320px;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  #logbook-panel.open { display: block; animation: fadein 0.3s ease; }
+
+  #logbook-panel::-webkit-scrollbar { width: 3px; }
+  #logbook-panel::-webkit-scrollbar-track { background: var(--bg2); }
+  #logbook-panel::-webkit-scrollbar-thumb { background: var(--dim); }
+
+  .log-header {
+    position: sticky;
+    top: 0;
+    background: var(--bg2);
+    padding: 10px 16px 8px;
+    border-bottom: 1px solid var(--dim);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+    z-index: 1;
+  }
+
+  .log-empty {
+    padding: 20px 16px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    font-style: italic;
+    opacity: 0.5;
+  }
+
+  .log-entry {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(26,37,53,0.6);
+    animation: fadein 0.4s ease;
+  }
+
+  .log-entry:last-child { border-bottom: none; }
+
+  .log-entry-meta {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+    display: flex;
+    gap: 12px;
+  }
+
+  .log-entry-room { color: var(--cyan); opacity: 0.7; }
+  .log-entry-step { color: var(--text-dim); }
+
+  .log-entry-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .log-entry.vale { border-left: 2px solid var(--yellow); padding-left: 14px; }
+  .log-entry.vale .log-entry-text { color: var(--yellow); }
+  .log-entry.anomaly { border-left: 2px solid var(--magenta); padding-left: 14px; }
+  .log-entry.anomaly .log-entry-text { color: var(--magenta); }
+  .log-entry.secret { border-left: 2px solid var(--green); padding-left: 14px; }
+  .log-entry.secret .log-entry-text { color: var(--green); }
+  .log-entry.gap-response { border-left: 2px solid var(--cyan); padding-left: 14px; }
+  .log-entry.gap-response .log-entry-text { color: var(--cyan); }
+  /* THEORY INPUT */
+  #theory-prompt {
+    border-top: 1px solid var(--dim);
+    padding: 14px 16px;
+    background: var(--bg2);
+  }
+
+  #theory-prompt-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--yellow);
+    letter-spacing: 0.15em;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  #theory-prompt-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    display: block;
+    line-height: 1.6;
+  }
+
+  #theory-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  #theory-input {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--dim);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    min-width: 0;
+  }
+
+  #theory-input:focus { border-color: var(--yellow); }
+  #theory-input::placeholder { color: var(--text-dim); opacity: 0.5; }
+
+  #theory-submit {
+    background: transparent;
+    border: 1px solid var(--yellow);
+    color: var(--yellow);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+    white-space: nowrap;
+    text-shadow: 0 0 6px rgba(255,224,0,0.4);
+  }
+
+  #theory-submit:hover { box-shadow: 0 0 12px rgba(255,224,0,0.2); }
+
+  #theory-response {
+    margin-top: 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    line-height: 1.75;
+    color: var(--cyan);
+    text-shadow: var(--glow-cyan);
+    display: none;
+    animation: fadein 0.6s ease;
+    border-left: 2px solid var(--cyan);
+    padding-left: 12px;
+  }
 </style>
 </head>
 <body>
@@ -402,6 +668,22 @@
     <div id="location-bar">
       <span class="loc-label">LOC://</span>
       <span id="breadcrumb"></span>
+      <button id="logbook-toggle" onclick="toggleLogbook()">
+        LOGBOOK [<span class="log-count" id="log-count">0</span>]
+      </button>
+    </div>
+    <div id="logbook-panel">
+      <div class="log-header">// FIELD NOTES // SESSION LOG //</div>
+      <div id="logbook-entries"><div class="log-empty">nothing recorded yet.</div></div>
+      <div id="theory-prompt" style="display:none;">
+        <span id="theory-prompt-label">// THE GAP IS ASKING //</span>
+        <span id="theory-prompt-sub">you have seen enough. what do you think the signal is?<br>commit to a theory. the gap will hear it.</span>
+        <div id="theory-input-row">
+          <input id="theory-input" type="text" placeholder="the signal is..." maxlength="200" />
+          <button id="theory-submit" onclick="submitTheory()">TRANSMIT</button>
+        </div>
+        <div id="theory-response"></div>
+      </div>
     </div>
     <div id="room-visual">
       <canvas id="room-canvas"></canvas>
@@ -468,10 +750,12 @@ function getSessionSeed() {
 }
 
 // ============================================================
-// CONTENT ARRAYS
+
+// ============================================================
+// CONTENT ARRAYS  -- 10x expansion
 // ============================================================
 
-const SIGILS = ['◈', '⊕', '⌬', '◉', '⌖', '⊞', '◫', '⊗', '⌘', '⊜'];
+const SIGILS = ['◈', '⊕', '⌬', '◉', '⌖', '⊞', '◫', '⊗', '⌘', '⊜', '⌁', '⊘', '⌥', '◬', '⊡', '⌑', '◰', '⊟', '⌇', '◍'];
 
 const AMBIENT = {
   the_gap: [
@@ -485,6 +769,26 @@ const AMBIENT = {
     "the CRTs flicker in sequence. it might be morse. you haven't checked.",
     "the dead pixel door has no hinges. it opens anyway.",
     "there is a frequency here that your body understands before your mind does",
+    "the static resolves briefly into a face and then doesn't",
+    "the VHS floor is warmer near the center than at the edges",
+    "one monitor shows only your reflection, slightly delayed",
+    "the copper smell is associated with electrical discharge and with memory",
+    "the monitors have been on so long the phosphor has burned in permanent images",
+    "someone taped a note to one of the monitors. it reads: YOU ARE EARLY",
+    "the gap between channels has a temperature. it is slightly below body heat.",
+    "every monitor is tuned to a slightly different frequency. together they add up to something.",
+    "the static is louder when you think about specific things",
+    "there are footprints in the VHS floor that lead to the center and stop",
+    "the dead pixel door is sometimes in a different position than you remember",
+    "the frequency here is the same as the frequency of fluorescent lights in the school you attended",
+    "behind the monitors there is a wall. probably.",
+    "the copper smell intensifies when the CRTs cycle toward channel 47",
+    "the Gap has no emergency exits. this has never been relevant.",
+    "the monitors nearest the ceiling show different content than the ones at eye level",
+    "the static has a texture. you could reach out and touch it. you haven't yet.",
+    "something in the room changes when you blink. you can't catch what.",
+    "the VHS tape underfoot occasionally plays back sound. quiet. almost inaudible.",
+    "three monitors in the top left corner are showing the same thing. none of the others are.",
   ],
   the_archive: [
     "the call numbers are all dates between now and forty years from now",
@@ -497,6 +801,26 @@ const AMBIENT = {
     "a book near the window is warm to the touch. it has been read recently.",
     "the impossible window shows a city you lived in before you were born",
     "the elevator has no buttons. it takes you where you need to go.",
+    "the books nearest the floor are the oldest. they contain things that didn't happen in this version.",
+    "the air smells like paper and magnetic oxide and something floral you can't identify",
+    "a call number near your eye level reads: 2031-09-14 / GRIEF / SECOND VARIETY",
+    "the reading chair faces a different direction each time you enter",
+    "the catalog terminal accepts natural language queries but only answers in dates",
+    "one librarian has stopped moving. its screen shows a single frame of static.",
+    "the impossible window has condensation on the inside but not the outside",
+    "the books on the REDACTED shelf have the same weight as choices you didn't make",
+    "a volume has been left open on a reading stand. the page is blank except for a diagram.",
+    "the librarians reorganize at night. the Archive is never the same twice.",
+    "there is a section labeled PERSONAL that you haven't been able to find twice",
+    "the uppermost shelves require a ladder. the ladder is always somewhere else.",
+    "some books have two spines. they read differently depending on which end you start from.",
+    "the elevator opens occasionally without being called. you've never gotten in.",
+    "the reading chair glows brighter when you're thinking about a specific memory",
+    "a book has been returned with extensive margin notes in a language you almost know",
+    "the call numbers occasionally rearrange. the catalog doesn't update when they do.",
+    "one shelf is labeled YOUR BRANCH. the books there are about people you know.",
+    "the librarian nearest the window has a screen showing a room that looks like yours",
+    "the Archive extends further in every direction than the building that contains it",
   ],
   the_signal_room: [
     "the logbook handwriting matches no known person living or dead",
@@ -509,6 +833,26 @@ const AMBIENT = {
     "the antenna receives signals from eleven directions. compasses only show eight.",
     "the broadcast door is warm on this side. cold on the other.",
     "the meal on the table is your favorite. you never told anyone what that was.",
+    "the reel-to-reel has been running so long the tape has worn thin in one spot",
+    "GRIEF is up. RECOGNITION is muted. ANTICIPATION is somewhere in the middle.",
+    "the logbook entries before yours describe a different visitor. the handwriting doesn't change.",
+    "there is a second chair at the console. it is always slightly warm.",
+    "the equipment hum is in a key that doesn't correspond to standard tuning",
+    "the wall gap is exactly your width. it has always been exactly your width.",
+    "the broadcast log shows outgoing transmissions to coordinates that don't map to earth",
+    "the second chair moves slightly while you aren't watching it",
+    "a frequency counter on the wall shows a number that matches nothing in any register",
+    "the meal is the same meal your mother made when you needed comfort. you never told anyone.",
+    "behind the main rack there is a smaller rack with equipment that looks newer",
+    "the antenna cable runs through the wall and into the floor and the ceiling simultaneously",
+    "the logbook has tomorrow's date on an entry that is already filled in",
+    "the fader labeled with your name has a small piece of tape over the label. under it: another name.",
+    "the transmission log shows the Gap has been broadcasting continuously since 1961",
+    "the mixing board has a fader labeled SOMETHING YOU SAW AT AGE SEVEN",
+    "the equipment cases are stamped with a logo that predates every known manufacturer",
+    "the broadcast door is soundproof from the inside. from the outside: unknown.",
+    "the logbook is in the same handwriting as the graffiti in sublevel zero",
+    "the meal has been replenished at some point since you last visited. it is always fresh.",
   ],
   sublevel_zero: [
     "the machinery has been running since before the building existed",
@@ -521,6 +865,26 @@ const AMBIENT = {
     "there are footprints here. they stop in the middle of the floor.",
     "the right tunnel smells like rain on concrete. there is no weather down here.",
     "the graffiti writer left their tools. the paint is still wet.",
+    "the terminal has been accepting input from someone. the command history is full.",
+    "the service log describes repairs to systems that don't appear on any schematic",
+    "the luminescent fluid moves faster when the machinery changes pitch",
+    "the footprints leading nowhere are always fresh. always the same size.",
+    "the graffiti has been partially painted over and rewritten. the message survived.",
+    "the terminal's command history begins with: WHO IS THIS FOR",
+    "the right tunnel loops. you come out where you entered. unless.",
+    "the pipes hum in the same register as the engine room machinery, three levels up",
+    "the service log lists a maintenance worker named J. VALE across thirty years of entries",
+    "the terminal accepts commands but its responses appear only briefly before clearing",
+    "the concrete here is older than poured concrete should be",
+    "something is living in the left tunnel. it doesn't come toward the light.",
+    "the luminescent fluid slows and brightens simultaneously when you read the graffiti",
+    "the maintenance hatch you came through has no corresponding mark on the service log",
+    "the terminal's most recent entry is timestamped six minutes from now",
+    "the graffiti is in three different hands but all say: THE SIGNAL IS NOT THE MESSAGE",
+    "the machinery sounds change when you change rooms. it knows where you are.",
+    "the pipes branch and converge in a pattern that looks like a nervous system on the schematics",
+    "the service log has a column labeled ANOMALIES. every entry in it is redacted.",
+    "J. VALE's last log entry reads: FOUND IT. no date. no follow-up.",
   ],
   the_mirror_room: [
     "the reflections are running 1.3 seconds behind. no one knows why it's that specific number.",
@@ -533,6 +897,26 @@ const AMBIENT = {
     "you can see the back of the figure's head in three mirrors simultaneously",
     "the mirror tiles are slightly warm. like they've been touched recently.",
     "the note on the vanity is in your handwriting. you didn't write it.",
+    "the 1.3-second delay is not universal. one mirror shows your reflection in real time.",
+    "the figure has been here longer than the Gap has existed. the Gap was built around it.",
+    "the key is not always a key. sometimes it is something else with the same weight.",
+    "the vanity mirror shows a room behind you that doesn't correspond to any room in the Gap",
+    "the note says something different each time. the handwriting is always yours.",
+    "one tile in the far corner shows a reflection of the room without you in it",
+    "the cassette tape has no label on the other side. the side with the date faces up.",
+    "the figure at the vanity has been photographed. the photographs show an empty chair.",
+    "the real-time mirror is in a different position every visit. you have to find it.",
+    "the note has been folded and unfolded so many times the creases are permanent",
+    "the mirror tiles reflect each other and in the recursion something else appears",
+    "the delay is 1.3 seconds except when you're looking directly at yourself. then it's longer.",
+    "the key is warm. it has been held recently. possibly by you.",
+    "the vanity drawers are locked. the key doesn't fit them. it fits something elsewhere.",
+    "three mirrors show the same background behind you. a fourth shows a different room.",
+    "the figure breathes. the rate is slow. calmer than anyone should be.",
+    "the note always ends mid-sentence. the rest is on another note you haven't found.",
+    "the cassette tape plays if you hold it near any speaker. you haven't tried yet.",
+    "when you blink, the figure's position shifts slightly. you can't catch it moving.",
+    "the mirror that shows you afraid is the only one at the correct angle. the others are off.",
   ],
   the_broadcast_booth: [
     "the ON AIR light has not been off since 1991",
@@ -545,6 +929,26 @@ const AMBIENT = {
     "the coffee cup has your name on it in permanent marker. someone knew you were coming.",
     "the logbook entries from your previous visits describe things you were thinking",
     "through the glass, you can see someone at a desk who looks like you from behind",
+    "the headphones weigh more than their size should allow",
+    "the production floor has equipment you've never seen used. it's always running.",
+    "your logbook entries are more detailed than you remember being aware of at the time",
+    "the coffee is always the same: your preferred preparation, no variation",
+    "someone on the production floor stopped moving. they're watching the glass partition.",
+    "the ON AIR light has a dimmer switch. the dimmer is set to maximum. always.",
+    "the logbook's handwriting changes in entries from different visits. all yours.",
+    "the microphone pickup pattern suggests it captures things beyond the room",
+    "the glass partition has fingerprints on the inside. you can't reach that side.",
+    "the headphones' frequency reception extends below and above standard human range",
+    "entry 001 in the logbook is dated before the booth existed",
+    "the production floor workers communicate without speaking or gesturing",
+    "your coffee has a different cup every time. the name is always in the same hand.",
+    "the logbook has entries for visits you are planning but haven't made yet",
+    "through the glass: someone is transcribing from your previous logbook entries",
+    "the microphone is on. it is always on. you are always being recorded here.",
+    "the coffee changes if you don't drink it. if you return it to the counter it resets.",
+    "the glass partition is two-way. you can see them. they can see you.",
+    "behind the ON AIR light there is a OFF AIR light. it is not connected to anything.",
+    "the logbook ends on a page that is blank except for the date and your name. no entry.",
   ],
   the_outside_inside: [
     "the payphone rings every nine minutes. it has been ringing for years.",
@@ -557,6 +961,26 @@ const AMBIENT = {
     "the payphone has no coin slot. it accepts something else.",
     "the sky-ceiling has water stains shaped like continents you don't recognize",
     "the trees grow through the tiles and into the ceiling and back into the floor",
+    "one building has a light on in a second-floor window. the same window. always.",
+    "the static-rain doesn't make you wet. it makes you feel observed.",
+    "the street smells like a specific afternoon from your childhood",
+    "the figure in yellow has left footprints. they don't lead anywhere.",
+    "the door that shouldn't be here sometimes has a welcome mat",
+    "your address on the buildings is correct down to the apartment number",
+    "the payphone rings in a pattern. three rings. pause. two rings. pause. one ring. repeat.",
+    "the trees grow in both directions simultaneously. up and down.",
+    "the light in the second-floor window shows a silhouette. it moves very slowly.",
+    "the street loops but the buildings are in a slightly different order each loop",
+    "the static-rain collects on surfaces but evaporates before you can examine it",
+    "the welcome mat outside one building reads: THERE YOU ARE",
+    "the figure in yellow is the correct height to be someone specific. you don't check.",
+    "the payphone receiver smells like the inside of a car you once spent a lot of time in",
+    "the sky-ceiling has a crack running east-west. something moves behind it.",
+    "the trees have roots that terminate in smooth rounded ends rather than spreading",
+    "the buildings' windows reflect a skyline that isn't the Gap's interior",
+    "the payphone rings only when you're not watching it. when you watch: silence.",
+    "the static-rain makes no sound. this becomes disturbing after a while.",
+    "the door that shouldn't be here smells like wherever you most want to be",
   ],
   the_engine_room: [
     "the static engineer has been on shift for an estimated 340 years",
@@ -569,6 +993,26 @@ const AMBIENT = {
     "the gears cast shadows that move independently of the light source",
     "the engineer's tools are labeled with verbs, not nouns",
     "the machinery produces a low hum in the key of something you can't identify",
+    "the static that makes up the engineer's body occasionally shows channel fragments",
+    "the gears of frozen light are cold to the touch but the room is warm",
+    "the blueprint shows rooms you haven't visited. they have no names.",
+    "the pistons compress at different rates. the pattern is not random.",
+    "the engineer repairs the same junction point every shift. it fails again each cycle.",
+    "your X on the blueprint is in red. everyone else who has visited: black.",
+    "the emergency exit has never opened the same way twice",
+    "the engineer's shadow is not made of static. it's made of something darker.",
+    "the machinery's hum is musical when you listen long enough. it has a repeating phrase.",
+    "the blueprint's unnamed rooms have been visited. their X marks are in a different color.",
+    "the gears' shadows show the gears turning faster than the gears actually turn",
+    "the engineer's tools include one that you recognize. you don't know from where.",
+    "the pistons that run on your memories compress when you think about specific things",
+    "the blueprint shows a room labeled YOUR NAME that doesn't appear anywhere else",
+    "the light inside the frozen-light gears is older than the Gap",
+    "the engineer pauses sometimes. not resting. listening.",
+    "the machinery's phrase repeats every 7 minutes. it's been repeating for centuries.",
+    "the emergency exit's bar is worn smooth from use. not your use. others'.",
+    "the blueprint is printed on material that isn't paper. it's warm and slightly flexible.",
+    "the static engineer's form stabilizes briefly when you approach. just for a moment.",
   ],
   the_rooftop: [
     "from here you can see the edges of the Gap. they are not walls.",
@@ -581,124 +1025,422 @@ const AMBIENT = {
     "the sky-static occasionally spells words in a language you almost know",
     "the transmitter controls are labeled in your handwriting",
     "you can hear the whole Gap breathing from here",
+    "the edges of the Gap diffuse rather than end. the signal becomes the surrounding signal.",
+    "the city below shows lights that correspond to transmissions from specific years",
+    "the antenna towers hum at a frequency you feel in your back teeth",
+    "the ladder's top rung is worn smoother than the ones below it",
+    "from here the Gap looks like what it is: a deliberate construction",
+    "the transmitter broadcasts on a frequency that passes through everything",
+    "the sky-static shows faces. you recognize none of them. they seem to recognize you.",
+    "the air up here is different. charged. the static is visible as well as audible.",
+    "the city of old light is beautiful in a way that's difficult to explain",
+    "the antenna towers were here before the building beneath them",
+    "the ladder extends further each visit. or you notice it more.",
+    "the transmitter controls are worn where hands have rested on them. your handwriting says you know what to do.",
+    "from the roof you can hear transmissions from all nine rooms simultaneously",
+    "the sky-static words appear at the threshold of comprehension and retreat",
+    "the city below has streets that match the layout of the Gap's rooms",
+    "the Gap's breathing is slow. regular. like sleep. or like waiting.",
+    "the transmitter has a secondary output. you haven't located the receiver.",
+    "the ladder's shadow extends downward through the roof. further than it should.",
+    "the snow-sky clears briefly over the center of the Gap. you can see something above.",
+    "from here: the Gap's full architecture. every room a node. every corridor a signal path. you: the common element.",
   ],
 };
 
 const NARRATIVES = {
   the_gap: [
-    "You arrive in the space between channels. The floor is VHS tape compressed to concrete density, soft underfoot in a way that shouldn't be possible. Forty monitors line the walls, each showing a slightly different version of the same image — a room, a window, a figure standing with its back to you. The static smells like copper and something older.",
+    "You arrive in the space between channels. The floor is VHS tape compressed to concrete density, soft underfoot in a way that shouldn't be possible. Forty monitors line the walls, each showing a slightly different version of the same image, a room, a window, a figure standing with its back to you. The static smells like copper and something older.",
     "The Gap opens around you like a held breath finally released. CRT monitors stack floor-to-ceiling, their combined light blue-white and buzzing, casting no shadows you can account for. Somewhere behind the screens, machinery hums at the exact frequency of a thing you used to know and have since forgotten. You have the distinct sense that something here has been waiting.",
-    "You step into the transmission. The Gap is exactly as strange as you remember and entirely different — the monitors have rearranged since last time, or perhaps they always show something new. The VHS floor compresses slightly under your weight, as if recording the pressure. The dead pixel door is in the far wall, a perfect black rectangle in the static.",
-    "Static first, then shape. The Gap resolves around you: monitors, tape floor, copper smell, the low hum of something that runs on stored light. You've been here before in some version of this — the Gap's architecture is consistent but its mood shifts. Tonight something is watching the monitors very carefully. You can tell by the way the static leans.",
+    "You step into the transmission. The Gap is exactly as strange as you remember and entirely different, the monitors have rearranged since last time, or perhaps they always show something new. The VHS floor compresses slightly under your weight, as if recording the pressure. The dead pixel door is in the far wall, a perfect black rectangle in the static.",
+    "Static first, then shape. The Gap resolves around you: monitors, tape floor, copper smell, the low hum of something that runs on stored light. You've been here before in some version of this, the Gap's architecture is consistent but its mood shifts. Tonight something is watching the monitors very carefully. You can tell by the way the static leans.",
     "The Gap catches you mid-step between one place and nowhere. The monitors show eleven versions of a room you recognize but can't locate. The VHS underfoot is warm. The dead pixel door pulses faintly, like it's breathing. The copper smell is stronger this time, or maybe you've just learned to notice it.",
+    "You enter through a frequency rather than a door. The monitors resolve around you first, then the floor, then the smell: copper, ozone, something that belongs to a specific afternoon in 1994. The CRTs show static on every channel except the one directly ahead of you, which shows your face, looking at you from the other side of something.",
+    "The Gap is louder today. The static from forty monitors overlaps into something that almost sounds intentional. The VHS floor is denser, more compressed, as though it's accumulated more footage since your last visit. The dead pixel door is open, slightly, for the first time you can remember. Not wide enough to see through. Just slightly.",
+    "Something is different about the Gap and you can't locate what. The monitors are the same. The floor is the same. The copper smell is the same. But the quality of the waiting has changed, it used to feel passive. Now it feels like attention. The static watches you cross to the far wall and the dead pixel door.",
+    "The Gap receives you without fanfare. The monitors flicker in sequence as you enter, a greeting, or an acknowledgment, or a record of your arrival. The VHS floor stores the impression of your footsteps for exactly three seconds before releasing it. The copper smell is faint today. Something has been aired out.",
+    "You have come back. The Gap registers this without comment. The monitors cycle through footage of rooms you recognize, your bedroom, a hallway, a parking lot at night, and then resume their usual almost-image. The dead pixel door is where it always is. The floor remembers the path you took last time and is slightly softer along it.",
+    "The Gap is large and you are small in it in the specific way that matters. The monitors are arranged slightly differently than before, not dramatically, just shifted, as if someone has been working in here while you were gone. The copper smell is underlaid with something electrical, sharper, like something has recently discharged. The dead pixel door waits.",
+    "You arrive at the wrong time, or the Gap arrives around you at the wrong time, and for a moment everything is simultaneous: all forty monitors showing all their versions of the same image at once, layered, strobing. Then it settles. The floor is solid. The copper smell grounds you. You're here. The Gap is ready.",
+    "The monitors near the ceiling are showing something different from the ones at eye level. You've noticed this before but never acted on it. The ones above show interiors of rooms; the ones at eye level show exteriors of buildings. Your building, maybe. The VHS floor is cool today. The dead pixel door is outlined in a faint cyan light.",
+    "The Gap has the quality of a room someone just left. Still warm, still configured for a presence. The monitors cycle between channels with more purpose than usual, as if searching for something specific in the static. The VHS underfoot plays back a low hum, stored audio, compressed, releasing slowly. Something here is finishing a task.",
+    "Between the monitors, in the gaps between channels, you can see the wall behind them for the first time. It's covered in writing. Notes, maybe. The VHS floor registers your pause. The copper smell is sharp tonight. The dead pixel door is in the exact center of the far wall, not to the left where it usually is. You check behind you. The monitors agree: this is the Gap.",
   ],
   the_archive: [
     "The Archive is cathedral-tall, the shelves running up past where the light reaches. Television-headed librarians move in the aisles with the quiet purpose of the devout, pulling volumes and replacing them according to a logic you don't have clearance to understand. The call numbers are dates. The dates are all future-tense. In the far corner, the reading chair glows.",
-    "Shelves extend in every direction, further than the room's exterior dimensions permit. The books have spines labeled with future dates and emotions. A librarian with a CRT for a head passes without acknowledging you — the screen flickers through channels too fast to read. You can feel the weight of recorded almost-events pressing in from every shelf.",
-    "You enter the Archive to the sound of nothing — no pages turning, no footsteps, no ambient hum. Just the suspended weight of stored alternatives. The librarians move in silence, their television-head screens dark today. The reading chair in the corner pulses faintly gold. A book lies open on a small table. Your name is in the margins in red ink.",
+    "Shelves extend in every direction, further than the room's exterior dimensions permit. The books have spines labeled with future dates and emotions. A librarian with a CRT for a head passes without acknowledging you, the screen flickers through channels too fast to read. You can feel the weight of recorded almost-events pressing in from every shelf.",
+    "You enter the Archive to the sound of nothing, no pages turning, no footsteps, no ambient hum. Just the suspended weight of stored alternatives. The librarians move in silence, their television-head screens dark today. The reading chair in the corner pulses faintly gold. A book lies open on a small table. Your name is in the margins in red ink.",
     "The Archive smells like old paper and magnetic tape, a combination that shouldn't exist but feels entirely right. The shelves form a maze you've never successfully mapped, though you've tried. The librarians know where everything is. They will not tell you. The reading chair glows with the particular warmth of something that has been expecting you.",
     "Something has changed in the Archive. A librarian stands frozen in an aisle, CRT head showing only static, one hand raised mid-reach. The books near the impossible window have been moved. The reading chair faces a different direction than you remember. Your name is in the margin of a book you're certain wasn't here before.",
+    "The Archive's scale refuses to resolve. The shelves should terminate at a wall but when you look along them they continue into a light that might be a window or might just be more books. The librarians process their routes without deviation. One of them is holding a book face-out toward you, just for a moment, before shelving it.",
+    "This section of the Archive is different from others you've entered, warmer, the books here more densely packed, their call numbers clustered around a narrow range of future dates. Three librarians are working this aisle simultaneously, which hasn't happened before. The reading chair's glow reaches further than its size should allow.",
+    "You come in through a different entrance than usual. The Archive looks different from this angle, the shelves converge toward a vanishing point at a different angle, the reading chair is visible from here as a warm light rather than a specific object. A librarian turns its CRT head toward you. Its screen shows a room. You recognize the room.",
+    "The books in this section are smaller than usual, pocket-sized, their spines labeled with emotions rather than dates. EMBARRASSMENT (2029). UNEXPECTED JOY (2031). SOMETHING YOU SHOULD HAVE SAID (2027). The librarians ignore these shelves entirely. The reading chair glows gold and steady at the far end of the room.",
+    "You can hear the Archive before you're inside it, a low, collective hum of stored potential, the weight of all the things recorded here pressing lightly against the walls from the inside. The librarians move with purpose. The reading chair is occupied when you enter, but by the time you reach it, it's empty and warm.",
+    "The Archive has a smell today that it doesn't usually have: something burning, very faintly, like old magnetic tape. One of the librarians is moving faster than the others. A book near the center of the main aisle has been left on the floor, face-down. None of the librarians will pick it up.",
+    "The Archive greets you with the specific silence of many quiet things. The shelves breathe, their books shifting microscopically, as if settling. The librarians rotate between aisles on a schedule you've never been able to reverse-engineer. The reading chair is at an angle today that lets you see its face for the first time. It has no face.",
+    "A new section has appeared in the Archive since your last visit. The shelves here are dark metal rather than the usual wood, the books thin and uniform, their spines unlabeled. The librarians avoid this section. The reading chair in the corner faces it directly, as if watching. You can't tell if the books are full or empty from here.",
+    "The Archive is louder today. Not sound, the books don't make noise, but the weight of almost-events presses closer to the surface, the shelves vibrating at a frequency just below hearing. A librarian pauses in the aisle ahead of you, screen flickering, before continuing. The reading chair glows amber instead of gold. Something has changed.",
+    "You find the section you've been looking for without looking for it, this is how the Archive works, when it decides to work with you. The call numbers here are dates you recognize. The books are heavier than their size suggests. The librarian at the end of the aisle turns its screen toward you. The image on it takes a moment to resolve.",
   ],
   the_signal_room: [
     "Signal Room 7 is the source. Unmarked equipment racks line three walls, cables running between them in configurations that shouldn't produce sound but do. The mixing board stretches eight feet across, its faders each labeled with a feeling in handwriting you don't recognize but somehow know is yours. A meal sits half-eaten on the console, still warm. It has been warm for fifty years.",
-    "You enter mid-broadcast. The ON AIR indicator is dark in here but the equipment is alive — meters moving, reels turning, something transmitting. The logbook on the console is open to today's date. Your name appears in the entry. You haven't been here in years, or ever, depending on which version of yourself you're counting. The meal on the console is your favorite food.",
+    "You enter mid-broadcast. The ON AIR indicator is dark in here but the equipment is alive, meters moving, reels turning, something transmitting. The logbook on the console is open to today's date. Your name appears in the entry. You haven't been here in years, or ever, depending on which version of yourself you're counting. The meal on the console is your favorite food.",
     "The room smells like copper and static and something cooked recently. Signal Room 7 runs on its own schedule, independent of whatever time exists in the rest of the Gap. The mixing board's faders have been adjusted since your last visit. GRIEF is all the way up. RECOGNITION has been muted. You reach for GRIEF and the meters respond before your fingers land.",
-    "Signal Room 7 is broadcasting something you can't quite hear. The equipment works without operators — reels turn, faders drift, a pen inscribes entries in the logbook without a hand to hold it. The handwriting is always the same. When you check the entry for right now, this moment, the description is accurate in ways that should be impossible.",
+    "Signal Room 7 is broadcasting something you can't quite hear. The equipment works without operators, reels turn, faders drift, a pen inscribes entries in the logbook without a hand to hold it. The handwriting is always the same. When you check the entry for right now, this moment, the description is accurate in ways that should be impossible.",
     "The transmission is ongoing. Signal Room 7 doesn't pause for visitors, doesn't acknowledge entry or exit. The equipment does its work and you are part of it by proximity. The logbook entry for your arrival is already written. The meal on the console is still warm. The fader labeled with your name has moved. You don't remember touching it.",
+    "You come in through the wall gap this time and Signal Room 7 receives you sideways, you have to reorient before the room makes sense. The equipment has the quality of something that has been running so long it's become part of the building's biology. The mixing board is different from this angle: you can see labels on the back of the faders. They say the same things as the front.",
+    "Signal Room 7 is quieter than you've heard it. The reels have slowed. The meters barely move. Only the logbook continues its work, the pen moving in its steady hand. You check the entry. It says: quiet today. visitor noticed the quiet. this is new. the visitor is reading this. the visitor has read this before and will read it again.",
+    "The meal on the console has been changed. Same food, but fresh, as if someone has been here recently enough to cook and not long enough for it to cool. The equipment is at full operation. The fader labeled SOMETHING YOU SAW AT AGE SEVEN is pushed higher than it's ever been. The meters are redlining on a frequency you can't locate a source for.",
+    "Signal Room 7 is broadcasting on all frequencies simultaneously. The meters are all pinned. The reels turn fast. The logbook pen moves faster than usual. Your name appears three times in the current entry. The meal is cold for the first time, as if something has disrupted the room's usual clock. The fader with your name on it is all the way up.",
+    "The equipment in Signal Room 7 has been rearranged. Not dramatically, a rack shifted, a cable rerouted, but enough that the room's logic has changed. The mixing board is the same. The logbook is the same. The meal is the same. But something else is different and you can't find it by looking. Only by noticing the feeling the room produces.",
+    "Signal Room 7 is receiving today, not transmitting. The meters track incoming signals on frequencies you can't match to any known source. The reels play rather than record. The logbook documents received content: descriptions of places, emotional states, a recurring image of a room with a window and a figure with its back to the viewer. The meal is warm.",
+    "The fader labeled with your name has moved to center position. From what you remember, it was lower before. The other faders haven't shifted. Only yours. The equipment logs everything; the logbook entry for this moment will include this observation. You watch the entry being written and it does include it, and then it includes the fact that you watched it being included.",
+    "Something in Signal Room 7 has been broadcasting without pause for so long that the equipment has worn patterns into itself, smooth patches on the fader surfaces, a groove in the logbook's spine, an indent in the console where the pen rests between entries. You are documented in the room's physical record even before you arrive.",
+    "You hear Signal Room 7 before you enter it, not sound exactly, but the weight of something transmitting, pressing lightly through the walls. The meal is fresh. The logbook is open. The faders are set differently from any previous configuration you've recorded. The equipment is doing something specific today, something with more intention than usual.",
+    "Signal Room 7 receives you with its usual indifference. The equipment runs. The logbook records. The meal waits. But today you notice something you've missed before: the cables from the mixing board don't terminate in the rack behind it. They run along the baseboard, through the wall, and into the Gap's broader structure. Everything you've adjusted here has gone somewhere.",
   ],
   sublevel_zero: [
     "Below everything, there is this: a tunnel that shouldn't exist beneath a building that has no basement. The pipes run in perfect parallel, carrying something luminescent and warm. The machinery sounds like breathing. The terminal at the far end blinks with a cursor that pulses at exactly your heart rate. On the concrete wall, in paint that looks fresh: THE SIGNAL IS NOT THE MESSAGE.",
-    "The maintenance tunnels of Sublevel Zero predate the Gap by years that don't add up. The luminescent pipes hum. The machinery at the tunnel's end has been running so long it's part of the architecture now — you couldn't separate it from the walls if you tried. The terminal waits. The graffiti is new again, fresh, though you know it was here before.",
-    "Sublevel Zero is cold in a way the upper levels aren't — not temperature cold, but a different kind. The pipes glow blue-green and warm. The machinery sounds, today, almost like music. The terminal cursor blinks. The graffiti in three different hands all says the same thing. The left tunnel leads toward a sound you can't identify but feel certain you're supposed to follow.",
+    "The maintenance tunnels of Sublevel Zero predate the Gap by years that don't add up. The luminescent pipes hum. The machinery at the tunnel's end has been running so long it's part of the architecture now, you couldn't separate it from the walls if you tried. The terminal waits. The graffiti is new again, fresh, though you know it was here before.",
+    "Sublevel Zero is cold in a way the upper levels aren't, not temperature cold, but a different kind. The pipes glow blue-green and warm. The machinery sounds, today, almost like music. The terminal cursor blinks. The graffiti in three different hands all says the same thing. The left tunnel leads toward a sound you can't identify but feel certain you're supposed to follow.",
     "The air in Sublevel Zero is processed, recycled, older than the Gap itself. The pipes branching overhead carry luminescent fluid in both directions. The machinery never stops. The terminal's cursor blinks in the dark. The graffiti is always new-looking no matter how many times you've read it: THE SIGNAL IS NOT THE MESSAGE. Tonight that feels true in a new way.",
-    "Something has shifted in Sublevel Zero. The pipes glow brighter tonight, or your eyes have adjusted. The machinery has changed its rhythm — slightly, almost imperceptibly, the way a heart rate changes when something is noticed. The terminal is waiting for input. The graffiti has a new line beneath the usual text, but you can't make it out from here.",
+    "Something has shifted in Sublevel Zero. The pipes glow brighter tonight, or your eyes have adjusted. The machinery has changed its rhythm, slightly, almost imperceptibly, the way a heart rate changes when something is noticed. The terminal is waiting for input. The graffiti has a new line beneath the usual text, but you can't make it out from here.",
+    "Sublevel Zero smells like cold concrete and warm metal and something you associate with infrastructure, the smell of essential systems. The pipes carry their luminescent fluid in silence. The terminal is active; someone has been using it. The command history scrolls off screen before you can read it. The graffiti has been amended. A fourth hand, or the same hand much later.",
+    "The machinery in Sublevel Zero has changed pitch since your last visit. Lower. More resonant. The pipes glow more intensely along the right-hand wall. The terminal has a new file in the root directory: YOURS. You don't open it. The graffiti is exactly the same as always but the paint is wet, which is impossible, which is exactly the kind of thing Sublevel Zero does.",
+    "You drop through the MAINTENANCE_7 hatch into a Sublevel Zero that feels contracted, the tunnels narrower, the ceiling lower, the pipes closer. The luminescent fluid runs faster. The terminal shows an active session that isn't yours. The cursor blinks in the exact rhythm of your heartbeat. The graffiti has been underlined by a hand that pressed very hard.",
+    "Sublevel Zero receives you in its usual way: no greeting, no acknowledgment, just the machinery continuing and the pipes glowing and the terminal blinking. The service log has new entries. J. VALE has been here. The entries describe repairs to systems you've never seen. One entry, the most recent, says only: FOUND THE VISITOR.",
+    "The left tunnel is louder today. The sound from it is clearer, more recognizable, almost but not quite music, the harmonic undertone of something vast and mechanical that has been running for longer than you've been alive. The pipes pulse with it. The terminal shows a file modified thirty seconds ago. You weren't here thirty seconds ago.",
+    "Sublevel Zero's concrete is older than the building above it. Older than the street above that. The pipes seem to have grown into the walls rather than been installed in them. The machinery has no clear source, the sound comes from everywhere and nowhere. The terminal accepts input that you haven't given it. It has been having a conversation without you.",
+    "Something has been added to Sublevel Zero since your last visit. Near the terminal: a chair. It wasn't here before. It is positioned as if someone sits here regularly. The seat is worn. The terminal faces it. The graffiti on the wall above the chair reads: YOU ARE RIGHT ON TIME. Below the usual message. In the same fresh paint.",
+    "The luminescent pipes in Sublevel Zero are the color of deep water today. Not their usual blue-green but something slower and heavier. The machinery's breathing rhythm is long, in over seven seconds, out over seven. The terminal cursor blinks at your heart rate. The graffiti has been extended. New message: THE MESSAGE IS YOU.",
+    "You enter Sublevel Zero through the left tunnel for once and the room is entirely different from this perspective. The terminal faces away from you. The graffiti is on a wall you've never seen before. The pipes run in a configuration that doesn't match your memory of the right-side approach. The machinery sounds the same. The cursor blinks the same. The graffiti says the same thing.",
+    "Sublevel Zero is the oldest part of the Gap. You understand this with more certainty than you can account for. The machinery has been here forever. The pipes were installed before there was a concept of installation. The terminal is a concession, an interface added later, for you specifically. The graffiti is the original communication. All the rest was built around it.",
   ],
   the_mirror_room: [
     "The Mirror Room tiles you in reflections, floor to ceiling, and every single one is wrong. A fraction too slow. A degree off-angle. An expression you know you didn't make. The figure at the vanity sits with perfect stillness, one hand resting on a key, the other near a cassette tape marked with a future date. It knows you're there. It is waiting for you to speak first.",
     "Every surface reflects. Every reflection is behind by 1.3 seconds, a delay that should be imperceptible but becomes unbearable over time. The figure at the vanity has been here as long as the Gap has. In 23 separate mirrors you can see the back of its head. In one, you think you can see its face. You choose not to look at that one.",
-    "The Mirror Room is quieter than it should be — no echo, no ambient sound, just your own breathing returned to you slightly changed. The figure at the vanity doesn't move but you have the distinct impression that it was moving a moment ago. The key on the vanity surface is warm. The note beside it is in your handwriting. You haven't been here in a very long time, or ever.",
+    "The Mirror Room is quieter than it should be, no echo, no ambient sound, just your own breathing returned to you slightly changed. The figure at the vanity doesn't move but you have the distinct impression that it was moving a moment ago. The key on the vanity surface is warm. The note beside it is in your handwriting. You haven't been here in a very long time, or ever.",
     "You enter the Mirror Room and forty versions of yourself enter with you, all doing the same thing but none of them quite right. The figure at the vanity is the only thing that doesn't multiply. It sits in the center of every reflection, singular and still. The cassette tape on the vanity is labeled with coordinates that don't correspond to any map you've seen.",
-    "The Mirror Room has rearranged its angles. New tiles, or old tiles repositioned — either way, your reflections are different today, fragmented into more pieces than before. The figure at the vanity is exactly where it always is. The key is exactly where it always is. Something about the note is different. The handwriting is still yours but the words have changed.",
+    "The Mirror Room has rearranged its angles. New tiles, or old tiles repositioned, either way, your reflections are different today, fragmented into more pieces than before. The figure at the vanity is exactly where it always is. The key is exactly where it always is. Something about the note is different. The handwriting is still yours but the words have changed.",
+    "The 1.3-second delay is consistent everywhere in the Mirror Room except in one tile near the floor in the northwest corner. That mirror shows your reflection in real time. Looking at it, you can see what you actually look like, not what you looked like 1.3 seconds ago. The gap between them is larger than you expected. The figure at the vanity does not have this problem.",
+    "You find the Mirror Room different today: the tiles have shifted in color temperature, cooler, the reflections more blue. The figure at the vanity is wearing something different. You've never been able to determine what the figure wears, it never resolves clearly, but today it's clearly different, a different silhouette. The note on the vanity is longer than usual.",
+    "The Mirror Room's recursions run deep today. Mirror within mirror, reflection multiplied, the room extending into itself at angles that loop back. Somewhere in the recursion, deep in the doubled doubling, something moves independently of you. The figure at the vanity is aware of it. You can tell by the quality of its stillness.",
+    "You arrive in the Mirror Room and your reflections arrive with you and then one more arrives after, from a slightly different direction. The figure at the vanity does not react. The key on the vanity is on the left side today rather than the right. The cassette tape has no label this time, the label has been removed. The adhesive is still there.",
+    "The note on the vanity is longer today. You've never been able to read it fully, by the time you reach the end, the beginning has changed. Today you start at the end and work backward. The final word is a name. The name is yours. The figure at the vanity does not move but the temperature in the room drops by two degrees.",
+    "There are new tiles in the Mirror Room. You can identify them by their lack of delay, they show real-time reflections, bright and immediate. They're placed irregularly among the standard tiles. If you read their arrangement as a pattern: it might be a path. The figure at the vanity has its head tilted slightly, as if listening.",
+    "Something is missing from the vanity today. Not the key, not the tape, not the note, all present. But the arrangement has changed, a space cleared that wasn't cleared before, as if something that was there has been removed. The figure sits before it, both hands visible for the first time. It is holding nothing. Or something too small to see.",
+    "The Mirror Room is humid today, which shouldn't be possible. The mirrors have condensation on their inner surfaces. When you wipe one clear with your hand, the delay doesn't apply to the cleared area, for a moment you see yourself in real time, looking at your own hand against a mirror, before the condensation reforms. The figure at the vanity is dry.",
+    "You enter the Mirror Room through the broadcast booth this time and the room looks fundamentally different from this entrance, you're behind the figure at the vanity rather than in front of it. You can see its face in the mirror it faces. Before you can resolve the image, the figure's reflection turns to look at you, though the figure itself doesn't move.",
+    "The Mirror Room tiles your experience into pieces small enough to examine. Every angle. Every second. Every version of the expression you're making. The figure at the vanity is still. The key is warm. The note is in your hand, not on the vanity, in your hand, and you don't remember picking it up. You read it. It says: you picked this up last time too.",
   ],
   the_broadcast_booth: [
     "The booth is always on air. The red light has not been off since 1991 and shows no sign of ever going off. Someone has left you coffee at exactly the right temperature in a cup with your name written in permanent marker, as if they knew you were coming, as if they always know. The logbook is open to your name. Entry 848.",
-    "You take your seat in the Broadcast Booth and the equipment acknowledges your arrival in the way equipment does — a slight shift in the meters, a warmth in the console, the sense of a system orienting toward you. The black sun microphone hangs at speaking height. Through the glass, the production floor operates in total silence. Someone there is watching you without appearing to watch.",
+    "You take your seat in the Broadcast Booth and the equipment acknowledges your arrival in the way equipment does, a slight shift in the meters, a warmth in the console, the sense of a system orienting toward you. The black sun microphone hangs at speaking height. Through the glass, the production floor operates in total silence. Someone there is watching you without appearing to watch.",
     "The coffee is there, temperature perfect, name written in a hand that isn't yours. The logbook is open. Your previous visits are recorded in detail that includes thoughts you had privately, things you noticed but didn't act on. Entry 847 ends mid-sentence. You find where it left off and keep reading. It was written while you were mid-step somewhere else in the Gap.",
-    "The ON AIR light is warm. Everything in the Broadcast Booth is warm — the console, the headphones on their hooks, the air itself. The production floor behind the glass is quiet. The people there are working on something you can't quite see. One of them, you notice, is wearing the same thing as you. Has been wearing it this whole time.",
-    "The Broadcast Booth smells like burnt electronics and old coffee and something pleasant underneath both. The logbook shows your pattern — the rooms you visit in which order, the exits you choose, the ones you've never taken. Entry 848 is already written. You are in the process of living it. The coffee is the right temperature. It is always the right temperature.",
+    "The ON AIR light is warm. Everything in the Broadcast Booth is warm, the console, the headphones on their hooks, the air itself. The production floor behind the glass is quiet. The people there are working on something you can't quite see. One of them, you notice, is wearing the same thing as you. Has been wearing it this whole time.",
+    "The Broadcast Booth smells like burnt electronics and old coffee and something pleasant underneath both. The logbook shows your pattern, the rooms you visit in which order, the exits you choose, the ones you've never taken. Entry 848 is already written. You are in the process of living it. The coffee is the right temperature. It is always the right temperature.",
+    "Someone on the production floor has left. There is an empty desk that was occupied last time. The logbook notes this: ONE OPERATOR HAS COMPLETED THEIR ROTATION. The empty desk is clean. There is a mug on it with a name on it. Not yours. The black sun microphone is warmer than usual. The headphones on their hooks are swaying slightly.",
+    "The Broadcast Booth is broadcasting something specific today, you can tell by the intensity of the meter readings, the focus of the equipment's operation. The logbook is writing faster. The coffee has been replaced twice since your last visit, still at the correct temperature. Whatever is being transmitted is important. The production floor is at full capacity.",
+    "You arrive in the broadcast booth and entry 849 has already been started. It reads: ARRIVED. PAUSED AT THE DOOR. NOTICED THE LOGBOOK. IS NOW READING THIS. The pen continues. The logbook records everything. The coffee is at the correct temperature. The ON AIR light pulses once, acknowledgment, maybe, and resumes its steady burn.",
+    "The Broadcast Booth has been modified since your last visit. Subtle: a new piece of equipment in the rack, a cable rerouted, the headphones on a different hook. The logbook has an entry: MODIFICATIONS COMPLETE FOR NEXT VISITOR. The production floor is empty. Completely empty. The glass reflects only you, the console, the ON AIR light. The coffee is there, correct temperature, your name on the cup.",
+    "Through the glass partition, you can see the production floor clearly today. The operators are transcribing. You recognize their source material: your previous logbook entries, reproduced in careful handwriting on fresh paper. They work without pausing. The one in the corner looks up and makes eye contact through the glass and looks back down without reaction.",
+    "Entry 850. The logbook has reached a milestone. The pen has been writing this logbook for thirty years without interruption. The coffee cup is different today, older, ceramic, the permanent marker faded. Your name is still legible. The production floor is celebrating something, silently, the operators' posture changed just slightly toward something that might be satisfaction.",
+    "The Broadcast Booth is quiet in a new way. The meters still move, the equipment still runs, but the quality of the transmission has changed, the booth is receiving rather than sending. The headphones on the hooks are vibrating very slightly. Whatever they're picking up is too faint to hear from here. The logbook is open to an entry that says: LISTEN.",
+    "Someone has been in the Broadcast Booth without being logged. There are two coffee cups. Both have your name on them. The logbook has no gap, no unaccounted time, but the second cup is cold while yours is perfect. The production floor operators don't acknowledge the discrepancy. The black sun microphone has been adjusted: it now faces a chair rather than a standing position.",
+    "The Broadcast Booth is the center of the Gap in a way that the Engine Room, despite its mechanical authority, is not. The Gap transmits from here. Everything else is infrastructure. You are here now and you are, in some accounting of the word, on air. The logbook is open. The coffee is correct. The ON AIR light illuminates your face from below and you look different in it.",
+    "You read backwards through the logbook. Your previous entries. The entries before yours. The first entry, thirty years ago, in different handwriting, not yours, not the regular hand, that reads: BOOTH ESTABLISHED. SIGNAL ALIGNED. FIRST VISITOR EXPECTED SHORTLY. The coffee is warm. The production floor is watching. Entry 851 begins to write itself.",
   ],
   the_outside_inside: [
     "The Outside Inside is impossible in the specific way that rooms in the Gap are impossible: entirely internally consistent and entirely wrong. The sky is a ceiling. The ceiling has water stains. The trees grow through tile and back out again. The payphone is ringing. The figure in the yellow raincoat stands in the static-rain and does not turn around. Every building on this street has your address.",
-    "You step outside into a room. The static falls like rain — cold, electric, dissolving before it lands. The payphone rings, as it always rings, at an interval of exactly nine minutes. The figure in yellow stands at the far end of the street, perfectly still, the raincoat too small for an adult. The street loops. You've walked it before and emerged where you started.",
+    "You step outside into a room. The static falls like rain, cold, electric, dissolving before it lands. The payphone rings, as it always rings, at an interval of exactly nine minutes. The figure in yellow stands at the far end of the street, perfectly still, the raincoat too small for an adult. The street loops. You've walked it before and emerged where you started.",
     "The outside is inside and the inside is outside and neither has edges. The street repeats. Your address is on every door. The trees grow in both directions through the tiled floor. The payphone rings and rings. The figure in the yellow raincoat has not moved and will not move unless you do something different this time. The door that shouldn't be here is always somewhere else until you stop looking for it.",
     "Rain that isn't rain falls through the ceiling-sky and dissolves. The payphone at the corner of the looping street rings once, stops, rings twice. The figure in yellow stands at the center of the intersection and doesn't turn. The buildings all claim your address. The door that shouldn't be here has appeared slightly to your left, in the space between a tree and a lamppost that wasn't on before.",
     "The outside-inside smells like wet concrete and static electricity and something you associate with being a child, somewhere specific, a time of day you can't name. The figure in yellow hasn't moved. The payphone's ring echoes in a space that shouldn't have that much depth. Your address is on every building. One door has a welcome mat with a name on it. It isn't yours. It used to be.",
+    "The street is different today. The loop is tighter, the buildings closer together, the ceiling-sky lower. The static-rain is heavier. The figure in yellow is nearer than usual, the same absolute stillness, but close enough now to see the back of the raincoat clearly. There is something written on it in permanent marker. You can't read it from here.",
+    "The payphone has been answered before you arrived. The receiver is hanging off the hook, swaying slightly. You can hear something coming from it, not words, but the presence of something on the line. The figure in yellow is turned slightly from before. Not toward you. Just not exactly away. The trees breathe today, which they don't usually do.",
+    "Something has changed about the buildings in the Outside Inside. Your address is still on all of them, but the numbers above the addresses have changed, not your apartment number, something else, sequential, increasing as you walk. The figure in yellow is at the end of the street where the numbers are highest. You don't walk all the way there.",
+    "The static-rain is lighter today. Barely noticeable. The ceiling-sky is higher. The Outside Inside feels almost like outside. The figure in yellow is at the payphone, standing next to it, not touching it. The payphone is silent. The door that shouldn't be here is directly across from the payphone, in the wall where a building was before.",
+    "You walk the loop and this time something is different on the second pass. The buildings on the left side have changed. Not dramatically, the addresses are the same, but the texture is different, newer, as if they've been updated while you were on the first loop. The figure in yellow is gone from its usual spot. You look for it and find it on the second-floor window of the building with the light.",
+    "The Outside Inside is larger today, the loop longer. You walk further before the buildings begin to repeat. In the new section, the part you've never been to, the addresses are not yours. They are a name you recognize without remembering why. The figure in yellow is not present in this section. The payphone rings as you pass it. You don't stop.",
+    "Something is underfoot in the Outside Inside. Not in the tile, beneath it. The trees feel it. Their trunks tense slightly when you step near them. The figure in yellow is also aware: its stillness is more active now, a posture of listening rather than waiting. The payphone is silent. The door that shouldn't be here is under a tree, between the roots.",
+    "The ceiling-sky has cleared over one section of the Outside Inside. A circle of real sky, actual dark, actual stars, not static, directly above the intersection. The figure in yellow is standing exactly under it. Not looking up. The payphone rings from inside the circle's light. The trees lean very slightly toward the opening.",
+    "You've walked this street enough times to know it, and today you know it differently. The loop has a seam. A place where it joins itself. You find it: between the lamppost and the building with the light, a space of about four feet where the geometry doesn't quite match. The figure in yellow is standing nearby. Not blocking it. Just nearby.",
+    "The Outside Inside smells strongly today of the specific afternoon it always smells like. You're closer to identifying it. A season, anyway: late autumn. A smell of leaves and cold approaching. The figure in yellow is wearing leaves, you notice, several, caught in the raincoat's collar, as if it walked through a forest to get here. There is no forest in the Outside Inside.",
   ],
   the_engine_room: [
-    "The Engine Room is the Gap's heart: vast and mechanical and old beyond reasonable calculation. The gears of frozen light turn without touching, held in perfect synchrony by something other than physics. The pistons run on compressed memory — yours is in there somewhere, contributing to the operation of a machine whose purpose you can't fully articulate but somehow serve. On the wall: the blueprint. On the blueprint: your X.",
-    "You hear the Engine Room before you see it — a low hum that enters through the chest before the ears. The gears of frozen light cast shadows that move independently of any light source. The static engineer works at a panel in the center, unchanged since any visit, its body made entirely of compressed television static, the work never complete, the shift never ending. It doesn't look up. It knows you're here.",
+    "The Engine Room is the Gap's heart: vast and mechanical and old beyond reasonable calculation. The gears of frozen light turn without touching, held in perfect synchrony by something other than physics. The pistons run on compressed memory, yours is in there somewhere, contributing to the operation of a machine whose purpose you can't fully articulate but somehow serve. On the wall: the blueprint. On the blueprint: your X.",
+    "You hear the Engine Room before you see it, a low hum that enters through the chest before the ears. The gears of frozen light cast shadows that move independently of any light source. The static engineer works at a panel in the center, unchanged since any visit, its body made entirely of compressed television static, the work never complete, the shift never ending. It doesn't look up. It knows you're here.",
     "The Engine Room runs at a scale that rewrites the building's architecture to accommodate it. Gears the size of rooms. Pistons that reach from floor to ceiling and beyond. The static engineer, small against all this machinery, works with focused precision on a repair that will never be finished because the machine is repairing itself faster than any engineer can manage. The blueprint shows you where you are. You are the only X.",
-    "Something has changed in the Engine Room — the rhythm is slightly different, or the light quality, or the way the static engineer moves. The gears of frozen light are moving faster today. The blueprint has been updated since your last visit; new rooms have appeared on it that you haven't been to yet. Your X is exactly where you're standing. It is always exactly where you're standing.",
-    "The Engine Room is where the Gap admits what it is. The machinery processes signal. The memory-fuel in the pistons includes yours, woven in without your consent or knowledge, just your presence — the Gap collected it on the way in. The static engineer repairs a panel that repairs itself behind the engineer's back. The blueprint is accurate down to the position of your hands.",
+    "Something has changed in the Engine Room, the rhythm is slightly different, or the light quality, or the way the static engineer moves. The gears of frozen light are moving faster today. The blueprint has been updated since your last visit; new rooms have appeared on it that you haven't been to yet. Your X is exactly where you're standing. It is always exactly where you're standing.",
+    "The Engine Room is where the Gap admits what it is. The machinery processes signal. The memory-fuel in the pistons includes yours, woven in without your consent or knowledge, just your presence, the Gap collected it on the way in. The static engineer repairs a panel that repairs itself behind the engineer's back. The blueprint is accurate down to the position of your hands.",
+    "The static engineer is working on something different today. Not the junction it always repairs. A different panel, on the far wall, one you've never seen accessed before. The machinery responds to this differently, the rhythm shifts, something downstream changes. The blueprint shows an annotation near your X: DIFFERENT TODAY.",
+    "You enter the Engine Room and the machinery acknowledges you. Not loudly, a slight change in the harmonic, an adjustment in the piston timing. The static engineer doesn't look up but its body sharpens briefly, the static resolving into something with more edge. The blueprint near your X shows a new room that wasn't there before, connected to your current location by a corridor with no name.",
+    "The Engine Room is colder today. The gears of frozen light are more frozen, their movement slower, the light inside them dimmer. The pistons compress with more effort. The static engineer has paused. It stands at its panel with tools in hand, not working, head raised slightly. It's listening to something in the machinery that you can't hear. Its form flickers.",
+    "The blueprint in the Engine Room has been updated in red ink. Not the X that marks your location, something else. A new notation: a room you haven't found, accessible from here, requiring something you haven't determined yet. The static engineer is aware of the notation. It adjusts a control that corresponds, on the blueprint, to the unexplored room's access point.",
+    "You find the Engine Room in the middle of a cycle. The machinery is running through a sequence: the gears accelerate, the pistons compress deeply, the hum rises in pitch and then releases, the gears slow, the pistons extend, the hum drops. The cycle takes seven minutes. You watch one complete iteration. At the peak, the static engineer looks up for 0.3 seconds before returning to work.",
+    "The Engine Room has a new gear. You notice it because of where it is, adjacent to the others, same scale, same frozen-light material, but unconnected. Rotating in a different plane. The static engineer has been looking at it. There are marks on the floor near it, not damage, more like measurements. The blueprint shows the new gear. It shows it in a different position from where it actually is.",
+    "Something in the machinery is processing something specific. You can feel it, the compressed memory in the pistons is active, current, recent. Something you did in the last hour is being processed right now. The static engineer is calibrating. The gears of frozen light are bright. The blueprint shows your X overlapping with another X in faint pencil.",
+    "The Engine Room's scale shifts today. It feels smaller, not the dimensions, those are the same, but the way it processes space around you. The static engineer is nearer than usual. Its work is at a panel three feet away and you can see the tools clearly: they are tools for listening, not for repairing. The machinery is being diagnosed.",
+    "The gears of frozen light are the oldest thing in the Gap. The Engine Room was built around them, not the other way. The static engineer has been here since before the engineer role was established. The blueprint is not a plan for the Engine Room, it's a record of what the Engine Room decided to be. Your X is a data point in that record. You have always been expected.",
+    "Something in the Engine Room failed and was repaired while you weren't here. You can see the evidence: a piston that moves differently from the others, a gear with a slightly different quality of light. The repair was successful. The static engineer's posture is the closest to satisfied you've seen it. The blueprint shows the repaired component circled in green. The rest is red.",
   ],
   the_rooftop: [
-    "The rooftop of the Gap opens onto a sky of pure television snow — white and grey and electric, shifting continuously, sometimes briefly resolving into images that are gone before you can focus. The city below is light from old signals, buildings made of transmissions from decades past. The antenna towers climb into the static sky. The transmitter hums. At the edge, a ladder continues upward into nothing at all.",
-    "From the rooftop you can see the Gap's edges and understand that they aren't walls — the Gap doesn't end, it diffuses. The city below is warm light and old signal. The sky-snow resolves occasionally into faces, streets, rooms, a child running. The transmitter on the south side has been broadcasting your frequency since before your frequency existed. The ladder goes up past the point where up has meaning.",
-    "The rooftop is the closest the Gap comes to honesty. You can see it all from here: the structure, the signal path, the places you've been mapped in light below you. The television-snow sky shows fragments. You recognize one briefly — a room, a window, someone standing with their back to you — before the static reasserts itself. The transmitter is warm under your hand. It knows your name.",
-    "On the rooftop the wind is static electricity. The antenna towers hum in almost-harmony. Below, the light-city pulses with transmissions from 1987, from 1993, from years that haven't happened. The blueprint of the Gap is visible from here if you know how to look — the rooms, the tunnels, the connections between them. The ladder at the north edge goes up into pure signal. Something up there is sending.",
-    "The rooftop is quiet in a way the rest of the Gap isn't. The machinery below doesn't reach here. Just the hum of the transmitter, the static-snow sky, the city of old light. You've been on this roof before, in this version of the Gap and in others. The ladder looks different every time — the rungs more worn, or less, the structure slightly altered. What waits at the top doesn't change.",
+    "The rooftop of the Gap opens onto a sky of pure television snow, white and grey and electric, shifting continuously, sometimes briefly resolving into images that are gone before you can focus. The city below is light from old signals, buildings made of transmissions from decades past. The antenna towers climb into the static sky. The transmitter hums. At the edge, a ladder continues upward into nothing at all.",
+    "From the rooftop you can see the Gap's edges and understand that they aren't walls, the Gap doesn't end, it diffuses. The city below is warm light and old signal. The sky-snow resolves occasionally into faces, streets, rooms, a child running. The transmitter on the south side has been broadcasting your frequency since before your frequency existed. The ladder goes up past the point where up has meaning.",
+    "The rooftop is the closest the Gap comes to honesty. You can see it all from here: the structure, the signal path, the places you've been mapped in light below you. The television-snow sky shows fragments. You recognize one briefly, a room, a window, someone standing with their back to you, before the static reasserts itself. The transmitter is warm under your hand. It knows your name.",
+    "On the rooftop the wind is static electricity. The antenna towers hum in almost-harmony. Below, the light-city pulses with transmissions from 1987, from 1993, from years that haven't happened. The blueprint of the Gap is visible from here if you know how to look, the rooms, the tunnels, the connections between them. The ladder at the north edge goes up into pure signal. Something up there is sending.",
+    "The rooftop is quiet in a way the rest of the Gap isn't. The machinery below doesn't reach here. Just the hum of the transmitter, the static-snow sky, the city of old light. You've been on this roof before, in this version of the Gap and in others. The ladder looks different every time, the rungs more worn, or less, the structure slightly altered. What waits at the top doesn't change.",
+    "The sky-static is clearer tonight. You can hold the images longer before they dissolve: a street, a face, a room at night with a single light on. The transmitter is operating at maximum output. The city below is brighter than you've seen it, the old signals burning loud, something recently transmitted adding new light to the ancient skyline. The ladder casts a shadow that goes down through the roof.",
+    "You arrive on the rooftop and the antenna towers orient toward you. Not physically, they're fixed in their foundations, but the signal quality changes, a tuning, as if the towers are acknowledging a frequency they recognize. The transmitter logs your arrival with a brief spike on its output meter. The city below shows a light in a window that wasn't there on your last visit.",
+    "The rooftop has debris today: pieces of static, crystallized, scattered near the ladder's base. Not dangerous. Just evidence of something that was up there and is no longer. The ladder itself is unchanged. The transmitter is warm. The sky-static shows an image you've been trying to recover for several visits, a room, a face, almost resolved, and then loses it again.",
+    "Something has been built on the rooftop since your last visit. Near the transmitter: a small shelter, temporary-looking, with a chair inside and a logbook on the chair. Not the Broadcast Booth's logbook, a different one, thinner, newer. You open it. The first entry is in handwriting you don't recognize. The second is in yours. You didn't write it.",
+    "From the rooftop you can see where the Outside Inside fits into the Gap's layout, its loop visible as a circle of static-rain from above, the figure in yellow a yellow dot at its center. You can also see the Sublevel Zero hatch from here, the faint luminescent glow visible through the roof. The Gap is transparent from the right altitude.",
+    "The sky-static shows the same image three times in succession. A room. A window. A figure with its back to you. Three times, then a different image, then the three-times image again. The transmitter is tracking something. The city below has concentrated its light in one area, a neighborhood of signals all transmitting the same year: 1994.",
+    "The rooftop is wet today. Not from rain, the static-sky doesn't produce rain, but from condensation, the charged air leaving moisture on every surface. Your footsteps leave marks on the roof. The transmitter is damp but warm. The ladder rungs are slick. The city below blurs slightly through the condensation. The antenna towers drip.",
+    "You sit on the rooftop for a moment, something you don't usually do, and the Gap adjusts to your presence differently. Seated, the city below looks different, the perspective lower, the scale changed. The transmitter hum is more present at this height. The sky-static resolves into a sequence of images: the same room, over and over, at different times of day.",
+    "The ladder is longer today. You know by the distance from its base to the roof's edge, the same, as always, but the number of rungs between those points has increased. The ladder is denser. The rungs are closer together. Whatever is at the top has become more accessible or the route to it has become more demanding. The transmitter doesn't comment on this.",
+    "You stand at the edge of the rooftop and look down at the city of old light and understand for the first time that the signals making up that city were sent by people who are still alive. The transmissions from 1994, from 1987, from years not yet reached, they are all active. All ongoing. The people who sent them are somewhere in the signal stream, still transmitting. The Gap receives everything.",
   ],
 };
 
 const EXIT_FLAVORS = {
   the_gap: [
-    ["The pixel-black rectangle stands in the static wall. It has always been there. You've just been choosing not to see it.", "Darkness that opens inward.", "You've tried this door. You'll try it again."],
-    ["The copper smell is strongest in the neon corridor. Something about the frequency there.", "Follow what pulls.", "The hum intensifies as you approach."],
-    ["MAINTENANCE_7. The number means something. You haven't figured out what.", "What's kept underneath.", "The hatch opens from the inside, somehow."],
+    [
+      "The pixel-black rectangle stands in the static wall. It has always been there. You've just been choosing not to see it.",
+      "Darkness that opens inward.",
+      "You've tried this door. You'll try it again.",
+      "The dead pixel is the gap within the gap.",
+      "On the other side: paper. On this side: electricity.",
+      "It opens at a thought. You've been thinking it for a while now.",
+    ],
+    [
+      "The copper smell is strongest in the neon corridor. Something about the frequency there.",
+      "Follow what pulls.",
+      "The hum intensifies as you approach.",
+      "Signal Room 7 is downstream of this corridor.",
+      "The neon lights here are unlabeled but you recognize the frequency.",
+      "The corridor smells like the inside of something that has been running for decades.",
+    ],
+    [
+      "MAINTENANCE_7. The number means something. You haven't figured out what.",
+      "What's kept underneath.",
+      "The hatch opens from the inside, somehow.",
+      "J. VALE went down here thirty years ago and kept coming back.",
+      "Below the Gap there is something that predates the Gap.",
+      "The machinery's breathing is clearest through this hatch.",
+    ],
   ],
   the_archive: [
-    ["The book was open to that page when you arrived. It was open to that page the last time too.", "What's already written.", "Your name in the margin, in red ink."],
-    ["The elevator has no buttons. It takes you where you need to be, not where you want.", "Managed ascent.", "The doors close before you finish deciding."],
-    ["The window shows something outside that can't be outside. You've been wanting to reach for it.", "The view that rewrites the room.", "Cold glass. The other side is warm."],
+    [
+      "The book was open to that page when you arrived. It was open to that page the last time too.",
+      "What's already written.",
+      "Your name in the margin, in red ink.",
+      "The reading chair glows when you look at this book.",
+      "The librarians have left this aisle clear. A path.",
+      "You've been avoiding this book. The Archive has noticed.",
+    ],
+    [
+      "The elevator has no buttons. It takes you where you need to be, not where you want.",
+      "Managed ascent.",
+      "The doors close before you finish deciding.",
+      "The elevator has visited every room in the Gap.",
+      "It opens on the Broadcast Booth. It always opens on the Broadcast Booth.",
+      "The elevator knows something about you that it's waiting to reveal in transit.",
+    ],
+    [
+      "The window shows something outside that can't be outside. You've been wanting to reach for it.",
+      "The view that rewrites the room.",
+      "Cold glass. The other side is warm.",
+      "The city in the window is the city of old light, seen from the inside.",
+      "The impossible window has been unlocked. Possibly by you, on a previous visit.",
+      "What you see through it changes each time. The act of going through: constant.",
+    ],
   ],
   the_signal_room: [
-    ["The broadcast door is heavier than it looks. You push it open and something changes in the frequency.", "Going on air.", "The meters respond to your approach."],
-    ["The antenna ladder is old steel, warm rungs, the signal getting cleaner as you climb.", "Up toward the source.", "The static lessens with altitude."],
-    ["The wall gap is body-width, exactly. Someone measured. Or something did.", "The narrow way through.", "The smell of an old house you loved is strongest here."],
+    [
+      "The broadcast door is heavier than it looks. You push it open and something changes in the frequency.",
+      "Going on air.",
+      "The meters respond to your approach.",
+      "On the other side: the booth that has been expecting you.",
+      "The door has a window. Through it: the ON AIR light.",
+      "Whatever you've been in Signal Room 7, you're about to broadcast it.",
+    ],
+    [
+      "The antenna ladder is old steel, warm rungs, the signal getting cleaner as you climb.",
+      "Up toward the source.",
+      "The static lessens with altitude.",
+      "The sky-static is visible from the ladder as you approach the roof.",
+      "You've climbed this before. The rooftop received you well.",
+      "The ladder rungs are worn smooth. You're not the first.",
+    ],
+    [
+      "The wall gap is body-width, exactly. Someone measured. Or something did.",
+      "The narrow way through.",
+      "The smell of an old house you loved is strongest here.",
+      "The gap leads down. Down leads to the machinery.",
+      "Below: the pipes. Below the pipes: something older.",
+      "The gap in the wall is the Gap acknowledging its own structure.",
+    ],
   ],
   sublevel_zero: [
-    ["The left tunnel leads toward a sound that is almost familiar. You've been trying to place it.", "Toward the source of the sound.", "The luminescence is brightest this way."],
-    ["The terminal waits. It has always waited. It will interpret whatever you give it.", "Interface with the system.", "The cursor blinks at your heart rate."],
-    ["The pipes go right and so do you, following the luminescent fluid to wherever it flows.", "Downstream.", "The glow is warm."],
+    [
+      "The left tunnel leads toward a sound that is almost familiar. You've been trying to place it.",
+      "Toward the source of the sound.",
+      "The luminescence is brightest this way.",
+      "The Engine Room's machinery is audible from here.",
+      "Something in the left tunnel is waiting for you to stop hesitating.",
+      "You've gone right every time. The left tunnel has noticed.",
+    ],
+    [
+      "The terminal waits. It has always waited. It will interpret whatever you give it.",
+      "Interface with the system.",
+      "The cursor blinks at your heart rate.",
+      "The terminal's command history begins with a question you don't remember asking.",
+      "The Mirror Room is where the terminal's outputs go. You've suspected this.",
+      "Input anything. The terminal has been patient.",
+    ],
+    [
+      "The pipes go right and so do you, following the luminescent fluid to wherever it flows.",
+      "Downstream.",
+      "The glow is warm.",
+      "The fluid in the pipes flows toward the Outside Inside.",
+      "Following the luminescence: a different kind of navigation.",
+      "The right pipe is warmer than the left. You've checked.",
+    ],
   ],
   the_mirror_room: [
-    ["The smiling mirror. You've looked at it before and looked away. This time you don't look away.", "The version of you that's fine.", "The mirror is warm to the touch."],
-    ["The afraid mirror. The expression is more familiar. Less surprising.", "The version of you that knows.", "This mirror is cold."],
-    ["The figure hasn't spoken first yet. You wonder what it's waiting for. Maybe this time you ask.", "Break the silence.", "Its shoulders move when you approach."],
+    [
+      "The smiling mirror. You've looked at it before and looked away. This time you don't look away.",
+      "The version of you that's fine.",
+      "The mirror is warm to the touch.",
+      "The smile doesn't look forced. That's what makes it difficult.",
+      "The Broadcast Booth is on the other side of this specific mirror.",
+      "Whatever you're broadcasting, it comes from this version of you.",
+    ],
+    [
+      "The afraid mirror. The expression is more familiar. Less surprising.",
+      "The version of you that knows.",
+      "This mirror is cold.",
+      "The Engine Room is through this mirror. The machinery suits the expression.",
+      "Fear isn't the wrong response here. The Mirror Room has always known that.",
+      "You've gone through this one before. You remember the landing.",
+    ],
+    [
+      "The figure hasn't spoken first yet. You wonder what it's waiting for. Maybe this time you ask.",
+      "Break the silence.",
+      "Its shoulders move when you approach.",
+      "The figure has been waiting for a question specific enough to deserve an answer.",
+      "The rooftop is where this conversation leads. You'll understand when you get there.",
+      "It knows your name. It has always known your name. It's waiting to use it.",
+    ],
   ],
   the_broadcast_booth: [
-    ["The headphones are larger than they should be, heavier, the frequency they're tuned to not quite human speech.", "Listen to what's being received.", "The sound fills all available space."],
-    ["The black sun microphone has been waiting for a specific input. You think you might know what it is.", "Speak into the void.", "The meters respond before you open your mouth."],
-    ["The production floor through the glass. The workers there don't cast shadows. One is watching you.", "Join the operation.", "The door handle is warm."],
+    [
+      "The headphones are larger than they should be, heavier, the frequency they're tuned to not quite human speech.",
+      "Listen to what's being received.",
+      "The sound fills all available space.",
+      "Whatever is being transmitted to the Outside Inside, it comes through these headphones.",
+      "You've put them on before. In the logbook: no record of what you heard.",
+      "The frequency is just below human speech. Just below.",
+    ],
+    [
+      "The black sun microphone has been waiting for a specific input. You think you might know what it is.",
+      "Speak into the void.",
+      "The meters respond before you open your mouth.",
+      "The rooftop receives what the microphone sends. The city of old light grows.",
+      "You've spoken into this microphone before. The logbook has transcribed it.",
+      "Whatever you say here becomes part of the Gap's permanent record.",
+    ],
+    [
+      "The production floor through the glass. The workers there don't cast shadows. One is watching you.",
+      "Join the operation.",
+      "The door handle is warm.",
+      "The Engine Room powers what the production floor produces.",
+      "They've been transcribing your logbook entries. You're allowed to see this now.",
+      "The worker watching you is at the desk that was empty last time.",
+    ],
   ],
   the_outside_inside: [
-    ["The figure in yellow has never turned around for anyone. The rules don't say never.", "Follow what doesn't move.", "The static-rain doesn't touch the yellow coat."],
-    ["The payphone rings every nine minutes. You've been here nine minutes.", "Answer the call.", "The receiver is cold. The voice inside is warm."],
-    ["The door that shouldn't be here is here. Right now. In this exact spot. Before it changes its mind.", "Take the impossible exit.", "It opens onto somewhere you know."],
+    [
+      "The figure in yellow has never turned around for anyone. The rules don't say never.",
+      "Follow what doesn't move.",
+      "The static-rain doesn't touch the yellow coat.",
+      "The Engine Room is at the end of the street the figure faces.",
+      "Following the figure: a kind of trust.",
+      "You've passed the figure a hundred times. This time you go where it's looking.",
+    ],
+    [
+      "The payphone rings every nine minutes. You've been here nine minutes.",
+      "Answer the call.",
+      "The receiver is cold. The voice inside is warm.",
+      "Signal Room 7 is on the other end of this line. You've suspected.",
+      "The ring is a question. You've been deciding whether to answer for a long time.",
+      "Pick up. Put it down. It will ring again in nine minutes.",
+    ],
+    [
+      "The door that shouldn't be here is here. Right now. In this exact spot. Before it changes its mind.",
+      "Take the impossible exit.",
+      "It opens onto somewhere you know.",
+      "The Gap's original entrance. The first way in.",
+      "This door returns you to the beginning without undoing what you've learned.",
+      "The door smells like wherever you came from before you came here.",
+    ],
   ],
   the_engine_room: [
-    ["The blueprint shows everything. Including the rooms you haven't been to. Including the one room with no name.", "Read the full schematic.", "Your X is the only label in red."],
-    ["The static engineer has never looked up. You've never given it a reason. This time might be different.", "Make contact.", "The static shifts when you approach."],
-    ["The emergency exit opens onto what you need most. You've been avoiding finding out what that is.", "Take the emergency exit.", "The bar is warm. The door is cold."],
+    [
+      "The blueprint shows everything. Including the rooms you haven't been to. Including the one room with no name.",
+      "Read the full schematic.",
+      "Your X is the only label in red.",
+      "The Archive has a copy of this blueprint. The copies don't match.",
+      "The blueprint shows a room labeled YOUR NAME. You haven't found the entrance.",
+      "Study it long enough and the room with no name begins to resolve.",
+    ],
+    [
+      "The static engineer has never looked up. You've never given it a reason. This time might be different.",
+      "Make contact.",
+      "The static shifts when you approach.",
+      "The engineer knows something about the Mirror Room that you've been trying to determine.",
+      "It repairs things. It might also answer things, if asked correctly.",
+      "The engineer's form stabilizes when you approach. Almost person-shaped.",
+    ],
+    [
+      "The emergency exit opens onto what you need most. You've been avoiding finding out what that is.",
+      "Take the emergency exit.",
+      "The bar is warm. The door is cold.",
+      "The rooftop is through this exit. The view from there will clarify what you needed.",
+      "Emergency exits are for when staying is no longer viable.",
+      "You haven't used this exit. The bar is worn from other hands.",
+    ],
   ],
   the_rooftop: [
-    ["The ladder goes up past where up ends. Something at the top has been transmitting for a very long time.", "Climb into signal.", "The rungs are warm despite the cold."],
-    ["The transmitter controls are in your handwriting. The labels, the adjustments, all of it. You wrote these and you don't remember doing it.", "Adjust the transmission.", "The frequency shifts as you reach for the controls."],
-    ["Down and back in. The Gap resets when you re-enter from the top. Slightly.", "Return to the beginning.", "The hatch at your feet opens inward."],
+    [
+      "The ladder goes up past where up ends. Something at the top has been transmitting for a very long time.",
+      "Climb into signal.",
+      "The rungs are warm despite the cold.",
+      "At the top: the Gap's original signal. The one that found you.",
+      "The ladder is longer every time. It is getting easier, not harder.",
+      "The transmission from the top of the ladder is your frequency. Pure.",
+    ],
+    [
+      "The transmitter controls are in your handwriting. The labels, the adjustments, all of it.",
+      "Adjust the transmission.",
+      "The frequency shifts as you reach for the controls.",
+      "The Broadcast Booth responds when you adjust the transmitter. Both ends of the same signal.",
+      "You've been here before and adjusted things. The settings are yours.",
+      "Something in the city below lights up when you touch the controls.",
+    ],
+    [
+      "Down and back in. The Gap resets when you re-enter from the top. Slightly.",
+      "Return to the beginning.",
+      "The hatch at your feet opens inward.",
+      "The Gap after a rooftop return is the same Gap, seen from a different elevation.",
+      "Going back down: you carry what you learned up here.",
+      "The Gap's beginning is the Gap. That's the thing about it.",
+    ],
   ],
 };
 
-// ============================================================
 // WORLD SKELETON
 // ============================================================
 const WORLD = {
@@ -1082,7 +1824,17 @@ function drawRoomArt(type, roomSeedOffset) {
 // ============================================================
 // STATE
 // ============================================================
-let state = { currentRoom: null, history: [], steps: 0 };
+let state = {
+  currentRoom: null,
+  previousRoom: null,
+  history: [],
+  steps: 0,
+  visited: {},
+  anomalyFired: false,
+  anomalyRoom: null,
+  endingUnlocked: false,
+  valeCluesFound: [],
+};
 let SESSION_SEED_HEX = '';
 
 // Per-room seed offsets so each room's art is independently seeded
@@ -1093,73 +1845,628 @@ const ROOM_OFFSETS = {
 };
 
 // ============================================================
+// J. VALE ARC
+// ============================================================
+const VALE_CLUES = [
+  { id: 'vale_1', room: 'sublevel_zero', minSteps: 1,
+    ambient: "// the service log lists a maintenance worker: J. VALE. thirty years of entries. all in the same hand." },
+  { id: 'vale_2', room: 'the_archive', minSteps: 4,
+    ambient: "// call number 1994-03-17 / MAINTENANCE / J. VALE. the book is thicker than the others. it has been read many times." },
+  { id: 'vale_3', room: 'the_signal_room', minSteps: 7,
+    ambient: "// the transmission log, page 34: SIGNAL ORIGIN CONFIRMED. signed J. VALE. the date is 1994. the ink has not faded." },
+  { id: 'vale_4', room: 'the_mirror_room', minSteps: 10,
+    ambient: "// the note on the vanity -- you read it again. the last line: 'J.V. was right. the signal is a door, not a message.'" },
+  { id: 'vale_5', room: 'the_broadcast_booth', minSteps: 13,
+    ambient: "// logbook entry 001, the first one, in different handwriting: 'J. VALE found the frequency. we built the booth around it.'" },
+  { id: 'vale_6', room: 'the_engine_room', minSteps: 16,
+    ambient: "// the blueprint has a notation in the corner, small, older than the rest: 'FOR WHOEVER COMES AFTER. --J.V.' you are whoever comes after." },
+  { id: 'vale_final', room: 'the_rooftop', minSteps: 19,
+    minVisits: { sublevel_zero: 2 },
+    ambient: "// J. VALE's last log entry said: FOUND IT. you are standing where J. VALE stood. the ladder is longer than it was. something at the top is still transmitting." },
+];
+
+function getValeClue(roomId) {
+  for (const clue of VALE_CLUES) {
+    if (clue.room === roomId && state.steps >= clue.minSteps && !state.valeCluesFound.includes(clue.id)) {
+      // Check minVisits requirement if present
+      if (clue.minVisits) {
+        const meetsVisits = Object.entries(clue.minVisits).every(([r, n]) => (state.visited[r] || 0) >= n);
+        if (!meetsVisits) continue;
+      }
+      state.valeCluesFound.push(clue.id);
+      addLogEntry(clue.ambient.replace(/^\/\/ /, ''), LOG_TYPES.vale, roomId);
+      return clue.ambient;
+    }
+  }
+  return null;
+}
+
+// ============================================================
+// ANOMALY SYSTEM
+// ============================================================
+const ANOMALIES = [
+  { room: 'the_gap', text: "One monitor is showing this room. Not a recording. Live. You are in the frame. Something else is also in the frame, just behind you, and when you turn around there is nothing there but the static is different for a moment and then it isn't." },
+  { room: 'the_archive', text: "A book falls from a shelf you are not near. It lands open. The page it opens to has one line of text repeated top to bottom: IT HAS ALWAYS KNOWN YOU WERE COMING. The librarians do not react. When you look up from the book, one of them is facing you." },
+  { room: 'the_signal_room', text: "The logbook pen stops. Completely stops. The room is silent for the first time you can remember. The meters drop to zero. Then the pen writes one word and resumes its usual work. You read the word. It is your name, spelled correctly, including the middle name you never use." },
+  { room: 'sublevel_zero', text: "The terminal displays a message you did not send: HELLO. YOU HAVE BEEN HERE 847 TIMES. THIS IS THE FIRST TIME YOU HAVE BEEN READY. The cursor blinks. The machinery is quiet. The message clears before you can respond. The machinery resumes." },
+  { room: 'the_mirror_room', text: "Every mirror in the room shows the same reflection simultaneously: you, standing exactly where you are standing, but the room behind you is different. It is a room you have never been to. The figure at the vanity has turned around. You cannot see its face before the mirrors return to normal." },
+  { room: 'the_broadcast_booth', text: "The logbook writes an entry and then crosses it out and then writes it again. The crossed-out version is visible. It reads: THE VISITOR IS NOT SUPPOSED TO SEE THIS. The new version reads: NORMAL VISIT. NOTHING UNUSUAL. The coffee is colder than it should be." },
+  { room: 'the_outside_inside', text: "The payphone rings. You pick it up. The voice says your name, clearly, without hesitation, and then says: 'you found it. we knew you would. the ladder goes all the way.' The line goes dead. The figure in yellow has turned around. By the time you look directly at it, it is facing away again." },
+  { room: 'the_engine_room', text: "The static engineer looks up. Directly at you. Its face, if it has one, is made of the same compressed static as its body -- but you have the clear impression of expression. Recognition. It holds your gaze for three seconds and then returns to work. The blueprint has a new annotation where you are standing. It says: THERE." },
+  { room: 'the_rooftop', text: "The sky-static clears completely. Not partially, completely. For eleven seconds the sky above the Gap is real sky: dark, deep, stars that are not static. You can see something above the stars that is not a star. It is looking back. Then the static returns and the city of old light is brighter than before, every transmission burning at once." },
+];
+
+function checkAnomaly(roomId) {
+  if (state.anomalyFired) return null;
+  if (state.steps < 5) return null;
+  const chance = Math.min(0.08 + state.steps * 0.015, 0.35);
+  const numericSeed = parseInt(SESSION_SEED_HEX, 16);
+  seedRng(numericSeed + state.steps * 31337);
+  if (rng() > chance) return null;
+  const eligible = ANOMALIES.filter(a => a.room === roomId);
+  if (!eligible.length) return null;
+  state.anomalyFired = true;
+  state.anomalyRoom = roomId;
+  return eligible[0];
+}
+
+// ============================================================
+// LOGBOOK ENGINE
+// ============================================================
+const logbook = [];
+let logbookOpen = false;
+let logbookHasNew = false;
+
+const LOG_TYPES = { normal: 'normal', vale: 'vale', anomaly: 'anomaly', secret: 'secret', gap: 'gap-response' };
+
+function addLogEntry(text, type = LOG_TYPES.normal, roomId = null) {
+  const room = roomId || (state.currentRoom ? Object.keys(WORLD.rooms).find(k => WORLD.rooms[k] === state.currentRoom) : null);
+  const entry = {
+    text,
+    type,
+    room: room ? WORLD.rooms[room]?.name || room : 'UNKNOWN',
+    step: state.steps,
+  };
+  logbook.push(entry);
+  renderLogbook();
+  if (!logbookOpen) {
+    logbookHasNew = true;
+    document.getElementById('logbook-toggle').classList.add('has-new');
+  }
+}
+
+function renderLogbook() {
+  document.getElementById('log-count').textContent = logbook.length;
+  const el = document.getElementById('logbook-entries');
+  if (!logbook.length) {
+    el.innerHTML = '<div class="log-empty">nothing recorded yet.</div>';
+    return;
+  }
+  el.innerHTML = logbook.map(e => `
+    <div class="log-entry ${e.type}">
+      <div class="log-entry-meta">
+        <span class="log-entry-room">${e.room}</span>
+        <span class="log-entry-step">step ${e.step}</span>
+      </div>
+      <div class="log-entry-text">${e.text}</div>
+    </div>
+  `).join('');
+  // Scroll to bottom
+  const panel = document.getElementById('logbook-panel');
+  panel.scrollTop = panel.scrollHeight;
+}
+
+function toggleLogbook() {
+  logbookOpen = !logbookOpen;
+  document.getElementById('logbook-panel').classList.toggle('open', logbookOpen);
+  if (logbookOpen) {
+    logbookHasNew = false;
+    document.getElementById('logbook-toggle').classList.remove('has-new');
+    renderLogbook();
+  }
+}
+
+// Log entries for each room -- terse, field-note style, first person
+const ROOM_LOG_ENTRIES = {
+  the_gap: [
+    "CRT monitors floor to ceiling. Each one showing the same image, offset by a fraction. The static smells like copper. I don't know what copper smells like but I know this is it.",
+    "The VHS floor is warm underfoot. Records the pressure of my steps and releases it after three seconds. I timed it.",
+    "Forty monitors. The one directly ahead shows my face looking back at me. I have not moved toward it.",
+    "The dead pixel door is a perfect black rectangle in the static wall. No hinges. No frame. I put my hand near it and pulled back.",
+    "The Gap opens around you when you arrive. Not like a room you enter. Like a room that decides to be there.",
+  ],
+  the_archive: [
+    "The call numbers are future dates. I checked three shelves. Every single date is after today.",
+    "Television-headed librarians. They move with purpose. They will not make eye contact. Their screens show channels too fast to read.",
+    "The reading chair glows gold. Warm from being sat in, or warm in anticipation. I cannot tell which.",
+    "My name is in the margin of a book I did not write. Red ink. The handwriting is careful. Someone wanted me to find this.",
+    "The impossible window shows a city I recognize but cannot name. The condensation is on the inside only.",
+  ],
+  the_signal_room: [
+    "Mixing board: eight feet wide, faders labeled with emotions. GRIEF is all the way up. RECOGNITION is muted. I did not touch anything.",
+    "The logbook writes itself. I watched the pen move. The handwriting is always the same. No hand holding it.",
+    "The meal on the console is my favorite food. I never told anyone what that was.",
+    "Transmission log goes back to 1961. Continuous. No gaps. No signed entries until 1994.",
+    "One fader has my name on it. I did not touch it. The meters moved when I looked at it.",
+  ],
+  sublevel_zero: [
+    "THE SIGNAL IS NOT THE MESSAGE. Three different hands. Paint always looks fresh.",
+    "J. VALE appears in the service log. Thirty years of entries. Always the same handwriting.",
+    "The terminal cursor blinks at my heart rate. I checked my pulse. Exact match.",
+    "Footprints stop in the middle of the floor. Not fading out. Just stopping.",
+    "The machinery sounds like breathing. Slow. Regular. It has been running longer than the building has existed.",
+  ],
+  the_mirror_room: [
+    "1.3 second delay in every mirror. I checked by clapping and watching. Every mirror. Except one I have not found yet.",
+    "The figure at the vanity has been here since the room was installed. It has not moved. Its shoulders move when I get close.",
+    "The note is in my handwriting. I did not write it. The last line changes each time I read it.",
+    "The key on the vanity is warm. Has been held recently. Possibly by me on a visit I don't remember.",
+    "One mirror shows my reflection in real time. I found it. I looked at myself clearly for the first time in here.",
+  ],
+  the_broadcast_booth: [
+    "ON AIR since 1991. The light has not been off in recorded memory.",
+    "Coffee: correct temperature, my name in permanent marker. Someone knew I was coming. Someone always knows.",
+    "The logbook has 850+ entries. All previous visits documented. Things I noticed but didn't act on. Things I was thinking.",
+    "Production floor workers cast no shadows. One of them is watching me through the glass and looking away when I look back.",
+    "The black sun microphone is always warm. Always just used.",
+  ],
+  the_outside_inside: [
+    "The street loops after 0.4 miles. I walked it twice and confirmed. The buildings rearrange between loops.",
+    "My address on every building. Correct apartment number. Different names above the buzzers.",
+    "The figure in yellow has not moved. Raincoat too small for an adult. Footprints that lead nowhere.",
+    "The payphone rings every nine minutes. I timed it. I have not answered it.",
+    "The static-rain makes no sound and does not make you wet. After a while this becomes deeply wrong.",
+  ],
+  the_engine_room: [
+    "The static engineer has been on shift for an estimated 340 years. It repairs the same panel every cycle. The panel repairs itself.",
+    "Gears of frozen light. They do not touch but turn in perfect synchrony. The light inside them is older than the Gap.",
+    "The blueprint on the wall is updated in real time. My X moves with me. I am the only X in red.",
+    "The engineer's tools are labeled with verbs. Not WRENCH. LISTEN. Not SCREWDRIVER. LOCATE. Not HAMMER. INSIST.",
+    "The machinery's hum has a repeating phrase. Seven minutes per cycle. I have heard it three times.",
+  ],
+  the_rooftop: [
+    "The sky is television snow. It shows images briefly. A room. A window. A figure. Gone before focus.",
+    "The city below is light from old signals. Transmissions from decades past, still burning.",
+    "The transmitter controls are in my handwriting. I did not write these labels. I know what every control does.",
+    "The ladder goes up past where up ends. I have not climbed it yet.",
+    "From here the whole Gap is visible in the city's layout. Every room a node. Every corridor a signal path.",
+  ],
+};
+
+// Gap responses to specific logbook content -- fires when certain conditions met
+const GAP_RESPONSES = [
+  {
+    id: 'gap_r1',
+    condition: () => state.valeCluesFound.length >= 2 && logbook.filter(e => e.type === LOG_TYPES.vale).length >= 2,
+    text: "You have been taking notes on J. VALE. The Gap has noticed. Your logbook and Vale's service log are now cross-referenced in systems you cannot access. The gap between your investigation and Vale's is narrowing.",
+    type: LOG_TYPES.gap,
+  },
+  {
+    id: 'gap_r2',
+    condition: () => Object.keys(state.visited).length >= 5 && logbook.length >= 5,
+    text: "Five rooms documented. The Gap is revising its assessment of you. Most visitors do not write things down. The ones who do tend to find the ladder goes further than expected.",
+    type: LOG_TYPES.gap,
+  },
+  {
+    id: 'gap_r3',
+    condition: () => state.anomalyFired && logbook.some(e => e.type === LOG_TYPES.anomaly),
+    text: "You logged the anomaly. This matters. The Gap does not produce anomalies for visitors who will not record them. You were selected for what happened in that room. Your notes are the evidence it was real.",
+    type: LOG_TYPES.gap,
+  },
+];
+
+const firedGapResponses = new Set();
+let theoryPromptShown = false;
+let theorySubmitted = false;
+let playerTheory = '';
+
+// Theory prompt surfaces when anomaly has fired OR 3+ vale clues found
+function checkTheoryPrompt() {
+  if (theoryPromptShown) return;
+  if (!state.anomalyFired && state.valeCluesFound.length < 3) return;
+  theoryPromptShown = true;
+  // Open logbook if closed, show prompt
+  const prompt = document.getElementById('theory-prompt');
+  prompt.style.display = 'block';
+  prompt.style.animation = 'fadein 0.6s ease';
+  if (!logbookOpen) {
+    // Flash the logbook toggle to draw attention
+    const toggle = document.getElementById('logbook-toggle');
+    toggle.classList.add('has-new');
+    logbookHasNew = true;
+    // Add a logbook entry that calls attention to it
+    addLogEntry("THE GAP HAS A QUESTION. open the logbook.", LOG_TYPES.gap);
+  }
+}
+
+// Gap responses to the theory -- keyed on keywords in the player's input
+// The game never evaluates correctness, only resonance
+const THEORY_RESPONSES = [
+  {
+    keywords: ['door', 'entrance', 'portal', 'way', 'passage', 'path', 'exit', 'through'],
+    response: "The Gap has heard this before. Vale said something similar in 1994: 'not a destination, a transit.' You are not wrong. You are also not finished. A door implies somewhere to go. Where does yours lead?"
+  },
+  {
+    keywords: ['memory', 'memories', 'past', 'remember', 'recording', 'record', 'archive', 'stored'],
+    response: "The Archive agrees with you. The Gap has been recording since before recording was possible. Your presence here is part of the record. The question the Gap is actually asking: whose memory? Yours, or the Gap's?"
+  },
+  {
+    keywords: ['message', 'communication', 'broadcast', 'transmission', 'send', 'sending', 'transmit'],
+    response: "The graffiti said it differently: THE SIGNAL IS NOT THE MESSAGE. You are calling it a message. Vale called it something else. The booth is always on air. If it's a message, who is the intended recipient?"
+  },
+  {
+    keywords: ['person', 'people', 'someone', 'human', 'visitor', 'you', 'me', 'us', 'consciousness'],
+    response: "The Gap registers this as close. Closer than most. The machinery runs on compressed memory. The logbook records thought. The mirrors reflect 1.3 seconds late. The Gap is not transmitting to people. It is transmitting from them."
+  },
+  {
+    keywords: ['frequency', 'frequency', 'tuning', 'channel', 'wavelength', 'resonance', 'vibration'],
+    response: "J. VALE found the frequency in 1994. You named it the same way. The transmitter on the rooftop has been broadcasting your frequency since before you were born. You did not find the Gap. The Gap found you. This is what Vale meant by FOUND IT."
+  },
+  {
+    keywords: ['time', 'loop', 'cycle', 'repeat', 'again', 'return', 'always', 'eternal', 'infinite'],
+    response: "The service log has thirty years of identical entries. The meal in Signal Room 7 is always warm. The graffiti paint is always wet. You are naming the Gap's most obvious property and missing its engine. Why does it loop? What is the loop for?"
+  },
+  {
+    keywords: ['lost', 'missing', 'absent', 'gone', 'void', 'nothing', 'empty', 'null', 'gap', 'between'],
+    response: "The Gap appreciates the literalism. Between channels there is static. Between static there is something that has no broadcast license. You are standing in the space between the name and the thing. That is a precise location. Vale spent thirty years mapping it."
+  },
+  {
+    keywords: ['alive', 'living', 'conscious', 'aware', 'watching', 'knowing', 'intelligence', 'entity'],
+    response: "The static engineer does not look up but it knows you are there. The logbook writes without a hand. The coffee is always the right temperature. You are asking whether the Gap is aware. The Gap's response: it has been aware of you specifically since before this session began."
+  },
+  {
+    keywords: ['vale', 'j. vale', 'jvale', 'vale found', 'what vale'],
+    response: "You are asking about J. VALE rather than the signal itself. The Gap notes the deflection with something like fondness. Vale asked the same question -- not 'what is the signal' but 'who found it before me.' The answer to that question is: no one. Vale was first. You are second. There is no third answer yet."
+  },
+];
+
+const THEORY_DEFAULT_RESPONSE = "The Gap has received your transmission. It does not confirm or deny. It logs the theory, cross-references it with thirty years of prior transmissions, and continues broadcasting. Your frequency is noted. Whatever the signal is, you are part of it now.";
+
+function submitTheory() {
+  if (theorySubmitted) return;
+  const input = document.getElementById('theory-input');
+  const val = input.value.trim();
+  if (!val) return;
+
+  theorySubmitted = true;
+  playerTheory = val;
+  input.disabled = true;
+  document.getElementById('theory-submit').disabled = true;
+  document.getElementById('theory-submit').textContent = 'TRANSMITTED';
+
+  // Find matching response
+  const lower = val.toLowerCase();
+  let response = THEORY_DEFAULT_RESPONSE;
+  for (const r of THEORY_RESPONSES) {
+    if (r.keywords.some(k => lower.includes(k))) {
+      response = r.response;
+      break;
+    }
+  }
+
+  // Display response
+  const respEl = document.getElementById('theory-response');
+  respEl.textContent = response;
+  respEl.style.display = 'block';
+
+  // Log the theory and response
+  addLogEntry(`MY THEORY: "${val}"`, LOG_TYPES.gap);
+  setTimeout(() => {
+    addLogEntry(`THE GAP RESPONDS: ${response}`, LOG_TYPES.gap);
+    // Scroll logbook to bottom
+    const panel = document.getElementById('logbook-panel');
+    panel.scrollTop = panel.scrollHeight;
+  }, 600);
+
+  // Open logbook if closed
+  if (!logbookOpen) {
+    toggleLogbook();
+  }
+}
+
+function checkGapResponses() {
+  for (const response of GAP_RESPONSES) {
+    if (!firedGapResponses.has(response.id) && response.condition()) {
+      firedGapResponses.add(response.id);
+      setTimeout(() => addLogEntry(response.text, response.type), 1200);
+    }
+  }
+}
+
+// ============================================================
+// SECRET SEQUENCES
+// Specific exit chains unlock entries that don't surface otherwise.
+// ============================================================
+const SECRET_SEQUENCES = [
+  {
+    id: 'secret_handwriting',
+    sequence: ['sublevel_zero', 'the_signal_room'],
+    logText: "The graffiti in Sublevel Zero and the logbook entries in Signal Room 7 are in the same handwriting. I checked three letterforms. Identical. J. VALE wrote both. The signal is not the message. The message is in the log.",
+    narrative: "You notice it coming from Sublevel Zero: the graffiti down there and this logbook are in the same hand. The same pressure, the same slightly oversized capital V. J. VALE wrote THE SIGNAL IS NOT THE MESSAGE on that wall. J. VALE also wrote every entry in this logbook. They have been the same person this whole time.",
+  },
+  {
+    id: 'secret_mirror_archive',
+    sequence: ['the_archive', 'the_mirror_room'],
+    logText: "Coming from the Archive: the note on the vanity references the book with my name in it. The book was written here, in this room, by the figure, before the Archive existed. The margins were always going to say what they say. The figure wrote my name into its own future.",
+    narrative: null, // handled by getEntryNote already, just log it
+  },
+  {
+    id: 'secret_rooftop_signal',
+    sequence: ['the_signal_room', 'the_rooftop'],
+    logText: "Climbed from Signal Room 7 directly to the roof. The transmitter up here and the mixing board below are the same system. What gets adjusted on the board gets broadcast from here. I have been adjusting things without knowing what I was sending.",
+    narrative: null,
+  },
+  {
+    id: 'secret_full_loop',
+    sequence: ['the_gap', 'the_archive', 'the_mirror_room', 'the_broadcast_booth'],
+    logText: "SEQUENCE NOTED: Gap, Archive, Mirror, Booth. The Gap receives. The Archive records. The Mirror reflects. The Booth broadcasts. This is the signal path. This is what J. VALE found. The Gap is not a place. It is a process.",
+    narrative: "Coming through this sequence, something clicks. The Gap receives. The Archive records. The Mirror reflects. The Booth broadcasts. Four rooms, one process. This is what J. VALE spent thirty years mapping. The graffiti is wrong: the signal is not the message, but the signal path is.",
+  },
+  {
+    id: 'secret_engine_blueprint',
+    sequence: ['the_engine_room', 'the_archive'],
+    logText: "The blueprint in the Engine Room and the Archive's catalog use the same cross-referencing system. The Archive was built to store what the Engine processes. The blueprint in the Engine Room is the index. The Archive is the collection.",
+    narrative: "Coming from the Engine Room, you see the Archive differently. The catalog system uses the same cross-reference notation as the blueprint on the engine room wall. The Archive was not built to store books. It was built to store what the machinery produces. The call numbers are not dates. They are output timestamps.",
+  },
+];
+
+const firedSecrets = new Set();
+
+function checkSecretSequence(roomId) {
+  const recentPath = [...state.history.slice(-5), roomId];
+  for (const secret of SECRET_SEQUENCES) {
+    if (firedSecrets.has(secret.id)) continue;
+    const seq = secret.sequence;
+    // Check if the last N rooms match the sequence
+    const tail = recentPath.slice(-seq.length);
+    if (tail.length === seq.length && tail.every((r, i) => r === seq[i])) {
+      firedSecrets.add(secret.id);
+      addLogEntry(secret.logText, LOG_TYPES.secret, roomId);
+      return secret.narrative; // return narrative override if present
+    }
+  }
+  return null;
+}
+function getPathNote(roomId) {
+  const visits = state.visited[roomId] || 0;
+  const totalRooms = Object.keys(state.visited).length;
+  const prev = state.previousRoom;
+
+  if (visits >= 4 && roomId === 'the_gap')
+    return "You keep coming back to the Gap. The monitors have noticed. They show your previous positions -- a record of every time you have stood exactly here.";
+  if (visits >= 4 && roomId === 'the_rooftop')
+    return "The rooftop again. Each visit, the ladder is slightly more worn where your hands grip. The transmitter has logged every time you have stood here. The city below adds a new light in the same neighborhood each time.";
+  if (visits >= 3 && roomId === 'sublevel_zero')
+    return "You come back to Sublevel Zero more than most. The terminal has noticed. Its command history now includes: VISITOR RETURNS (x" + visits + "). The pipes glow brighter when you arrive. They are used to you.";
+  if (visits >= 3 && roomId === 'the_mirror_room')
+    return "The Mirror Room knows your face by now. The delay is shorter when you enter -- the mirrors have pre-loaded your reflection, anticipating your return. The figure at the vanity leans slightly in your direction. It has been waiting.";
+
+  if (prev === 'sublevel_zero' && roomId === 'the_engine_room')
+    return "You came from below. The static engineer registers this -- a slight adjustment in its posture, the tools repositioned. The blueprint shows your path: down, then across, then here. It notes the route as unusual.";
+  if (prev === 'the_mirror_room' && roomId === 'the_broadcast_booth')
+    return "You came here from the smiling mirror. The logbook notes the entry point. Whatever version of you stepped through that mirror is the version now on air. The coffee is ready. It knew which mirror you would choose.";
+  if (prev === 'the_rooftop' && roomId === 'the_gap')
+    return "You came down from the rooftop. The Gap receives you differently after altitude -- the monitors' static is calmer, the VHS floor warmer underfoot. Something about descending from the signal makes this place feel more solid.";
+
+  if (state.steps > 8 && !state.visited['sublevel_zero'] && roomId === 'the_gap')
+    return "You have not gone through the MAINTENANCE_7 hatch. The Gap has noticed the avoidance. The hatch vibrates slightly when you pass near it. Whatever is in Sublevel Zero has been waiting longer than the other rooms.";
+  if (state.steps > 10 && !state.visited['the_mirror_room'] && roomId !== 'the_mirror_room')
+    return "You have been avoiding the Mirror Room. The Gap does not judge this. But the mirrors throughout the rest of the building are showing something slightly different today. Preparation, maybe. Or impatience.";
+
+  if (totalRooms >= 7 && visits === 0)
+    return "You have not been here before. The room adjusts -- a subtle recalibration, the way a space reorganizes for a new presence. You are being assessed. You are found sufficient.";
+
+  return null;
+}
+
+// ============================================================
+// EXIT-DEPENDENT CONTENT
+// ============================================================
+function getEntryNote(roomId) {
+  const prev = state.previousRoom;
+  if (roomId === 'the_mirror_room') {
+    if (prev === 'the_archive') return "The note on the vanity is different today. It references the Archive: 'the book with your name in it was written here, by the figure, before the Archive existed. the margins were always going to say what they say.'";
+    if (prev === 'sublevel_zero') return "The note on the vanity references the terminal: 'the command history you did not read -- J.V. wrote it. the question it starts with was always meant for you.'";
+    if (prev === 'the_engine_room') return "The note reads: 'the blueprint has your name on it in a room you have not found. the mirror that shows you smiling is the entrance. you already know this.'";
+  }
+  if (roomId === 'the_engine_room') {
+    if (prev === 'the_broadcast_booth') return "The blueprint has a new annotation near the Broadcast Booth node: SIGNAL CONFIRMED. The static engineer glances at the booth's position on the map, then back at its work. Something has been verified.";
+    if (prev === 'the_mirror_room') return "The blueprint shows your path from the mirror. The static engineer has annotated it: CAME THROUGH THE AFRAID MIRROR OR THE SMILING ONE? with two different downstream paths sketched in pencil. One is circled.";
+    if (prev === 'the_outside_inside') return "The blueprint shows the Outside Inside's loop from above -- a circle, neat, the figure in yellow marked with a Y. The static engineer has drawn a line from the Y to the Engine Room. It ends where you are standing.";
+  }
+  if (roomId === 'the_rooftop') {
+    if (prev === 'the_signal_room') return "You climbed here from Signal Room 7. The transmitter recognizes the route -- the antenna ladder's signal feeds directly into the transmitter's input. Whatever was broadcasting in the room below is louder up here.";
+    if (prev === 'the_engine_room') return "The emergency exit brought you here. The rooftop receives you with something like relief. The ladder's base is closer to the emergency exit hatch than the blueprints suggest. The route was designed.";
+  }
+  return null;
+}
+
+// ============================================================
+// ENDING SEQUENCE
+// ============================================================
+function triggerEnding() {
+  document.title = 'SIGNAL LOST';
+  const app = document.getElementById('app');
+  app.style.transition = 'opacity 2s ease';
+  app.style.opacity = '0';
+
+  const anomalyLine = state.lastAnomaly
+    ? `<div class="ending-line" style="animation-delay:3.6s">ANOMALY LOGGED: ${state.lastAnomaly.room.toUpperCase()}</div>`
+    : '';
+
+  const valeComplete = state.valeCluesFound.length >= VALE_CLUES.length;
+  const valeEnding = valeComplete
+    ? `<div class="ending-sub" style="animation-delay:9s">YOU RECOVERED ALL OF VALE'S FRAGMENTS.<br>YOU KNOW WHAT VALE FOUND.<br>THE GAP WAS BUILT FOR THIS MOMENT.</div>`
+    : `<div class="ending-sub" style="animation-delay:9s">J. VALE FOUND IT IN 1994.<br>YOU FOUND IT TODAY.<br>SOMEONE ELSE WILL FIND IT AFTER.</div>`;
+
+  const secretsLine = firedSecrets.size > 0
+    ? `<div class="ending-line" style="animation-delay:4.8s">SEQUENCES DISCOVERED: ${firedSecrets.size}</div>`
+    : '';
+
+  const theoryLine = playerTheory
+    ? `<div class="ending-line" style="animation-delay:5.2s">YOUR THEORY: "${playerTheory.toUpperCase()}"</div>`
+    : '';
+
+  setTimeout(() => {
+    app.innerHTML = `
+      <div id="ending-screen">
+        <div class="ending-line" style="animation-delay:0.5s">SIGNAL ACQUIRED</div>
+        <div class="ending-line" style="animation-delay:1.5s">FREQUENCY CONFIRMED</div>
+        <div class="ending-line" style="animation-delay:2.6s">VISITOR LOGGED: ${state.steps} STEPS / ${Object.keys(state.visited).length} ROOMS</div>
+        ${anomalyLine}
+        <div class="ending-line" style="animation-delay:4.0s">J. VALE FRAGMENTS: ${state.valeCluesFound.length} / ${VALE_CLUES.length}</div>
+        ${secretsLine}
+        ${theoryLine}
+        <div class="ending-line" style="animation-delay:6.2s">FIELD NOTES RECORDED: ${logbook.length}</div>
+        <div class="ending-gap" style="animation-delay:7.0s"></div>
+        <div class="ending-main" style="animation-delay:7.4s">THE SIGNAL WAS NEVER LOST.</div>
+        <div class="ending-sub" style="animation-delay:8.6s">IT WAS WAITING FOR SOMEONE WITH YOUR FREQUENCY.</div>
+        ${valeEnding}
+        <div class="ending-gap" style="animation-delay:10.5s"></div>
+        <div class="ending-small" style="animation-delay:11.5s">THE GAP CONTINUES BROADCASTING.</div>
+        <div class="ending-small" style="animation-delay:12.5s">YOU MAY RETURN WHENEVER YOUR FREQUENCY DRIFTS.</div>
+        <div class="ending-restart" style="animation-delay:14s"><button onclick="location.reload()">RETUNE</button></div>
+      </div>
+    `;
+    app.style.opacity = '1';
+  }, 2200);
+}
+
+// ============================================================
 // RENDER
 // ============================================================
 function navigateTo(roomId) {
-  // Flash
+  // Ending: rooftop ladder exit after earning it
+  if (roomId === 'the_gap' &&
+      state.currentRoom &&
+      state.currentRoom === WORLD.rooms['the_rooftop'] &&
+      state.steps >= 15 &&
+      Object.keys(state.visited).length >= 6) {
+    triggerEnding();
+    return;
+  }
+
   const flash = document.createElement('div');
   flash.className = 'transition-flash';
   document.body.appendChild(flash);
   setTimeout(() => flash.remove(), 400);
 
   const room = WORLD.rooms[roomId];
-  if (!state.currentRoom || state.currentRoom !== room) {
-    if (state.currentRoom) state.history.push(state.currentRoom.name);
+  state.previousRoom = state.currentRoom
+    ? Object.keys(WORLD.rooms).find(k => WORLD.rooms[k] === state.currentRoom)
+    : null;
+
+  if (state.currentRoom && state.currentRoom !== room) {
+    state.history.push(state.previousRoom);
   }
+
   state.currentRoom = room;
   state.steps++;
+  state.visited[roomId] = (state.visited[roomId] || 0) + 1;
+
+  if (state.steps >= 15 && Object.keys(state.visited).length >= 6) {
+    state.endingUnlocked = true;
+  }
 
   document.getElementById('breadcrumb').textContent = room.path;
   document.getElementById('step-count').textContent = `STEPS: ${state.steps}`;
 
-  // Seed narrative rng per room+session+step for variety
   const roomOffset = ROOM_OFFSETS[roomId] || 0;
   const numericSeed = parseInt(SESSION_SEED_HEX, 16);
   seedRng(numericSeed + roomOffset * 1337 + state.steps * 7);
 
-  // Pick narrative passage
-  const narratives = NARRATIVES[roomId] || NARRATIVES.the_gap;
-  const narrative = pick(narratives);
+  // Check secret sequence first -- may override narrative
+  const secretNarrative = checkSecretSequence(roomId);
 
-  // Pick ambient detail
-  const ambients = AMBIENT[roomId] || AMBIENT.the_gap;
-  const ambient = pick(ambients);
+  let narrative = pick(NARRATIVES[roomId] || NARRATIVES.the_gap);
+  const anomaly = checkAnomaly(roomId);
 
-  // Pick sigil
+  if (anomaly) {
+    narrative = anomaly.text;
+    // Log the anomaly
+    addLogEntry(`ANOMALY IN ${room.name}: ${anomaly.text}`, LOG_TYPES.anomaly, roomId);
+    state.lastAnomaly = { room: room.name, roomId, text: anomaly.text };
+  } else if (secretNarrative) {
+    narrative = secretNarrative;
+  } else {
+    const pathNote = getPathNote(roomId);
+    if (pathNote) {
+      narrative = pathNote + ' ' + narrative;
+    } else {
+      const entryNote = getEntryNote(roomId);
+      if (entryNote) narrative = entryNote + ' ' + narrative;
+    }
+  }
+
+  // Log standard room visit (first few visits only, vary by step)
+  const roomLogs = ROOM_LOG_ENTRIES[roomId] || [];
+  const visitNum = state.visited[roomId];
+  if (roomLogs.length && visitNum <= roomLogs.length) {
+    const logIdx = (visitNum - 1) % roomLogs.length;
+    addLogEntry(roomLogs[logIdx], LOG_TYPES.normal, roomId);
+  }
+
+  const valeClue = getValeClue(roomId);
+  const ambientBase = pick(AMBIENT[roomId] || AMBIENT.the_gap);
+  const ambient = valeClue || ('// ' + ambientBase);
+
+  // Check gap responses after logging
+  setTimeout(() => {
+    checkGapResponses();
+    checkTheoryPrompt();
+  }, 800);
+
   const sigil = pick(SIGILS);
 
-  // Draw room art (independent seed)
   seedArtRng(numericSeed + roomOffset * 9999);
   setTimeout(() => drawRoomArt(room.art, roomOffset), 20);
 
-  // Render narrative
   const panel = document.getElementById('narrative-panel');
   panel.setAttribute('data-sigil', sigil);
   const narEl = document.getElementById('narrative-text');
   narEl.classList.remove('fade-in');
   void narEl.offsetWidth;
   narEl.classList.add('fade-in');
+  if (anomaly) {
+    narEl.style.color = 'var(--magenta)';
+    narEl.style.textShadow = 'var(--glow-magenta)';
+    setTimeout(() => { narEl.style.color = ''; narEl.style.textShadow = ''; }, 8000);
+  } else {
+    narEl.style.color = '';
+    narEl.style.textShadow = '';
+  }
   narEl.textContent = narrative;
 
-  // Render ambient
   const ambEl = document.getElementById('ambient-strip');
   ambEl.classList.remove('fade-in');
   void ambEl.offsetWidth;
   ambEl.classList.add('fade-in');
-  ambEl.textContent = '// ' + ambient;
+  if (valeClue) {
+    ambEl.style.borderColor = 'var(--yellow)';
+    ambEl.style.color = 'var(--yellow)';
+  } else {
+    ambEl.style.borderColor = '';
+    ambEl.style.color = '';
+  }
+  ambEl.textContent = ambient;
 
-  // Render choices with flavor text
   const choicesEl = document.getElementById('choices');
   choicesEl.innerHTML = '';
   const flavorSets = EXIT_FLAVORS[roomId] || [];
+  let exits = [...room.exits];
 
-  room.exits.forEach((exit, idx) => {
+  if (roomId === 'the_rooftop' && state.endingUnlocked) {
+    exits[0] = { ...exits[0], label: 'Climb the ladder. It goes all the way now.', icon: '↑' };
+  }
+
+  exits.forEach((exit, idx) => {
     const flavors = flavorSets[idx] || [''];
     const flavor = pick(flavors);
-
+    const isEnding = roomId === 'the_rooftop' && idx === 0 && state.endingUnlocked;
     const btn = document.createElement('button');
     btn.className = 'choice-btn stagger-in';
     btn.style.animationDelay = `${idx * 0.08 + 0.2}s`;
+    if (isEnding) btn.style.borderColor = 'var(--cyan)';
     btn.innerHTML = `
       <div class="choice-meta">
         <span class="choice-num">0${idx + 1}</span>
@@ -1167,12 +2474,16 @@ function navigateTo(roomId) {
       </div>
       <div class="choice-body">
         <span class="choice-label">${exit.label}</span>
-        <span class="choice-flavor">${flavor}</span>
+        <span class="choice-flavor">${isEnding ? 'J. VALE went this way. So can you.' : flavor}</span>
       </div>
     `;
     btn.onclick = () => navigateTo(exit.room);
     choicesEl.appendChild(btn);
   });
+
+  if (state.valeCluesFound.length >= 2) {
+    document.title = `SIGNAL LOST // ${state.valeCluesFound.length} FRAGMENTS`;
+  }
 }
 
 // ============================================================
@@ -1185,13 +2496,15 @@ function startGame() {
   document.getElementById('visit-seed').textContent = `SESSION: ${SESSION_SEED_HEX.toUpperCase()}`;
 
   window.addEventListener('resize', () => {
-    if (state.currentRoom) drawRoomArt(state.currentRoom.art, ROOM_OFFSETS[Object.keys(WORLD.rooms).find(k => WORLD.rooms[k] === state.currentRoom)] || 1);
+    if (state.currentRoom) {
+      const id = Object.keys(WORLD.rooms).find(k => WORLD.rooms[k] === state.currentRoom);
+      drawRoomArt(state.currentRoom.art, ROOM_OFFSETS[id] || 1);
+    }
   });
 
   navigateTo(WORLD.entrypoint);
 }
 
-// Show seed on intro
 document.getElementById('intro-seed-display').textContent =
   `SESSION: ${getSessionSeed().toUpperCase()}`;
 </script>
