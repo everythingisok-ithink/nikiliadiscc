@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGNAL LOST // enter the gap</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+  :root {
+    --bg: #030508;
+    --bg2: #070c12;
+    --cyan: #00f5ff;
+    --magenta: #ff00aa;
+    --yellow: #ffe000;
+    --green: #00ff88;
+    --dim: #1a2535;
+    --text: #c8d8e8;
+    --text-dim: #4a6070;
+    --glow-cyan: 0 0 8px #00f5ff88, 0 0 24px #00f5ff33;
+    --glow-magenta: 0 0 8px #ff00aa88, 0 0 24px #ff00aa33;
+    --glow-green: 0 0 8px #00ff8888, 0 0 24px #00ff8833;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+    animation: grain 0.4s steps(1) infinite;
+    opacity: 0.35;
+  }
+
+  @keyframes grain {
+    0%,100%{transform:translate(0,0)} 10%{transform:translate(-2%,-3%)} 20%{transform:translate(3%,1%)}
+    30%{transform:translate(-1%,4%)} 40%{transform:translate(4%,-2%)} 50%{transform:translate(-3%,2%)}
+    60%{transform:translate(2%,-4%)} 70%{transform:translate(-4%,1%)} 80%{transform:translate(1%,3%)} 90%{transform:translate(3%,-1%)}
+  }
+
+  #app {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  #header {
+    text-align: center;
+    padding: 48px 0 40px;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 6vw, 4rem);
+    letter-spacing: -0.02em;
+    color: var(--cyan);
+    text-shadow: var(--glow-cyan);
+    animation: flicker 8s infinite;
+  }
+
+  .logo span { color: var(--magenta); text-shadow: var(--glow-magenta); }
+
+  @keyframes flicker {
+    0%,94%,100%{opacity:1} 95%{opacity:.4} 96%{opacity:1} 97.5%{opacity:.15} 98%{opacity:.9}
+  }
+
+  .tagline {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    margin-top: 10px;
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cyan), var(--magenta), transparent);
+    margin: 24px 0;
+    opacity: 0.35;
+  }
+
+  #location-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    border: 1px solid var(--dim);
+    background: var(--bg2);
+    margin-bottom: 28px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    position: relative;
+    overflow: hidden;
+  }
+
+  #location-bar::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--green);
+    box-shadow: var(--glow-green);
+  }
+
+  .loc-label { color: var(--green); }
+
+  #room-visual {
+    width: 100%;
+    height: 190px;
+    border: 1px solid var(--dim);
+    background: var(--bg2);
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #room-canvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+  }
+
+  #narrative-panel {
+    border: 1px solid var(--dim);
+    background: var(--bg2);
+    padding: 28px 32px;
+    margin-bottom: 8px;
+    position: relative;
+    min-height: 120px;
+  }
+
+  #narrative-panel::before {
+    content: attr(data-sigil);
+    position: absolute;
+    top: 10px; right: 14px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    opacity: 0.5;
+  }
+
+  #ambient-strip {
+    border-left: 2px solid var(--magenta);
+    padding: 8px 16px;
+    margin-bottom: 24px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    font-style: italic;
+    opacity: 0.7;
+  }
+
+  #narrative-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.87rem;
+    line-height: 1.9;
+    color: var(--text);
+  }
+
+  .cursor-blink {
+    display: inline-block;
+    width: 8px; height: 14px;
+    background: var(--cyan);
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  #choices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .choice-btn {
+    background: transparent;
+    border: 1px solid var(--dim);
+    color: var(--text);
+    padding: 14px 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.81rem;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, transform 0.1s;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .choice-btn::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 0;
+    background: linear-gradient(90deg, rgba(0,245,255,0.07), transparent);
+    transition: width 0.3s;
+  }
+
+  .choice-btn:hover::before { width: 100%; }
+  .choice-btn:hover { border-color: var(--cyan); color: var(--cyan); text-shadow: var(--glow-cyan); }
+  .choice-btn:active { transform: translateX(3px); }
+
+  .choice-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 28px;
+  }
+
+  .choice-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.63rem;
+    color: var(--magenta);
+    text-shadow: var(--glow-magenta);
+  }
+
+  .choice-icon {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+
+  .choice-body { flex: 1; }
+  .choice-label { display: block; margin-bottom: 3px; }
+
+  .choice-flavor {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  #status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.63rem;
+    color: var(--text-dim);
+    border-top: 1px solid var(--dim);
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: var(--glow-green);
+    margin-right: 5px;
+    animation: pulse-dot 2.5s ease infinite;
+  }
+
+  @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+  .transition-flash {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--cyan);
+    z-index: 9000;
+    pointer-events: none;
+    animation: flash-out 0.35s ease forwards;
+  }
+
+  @keyframes flash-out { 0%{opacity:.5} 100%{opacity:0} }
+
+  #intro-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 62vh;
+    text-align: center;
+    gap: 32px;
+  }
+
+  .intro-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(3rem, 9vw, 6rem);
+    line-height: 0.95;
+    color: var(--cyan);
+    text-shadow: var(--glow-cyan);
+    animation: flicker 6s infinite;
+  }
+
+  .intro-title .alt { color: var(--magenta); text-shadow: var(--glow-magenta); }
+
+  .intro-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    color: var(--text-dim);
+    max-width: 480px;
+    line-height: 1.9;
+  }
+
+  .intro-seed {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    opacity: 0.4;
+    letter-spacing: 0.15em;
+  }
+
+  .enter-btn {
+    background: transparent;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    padding: 16px 52px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+    text-shadow: var(--glow-cyan);
+    box-shadow: 0 0 20px rgba(0,245,255,0.08);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .enter-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 0; height: 0;
+    background: rgba(0,245,255,0.08);
+    transform: translate(-50%,-50%);
+    border-radius: 50%;
+    transition: width .4s, height .4s;
+  }
+
+  .enter-btn:hover::after { width: 400px; height: 400px; }
+  .enter-btn:hover { box-shadow: var(--glow-cyan), 0 0 40px rgba(0,245,255,0.15); }
+
+  #game-screen { display: none; }
+
+  .fade-in { animation: fadein 0.5s ease forwards; }
+  @keyframes fadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+  .stagger-in { opacity: 0; animation: fadein 0.4s ease forwards; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="header">
+    <div class="logo">SIGNAL<span>_LOST</span></div>
+    <div class="tagline">// transmission from the gap // you were not supposed to find this //</div>
+    <div class="divider"></div>
+  </div>
+
+  <div id="intro-screen">
+    <div class="intro-title">THE<br><span class="alt">GAP</span></div>
+    <div class="intro-sub">
+      SOMEWHERE BETWEEN CHANNEL 47 AND CHANNEL 48<br>
+      THERE IS A PLACE THAT HAS NO BROADCAST LICENSE.<br><br>
+      YOU HAVE BEEN RECEIVING ITS SIGNAL FOR YEARS.<br>
+      YOU JUST DIDN'T KNOW WHAT IT WAS.
+    </div>
+    <button class="enter-btn" onclick="startGame()">TUNE IN</button>
+    <div class="intro-seed" id="intro-seed-display"></div>
+  </div>
+
+  <div id="game-screen">
+    <div id="location-bar">
+      <span class="loc-label">LOC://</span>
+      <span id="breadcrumb"></span>
+    </div>
+    <div id="room-visual">
+      <canvas id="room-canvas"></canvas>
+    </div>
+    <div id="narrative-panel" data-sigil="">
+      <div id="narrative-text"></div>
+    </div>
+    <div id="ambient-strip"></div>
+    <div id="choices"></div>
+    <div id="status-bar">
+      <span><span class="status-dot"></span>SIGNAL ACQUIRED</span>
+      <span id="step-count">STEPS: 0</span>
+      <span id="visit-seed"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// SEEDED PRNG  (mulberry32)
+// ============================================================
+let _seed = 0;
+function seedRng(s) { _seed = s >>> 0; }
+function rng() {
+  _seed += 0x6D2B79F5;
+  let t = _seed;
+  t = Math.imul(t ^ t >>> 15, t | 1);
+  t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+  return ((t ^ t >>> 14) >>> 0) / 4294967296;
+}
+function pick(arr) { return arr[Math.floor(rng() * arr.length)]; }
+function pickN(arr, n) {
+  const copy = [...arr];
+  const out = [];
+  for (let i = 0; i < n && copy.length; i++) {
+    const idx = Math.floor(rng() * copy.length);
+    out.push(copy.splice(idx, 1)[0]);
+  }
+  return out;
+}
+
+// Separate rng for canvas so narrative picks don't affect art and vice versa
+let _seedArt = 0;
+function seedArtRng(s) { _seedArt = s >>> 0; }
+function artRng() {
+  _seedArt += 0x6D2B79F5;
+  let t = _seedArt;
+  t = Math.imul(t ^ t >>> 15, t | 1);
+  t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+  return ((t ^ t >>> 14) >>> 0) / 4294967296;
+}
+function artPick(arr) { return arr[Math.floor(artRng() * arr.length)]; }
+
+// ============================================================
+// SESSION SEED
+// ============================================================
+function getSessionSeed() {
+  let s = sessionStorage.getItem('gap_seed');
+  if (!s) {
+    s = Math.floor(Math.random() * 0xFFFFFFFF).toString(16).padStart(8, '0');
+    sessionStorage.setItem('gap_seed', s);
+  }
+  return s;
+}
+
+// ============================================================
+// CONTENT ARRAYS
+// ============================================================
+
+const SIGILS = ['◈', '⊕', '⌬', '◉', '⌖', '⊞', '◫', '⊗', '⌘', '⊜'];
+
+const AMBIENT = {
+  the_gap: [
+    "the static has been running for eleven years without interruption",
+    "channel 47.5 does not appear in any broadcast registry",
+    "someone left a coffee cup here. it is still warm. it is always still warm.",
+    "the monitors show 0.3 seconds of footage on loop. no one knows what it's from.",
+    "the VHS tape underfoot contains recordings of things that haven't happened yet",
+    "the air smells like ozone and something you can't name but recognize",
+    "you have been here before. the Gap remembers even when you don't.",
+    "the CRTs flicker in sequence. it might be morse. you haven't checked.",
+    "the dead pixel door has no hinges. it opens anyway.",
+    "there is a frequency here that your body understands before your mind does",
+  ],
+  the_archive: [
+    "the call numbers are all dates between now and forty years from now",
+    "the librarians haven't spoken since the collection exceeded one million volumes",
+    "your name appears in the margins of 47 separate books. you have only written one.",
+    "the reading chair hums at a frequency associated with deep memory",
+    "one shelf is labeled REDACTED. the books on it are blank but heavy.",
+    "the catalog system cross-references entries that haven't been added yet",
+    "the television-headed librarians shelve books by emotional weight, not subject",
+    "a book near the window is warm to the touch. it has been read recently.",
+    "the impossible window shows a city you lived in before you were born",
+    "the elevator has no buttons. it takes you where you need to go.",
+  ],
+  the_signal_room: [
+    "the logbook handwriting matches no known person living or dead",
+    "the mixing board faders are all labeled. GRIEF is pushed all the way up.",
+    "someone has been eating here for fifty years. the meal is always the same.",
+    "the equipment has no brand names. it predates branding.",
+    "the transmission log shows your frequency has been monitored since 1987",
+    "the wall gap smells like the inside of an old house you loved",
+    "one fader is labeled with your name. you haven't touched it yet.",
+    "the antenna receives signals from eleven directions. compasses only show eight.",
+    "the broadcast door is warm on this side. cold on the other.",
+    "the meal on the table is your favorite. you never told anyone what that was.",
+  ],
+  sublevel_zero: [
+    "the machinery has been running since before the building existed",
+    "the luminescent fluid in the pipes is not water. it is warmer.",
+    "MAINTENANCE_7 has 23 entries in the service log. all by different people. all the same day.",
+    "the graffiti keeps changing. the message doesn't.",
+    "the terminal cursor blinks at exactly your resting heart rate",
+    "the left tunnel leads toward a sound you heard once as a child",
+    "the pipes glow brighter when you stand near them",
+    "there are footprints here. they stop in the middle of the floor.",
+    "the right tunnel smells like rain on concrete. there is no weather down here.",
+    "the graffiti writer left their tools. the paint is still wet.",
+  ],
+  the_mirror_room: [
+    "the reflections are running 1.3 seconds behind. no one knows why it's that specific number.",
+    "the figure at the vanity has been sitting there since the room was installed",
+    "the key on the vanity opens something you haven't found yet",
+    "in the mirrors, your hands are always doing something slightly different",
+    "the mirror that shows you smiling has never shown anyone else smiling",
+    "the figure's shoulders move as if breathing. or as if laughing.",
+    "the cassette tape is labeled with a date six weeks from now",
+    "you can see the back of the figure's head in three mirrors simultaneously",
+    "the mirror tiles are slightly warm. like they've been touched recently.",
+    "the note on the vanity is in your handwriting. you didn't write it.",
+  ],
+  the_broadcast_booth: [
+    "the ON AIR light has not been off since 1991",
+    "the headphones are tuned to a frequency that doesn't correspond to human speech",
+    "someone keeps leaving coffee for you. it is always the right temperature.",
+    "the logbook shows you have broadcast 847 times. you remember none of them.",
+    "the production floor workers do not cast shadows",
+    "the black sun microphone is always warm, as if recently used",
+    "the glass partition shows a reflection that doesn't match the production floor",
+    "the coffee cup has your name on it in permanent marker. someone knew you were coming.",
+    "the logbook entries from your previous visits describe things you were thinking",
+    "through the glass, you can see someone at a desk who looks like you from behind",
+  ],
+  the_outside_inside: [
+    "the payphone rings every nine minutes. it has been ringing for years.",
+    "the figure in yellow has not moved in recorded memory",
+    "the street loops after exactly 0.4 miles. the buildings rearrange.",
+    "your address appears on eleven different buildings on this block",
+    "it is raining static. it has never stopped.",
+    "the door that shouldn't be here is different every time you look for it",
+    "the figure in yellow is wearing a raincoat that is too small for an adult",
+    "the payphone has no coin slot. it accepts something else.",
+    "the sky-ceiling has water stains shaped like continents you don't recognize",
+    "the trees grow through the tiles and into the ceiling and back into the floor",
+  ],
+  the_engine_room: [
+    "the static engineer has been on shift for an estimated 340 years",
+    "the gears of frozen light do not touch but turn in perfect synchrony",
+    "you are on the blueprint. you have always been on the blueprint.",
+    "the emergency exit opens onto whatever you most need to see",
+    "the engineer's work is repairing something that was broken before it existed",
+    "the pistons run on compressed memory. yours are in there somewhere.",
+    "the blueprint is updated in real time. your X is always exactly where you are.",
+    "the gears cast shadows that move independently of the light source",
+    "the engineer's tools are labeled with verbs, not nouns",
+    "the machinery produces a low hum in the key of something you can't identify",
+  ],
+  the_rooftop: [
+    "from here you can see the edges of the Gap. they are not walls.",
+    "the television snow sky sometimes briefly shows images you recognize",
+    "the transmitter has been broadcasting your frequency since before you were born",
+    "the ladder goes up past where up should end",
+    "the city below is made of light from signals that were sent decades ago",
+    "the antenna towers receive as much as they transmit",
+    "at the top of the ladder there is only signal. no structure. no floor.",
+    "the sky-static occasionally spells words in a language you almost know",
+    "the transmitter controls are labeled in your handwriting",
+    "you can hear the whole Gap breathing from here",
+  ],
+};
+
+const NARRATIVES = {
+  the_gap: [
+    "You arrive in the space between channels. The floor is VHS tape compressed to concrete density, soft underfoot in a way that shouldn't be possible. Forty monitors line the walls, each showing a slightly different version of the same image — a room, a window, a figure standing with its back to you. The static smells like copper and something older.",
+    "The Gap opens around you like a held breath finally released. CRT monitors stack floor-to-ceiling, their combined light blue-white and buzzing, casting no shadows you can account for. Somewhere behind the screens, machinery hums at the exact frequency of a thing you used to know and have since forgotten. You have the distinct sense that something here has been waiting.",
+    "You step into the transmission. The Gap is exactly as strange as you remember and entirely different — the monitors have rearranged since last time, or perhaps they always show something new. The VHS floor compresses slightly under your weight, as if recording the pressure. The dead pixel door is in the far wall, a perfect black rectangle in the static.",
+    "Static first, then shape. The Gap resolves around you: monitors, tape floor, copper smell, the low hum of something that runs on stored light. You've been here before in some version of this — the Gap's architecture is consistent but its mood shifts. Tonight something is watching the monitors very carefully. You can tell by the way the static leans.",
+    "The Gap catches you mid-step between one place and nowhere. The monitors show eleven versions of a room you recognize but can't locate. The VHS underfoot is warm. The dead pixel door pulses faintly, like it's breathing. The copper smell is stronger this time, or maybe you've just learned to notice it.",
+  ],
+  the_archive: [
+    "The Archive is cathedral-tall, the shelves running up past where the light reaches. Television-headed librarians move in the aisles with the quiet purpose of the devout, pulling volumes and replacing them according to a logic you don't have clearance to understand. The call numbers are dates. The dates are all future-tense. In the far corner, the reading chair glows.",
+    "Shelves extend in every direction, further than the room's exterior dimensions permit. The books have spines labeled with future dates and emotions. A librarian with a CRT for a head passes without acknowledging you — the screen flickers through channels too fast to read. You can feel the weight of recorded almost-events pressing in from every shelf.",
+    "You enter the Archive to the sound of nothing — no pages turning, no footsteps, no ambient hum. Just the suspended weight of stored alternatives. The librarians move in silence, their television-head screens dark today. The reading chair in the corner pulses faintly gold. A book lies open on a small table. Your name is in the margins in red ink.",
+    "The Archive smells like old paper and magnetic tape, a combination that shouldn't exist but feels entirely right. The shelves form a maze you've never successfully mapped, though you've tried. The librarians know where everything is. They will not tell you. The reading chair glows with the particular warmth of something that has been expecting you.",
+    "Something has changed in the Archive. A librarian stands frozen in an aisle, CRT head showing only static, one hand raised mid-reach. The books near the impossible window have been moved. The reading chair faces a different direction than you remember. Your name is in the margin of a book you're certain wasn't here before.",
+  ],
+  the_signal_room: [
+    "Signal Room 7 is the source. Unmarked equipment racks line three walls, cables running between them in configurations that shouldn't produce sound but do. The mixing board stretches eight feet across, its faders each labeled with a feeling in handwriting you don't recognize but somehow know is yours. A meal sits half-eaten on the console, still warm. It has been warm for fifty years.",
+    "You enter mid-broadcast. The ON AIR indicator is dark in here but the equipment is alive — meters moving, reels turning, something transmitting. The logbook on the console is open to today's date. Your name appears in the entry. You haven't been here in years, or ever, depending on which version of yourself you're counting. The meal on the console is your favorite food.",
+    "The room smells like copper and static and something cooked recently. Signal Room 7 runs on its own schedule, independent of whatever time exists in the rest of the Gap. The mixing board's faders have been adjusted since your last visit. GRIEF is all the way up. RECOGNITION has been muted. You reach for GRIEF and the meters respond before your fingers land.",
+    "Signal Room 7 is broadcasting something you can't quite hear. The equipment works without operators — reels turn, faders drift, a pen inscribes entries in the logbook without a hand to hold it. The handwriting is always the same. When you check the entry for right now, this moment, the description is accurate in ways that should be impossible.",
+    "The transmission is ongoing. Signal Room 7 doesn't pause for visitors, doesn't acknowledge entry or exit. The equipment does its work and you are part of it by proximity. The logbook entry for your arrival is already written. The meal on the console is still warm. The fader labeled with your name has moved. You don't remember touching it.",
+  ],
+  sublevel_zero: [
+    "Below everything, there is this: a tunnel that shouldn't exist beneath a building that has no basement. The pipes run in perfect parallel, carrying something luminescent and warm. The machinery sounds like breathing. The terminal at the far end blinks with a cursor that pulses at exactly your heart rate. On the concrete wall, in paint that looks fresh: THE SIGNAL IS NOT THE MESSAGE.",
+    "The maintenance tunnels of Sublevel Zero predate the Gap by years that don't add up. The luminescent pipes hum. The machinery at the tunnel's end has been running so long it's part of the architecture now — you couldn't separate it from the walls if you tried. The terminal waits. The graffiti is new again, fresh, though you know it was here before.",
+    "Sublevel Zero is cold in a way the upper levels aren't — not temperature cold, but a different kind. The pipes glow blue-green and warm. The machinery sounds, today, almost like music. The terminal cursor blinks. The graffiti in three different hands all says the same thing. The left tunnel leads toward a sound you can't identify but feel certain you're supposed to follow.",
+    "The air in Sublevel Zero is processed, recycled, older than the Gap itself. The pipes branching overhead carry luminescent fluid in both directions. The machinery never stops. The terminal's cursor blinks in the dark. The graffiti is always new-looking no matter how many times you've read it: THE SIGNAL IS NOT THE MESSAGE. Tonight that feels true in a new way.",
+    "Something has shifted in Sublevel Zero. The pipes glow brighter tonight, or your eyes have adjusted. The machinery has changed its rhythm — slightly, almost imperceptibly, the way a heart rate changes when something is noticed. The terminal is waiting for input. The graffiti has a new line beneath the usual text, but you can't make it out from here.",
+  ],
+  the_mirror_room: [
+    "The Mirror Room tiles you in reflections, floor to ceiling, and every single one is wrong. A fraction too slow. A degree off-angle. An expression you know you didn't make. The figure at the vanity sits with perfect stillness, one hand resting on a key, the other near a cassette tape marked with a future date. It knows you're there. It is waiting for you to speak first.",
+    "Every surface reflects. Every reflection is behind by 1.3 seconds, a delay that should be imperceptible but becomes unbearable over time. The figure at the vanity has been here as long as the Gap has. In 23 separate mirrors you can see the back of its head. In one, you think you can see its face. You choose not to look at that one.",
+    "The Mirror Room is quieter than it should be — no echo, no ambient sound, just your own breathing returned to you slightly changed. The figure at the vanity doesn't move but you have the distinct impression that it was moving a moment ago. The key on the vanity surface is warm. The note beside it is in your handwriting. You haven't been here in a very long time, or ever.",
+    "You enter the Mirror Room and forty versions of yourself enter with you, all doing the same thing but none of them quite right. The figure at the vanity is the only thing that doesn't multiply. It sits in the center of every reflection, singular and still. The cassette tape on the vanity is labeled with coordinates that don't correspond to any map you've seen.",
+    "The Mirror Room has rearranged its angles. New tiles, or old tiles repositioned — either way, your reflections are different today, fragmented into more pieces than before. The figure at the vanity is exactly where it always is. The key is exactly where it always is. Something about the note is different. The handwriting is still yours but the words have changed.",
+  ],
+  the_broadcast_booth: [
+    "The booth is always on air. The red light has not been off since 1991 and shows no sign of ever going off. Someone has left you coffee at exactly the right temperature in a cup with your name written in permanent marker, as if they knew you were coming, as if they always know. The logbook is open to your name. Entry 848.",
+    "You take your seat in the Broadcast Booth and the equipment acknowledges your arrival in the way equipment does — a slight shift in the meters, a warmth in the console, the sense of a system orienting toward you. The black sun microphone hangs at speaking height. Through the glass, the production floor operates in total silence. Someone there is watching you without appearing to watch.",
+    "The coffee is there, temperature perfect, name written in a hand that isn't yours. The logbook is open. Your previous visits are recorded in detail that includes thoughts you had privately, things you noticed but didn't act on. Entry 847 ends mid-sentence. You find where it left off and keep reading. It was written while you were mid-step somewhere else in the Gap.",
+    "The ON AIR light is warm. Everything in the Broadcast Booth is warm — the console, the headphones on their hooks, the air itself. The production floor behind the glass is quiet. The people there are working on something you can't quite see. One of them, you notice, is wearing the same thing as you. Has been wearing it this whole time.",
+    "The Broadcast Booth smells like burnt electronics and old coffee and something pleasant underneath both. The logbook shows your pattern — the rooms you visit in which order, the exits you choose, the ones you've never taken. Entry 848 is already written. You are in the process of living it. The coffee is the right temperature. It is always the right temperature.",
+  ],
+  the_outside_inside: [
+    "The Outside Inside is impossible in the specific way that rooms in the Gap are impossible: entirely internally consistent and entirely wrong. The sky is a ceiling. The ceiling has water stains. The trees grow through tile and back out again. The payphone is ringing. The figure in the yellow raincoat stands in the static-rain and does not turn around. Every building on this street has your address.",
+    "You step outside into a room. The static falls like rain — cold, electric, dissolving before it lands. The payphone rings, as it always rings, at an interval of exactly nine minutes. The figure in yellow stands at the far end of the street, perfectly still, the raincoat too small for an adult. The street loops. You've walked it before and emerged where you started.",
+    "The outside is inside and the inside is outside and neither has edges. The street repeats. Your address is on every door. The trees grow in both directions through the tiled floor. The payphone rings and rings. The figure in the yellow raincoat has not moved and will not move unless you do something different this time. The door that shouldn't be here is always somewhere else until you stop looking for it.",
+    "Rain that isn't rain falls through the ceiling-sky and dissolves. The payphone at the corner of the looping street rings once, stops, rings twice. The figure in yellow stands at the center of the intersection and doesn't turn. The buildings all claim your address. The door that shouldn't be here has appeared slightly to your left, in the space between a tree and a lamppost that wasn't on before.",
+    "The outside-inside smells like wet concrete and static electricity and something you associate with being a child, somewhere specific, a time of day you can't name. The figure in yellow hasn't moved. The payphone's ring echoes in a space that shouldn't have that much depth. Your address is on every building. One door has a welcome mat with a name on it. It isn't yours. It used to be.",
+  ],
+  the_engine_room: [
+    "The Engine Room is the Gap's heart: vast and mechanical and old beyond reasonable calculation. The gears of frozen light turn without touching, held in perfect synchrony by something other than physics. The pistons run on compressed memory — yours is in there somewhere, contributing to the operation of a machine whose purpose you can't fully articulate but somehow serve. On the wall: the blueprint. On the blueprint: your X.",
+    "You hear the Engine Room before you see it — a low hum that enters through the chest before the ears. The gears of frozen light cast shadows that move independently of any light source. The static engineer works at a panel in the center, unchanged since any visit, its body made entirely of compressed television static, the work never complete, the shift never ending. It doesn't look up. It knows you're here.",
+    "The Engine Room runs at a scale that rewrites the building's architecture to accommodate it. Gears the size of rooms. Pistons that reach from floor to ceiling and beyond. The static engineer, small against all this machinery, works with focused precision on a repair that will never be finished because the machine is repairing itself faster than any engineer can manage. The blueprint shows you where you are. You are the only X.",
+    "Something has changed in the Engine Room — the rhythm is slightly different, or the light quality, or the way the static engineer moves. The gears of frozen light are moving faster today. The blueprint has been updated since your last visit; new rooms have appeared on it that you haven't been to yet. Your X is exactly where you're standing. It is always exactly where you're standing.",
+    "The Engine Room is where the Gap admits what it is. The machinery processes signal. The memory-fuel in the pistons includes yours, woven in without your consent or knowledge, just your presence — the Gap collected it on the way in. The static engineer repairs a panel that repairs itself behind the engineer's back. The blueprint is accurate down to the position of your hands.",
+  ],
+  the_rooftop: [
+    "The rooftop of the Gap opens onto a sky of pure television snow — white and grey and electric, shifting continuously, sometimes briefly resolving into images that are gone before you can focus. The city below is light from old signals, buildings made of transmissions from decades past. The antenna towers climb into the static sky. The transmitter hums. At the edge, a ladder continues upward into nothing at all.",
+    "From the rooftop you can see the Gap's edges and understand that they aren't walls — the Gap doesn't end, it diffuses. The city below is warm light and old signal. The sky-snow resolves occasionally into faces, streets, rooms, a child running. The transmitter on the south side has been broadcasting your frequency since before your frequency existed. The ladder goes up past the point where up has meaning.",
+    "The rooftop is the closest the Gap comes to honesty. You can see it all from here: the structure, the signal path, the places you've been mapped in light below you. The television-snow sky shows fragments. You recognize one briefly — a room, a window, someone standing with their back to you — before the static reasserts itself. The transmitter is warm under your hand. It knows your name.",
+    "On the rooftop the wind is static electricity. The antenna towers hum in almost-harmony. Below, the light-city pulses with transmissions from 1987, from 1993, from years that haven't happened. The blueprint of the Gap is visible from here if you know how to look — the rooms, the tunnels, the connections between them. The ladder at the north edge goes up into pure signal. Something up there is sending.",
+    "The rooftop is quiet in a way the rest of the Gap isn't. The machinery below doesn't reach here. Just the hum of the transmitter, the static-snow sky, the city of old light. You've been on this roof before, in this version of the Gap and in others. The ladder looks different every time — the rungs more worn, or less, the structure slightly altered. What waits at the top doesn't change.",
+  ],
+};
+
+const EXIT_FLAVORS = {
+  the_gap: [
+    ["The pixel-black rectangle stands in the static wall. It has always been there. You've just been choosing not to see it.", "Darkness that opens inward.", "You've tried this door. You'll try it again."],
+    ["The copper smell is strongest in the neon corridor. Something about the frequency there.", "Follow what pulls.", "The hum intensifies as you approach."],
+    ["MAINTENANCE_7. The number means something. You haven't figured out what.", "What's kept underneath.", "The hatch opens from the inside, somehow."],
+  ],
+  the_archive: [
+    ["The book was open to that page when you arrived. It was open to that page the last time too.", "What's already written.", "Your name in the margin, in red ink."],
+    ["The elevator has no buttons. It takes you where you need to be, not where you want.", "Managed ascent.", "The doors close before you finish deciding."],
+    ["The window shows something outside that can't be outside. You've been wanting to reach for it.", "The view that rewrites the room.", "Cold glass. The other side is warm."],
+  ],
+  the_signal_room: [
+    ["The broadcast door is heavier than it looks. You push it open and something changes in the frequency.", "Going on air.", "The meters respond to your approach."],
+    ["The antenna ladder is old steel, warm rungs, the signal getting cleaner as you climb.", "Up toward the source.", "The static lessens with altitude."],
+    ["The wall gap is body-width, exactly. Someone measured. Or something did.", "The narrow way through.", "The smell of an old house you loved is strongest here."],
+  ],
+  sublevel_zero: [
+    ["The left tunnel leads toward a sound that is almost familiar. You've been trying to place it.", "Toward the source of the sound.", "The luminescence is brightest this way."],
+    ["The terminal waits. It has always waited. It will interpret whatever you give it.", "Interface with the system.", "The cursor blinks at your heart rate."],
+    ["The pipes go right and so do you, following the luminescent fluid to wherever it flows.", "Downstream.", "The glow is warm."],
+  ],
+  the_mirror_room: [
+    ["The smiling mirror. You've looked at it before and looked away. This time you don't look away.", "The version of you that's fine.", "The mirror is warm to the touch."],
+    ["The afraid mirror. The expression is more familiar. Less surprising.", "The version of you that knows.", "This mirror is cold."],
+    ["The figure hasn't spoken first yet. You wonder what it's waiting for. Maybe this time you ask.", "Break the silence.", "Its shoulders move when you approach."],
+  ],
+  the_broadcast_booth: [
+    ["The headphones are larger than they should be, heavier, the frequency they're tuned to not quite human speech.", "Listen to what's being received.", "The sound fills all available space."],
+    ["The black sun microphone has been waiting for a specific input. You think you might know what it is.", "Speak into the void.", "The meters respond before you open your mouth."],
+    ["The production floor through the glass. The workers there don't cast shadows. One is watching you.", "Join the operation.", "The door handle is warm."],
+  ],
+  the_outside_inside: [
+    ["The figure in yellow has never turned around for anyone. The rules don't say never.", "Follow what doesn't move.", "The static-rain doesn't touch the yellow coat."],
+    ["The payphone rings every nine minutes. You've been here nine minutes.", "Answer the call.", "The receiver is cold. The voice inside is warm."],
+    ["The door that shouldn't be here is here. Right now. In this exact spot. Before it changes its mind.", "Take the impossible exit.", "It opens onto somewhere you know."],
+  ],
+  the_engine_room: [
+    ["The blueprint shows everything. Including the rooms you haven't been to. Including the one room with no name.", "Read the full schematic.", "Your X is the only label in red."],
+    ["The static engineer has never looked up. You've never given it a reason. This time might be different.", "Make contact.", "The static shifts when you approach."],
+    ["The emergency exit opens onto what you need most. You've been avoiding finding out what that is.", "Take the emergency exit.", "The bar is warm. The door is cold."],
+  ],
+  the_rooftop: [
+    ["The ladder goes up past where up ends. Something at the top has been transmitting for a very long time.", "Climb into signal.", "The rungs are warm despite the cold."],
+    ["The transmitter controls are in your handwriting. The labels, the adjustments, all of it. You wrote these and you don't remember doing it.", "Adjust the transmission.", "The frequency shifts as you reach for the controls."],
+    ["Down and back in. The Gap resets when you re-enter from the top. Slightly.", "Return to the beginning.", "The hatch at your feet opens inward."],
+  ],
+};
+
+// ============================================================
+// WORLD SKELETON
+// ============================================================
+const WORLD = {
+  entrypoint: "the_gap",
+  rooms: {
+    the_gap: {
+      name: "THE GAP",
+      path: "THE GAP",
+      art: "gap",
+      exits: [
+        { label: "Step through the dead pixel door", room: "the_archive", icon: "→" },
+        { label: "Follow the copper-smell corridor", room: "the_signal_room", icon: "→" },
+        { label: "Open the MAINTENANCE_7 hatch", room: "sublevel_zero", icon: "↓" },
+      ]
+    },
+    the_archive: {
+      name: "THE ARCHIVE",
+      path: "THE GAP / THE ARCHIVE",
+      art: "archive",
+      exits: [
+        { label: "Read the book with your name in it", room: "the_mirror_room", icon: "→" },
+        { label: "Take the staff-only elevator", room: "the_broadcast_booth", icon: "↑" },
+        { label: "Climb through the impossible window", room: "the_outside_inside", icon: "◎" },
+      ]
+    },
+    the_signal_room: {
+      name: "SIGNAL ROOM 7",
+      path: "THE GAP / SIGNAL ROOM 7",
+      art: "signal",
+      exits: [
+        { label: "Go through the broadcast door", room: "the_broadcast_booth", icon: "◉" },
+        { label: "Climb the antenna ladder", room: "the_rooftop", icon: "↑" },
+        { label: "Squeeze through the wall gap", room: "sublevel_zero", icon: "↓" },
+      ]
+    },
+    sublevel_zero: {
+      name: "SUBLEVEL ZERO",
+      path: "THE GAP / SUBLEVEL ZERO",
+      art: "sublevel",
+      exits: [
+        { label: "Take the left tunnel toward the sound", room: "the_engine_room", icon: "←" },
+        { label: "Use the terminal", room: "the_mirror_room", icon: "◎" },
+        { label: "Follow the luminescent pipes right", room: "the_outside_inside", icon: "→" },
+      ]
+    },
+    the_mirror_room: {
+      name: "THE MIRROR ROOM",
+      path: "THE GAP / THE MIRROR ROOM",
+      art: "mirror",
+      exits: [
+        { label: "Step into the mirror that shows you smiling", room: "the_broadcast_booth", icon: "◎" },
+        { label: "Step into the mirror that shows you afraid", room: "the_engine_room", icon: "◎" },
+        { label: "Speak to the figure at the vanity", room: "the_rooftop", icon: "→" },
+      ]
+    },
+    the_broadcast_booth: {
+      name: "BROADCAST BOOTH",
+      path: "THE GAP / BROADCAST BOOTH",
+      art: "booth",
+      exits: [
+        { label: "Put on the satellite headphones", room: "the_outside_inside", icon: "◎" },
+        { label: "Speak into the black sun microphone", room: "the_rooftop", icon: "◉" },
+        { label: "Go through to the production floor", room: "the_engine_room", icon: "→" },
+      ]
+    },
+    the_outside_inside: {
+      name: "THE OUTSIDE INSIDE",
+      path: "THE GAP / THE OUTSIDE INSIDE",
+      art: "outside",
+      exits: [
+        { label: "Follow the figure in yellow", room: "the_engine_room", icon: "→" },
+        { label: "Answer the payphone", room: "the_signal_room", icon: "◉" },
+        { label: "Open the door that shouldn't be here", room: "the_gap", icon: "↻" },
+      ]
+    },
+    the_engine_room: {
+      name: "THE ENGINE ROOM",
+      path: "THE GAP / THE ENGINE ROOM",
+      art: "engine",
+      exits: [
+        { label: "Study the blueprint on the wall", room: "the_archive", icon: "◎" },
+        { label: "Talk to the static engineer", room: "the_mirror_room", icon: "→" },
+        { label: "Take the emergency exit", room: "the_rooftop", icon: "↑" },
+      ]
+    },
+    the_rooftop: {
+      name: "THE ROOFTOP",
+      path: "THE GAP / THE ROOFTOP",
+      art: "rooftop",
+      exits: [
+        { label: "Climb the ladder into pure signal", room: "the_gap", icon: "↑" },
+        { label: "Access the transmitter controls", room: "the_broadcast_booth", icon: "◉" },
+        { label: "Go back down inside", room: "the_gap", icon: "↓" },
+      ]
+    },
+  }
+};
+
+// ============================================================
+// CANVAS ART  (session-seeded variations per room)
+// ============================================================
+function drawRoomArt(type, roomSeedOffset) {
+  const canvas = document.getElementById('room-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth || 800;
+  canvas.height = canvas.offsetHeight || 190;
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+
+  // Seed art rng per room + session
+  seedArtRng(_seed + roomSeedOffset * 9999);
+
+  const palette = [
+    ['0,245,255', '255,0,170', '0,255,136'],
+    ['255,0,170', '255,224,0', '0,245,255'],
+    ['0,255,136', '0,245,255', '255,0,170'],
+    ['255,224,0', '255,0,170', '0,255,136'],
+  ];
+  const pal = palette[Math.floor(artRng() * palette.length)];
+  const c1 = pal[0], c2 = pal[1], c3 = pal[2];
+
+  ctx.fillStyle = '#040810';
+  ctx.fillRect(0, 0, w, h);
+
+  const arts = {
+    gap: () => {
+      const cols = 6 + Math.floor(artRng() * 3);
+      const rows = 3;
+      const tw = w / cols, th = h / rows;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const x = c * tw + artRng() * 4 - 2;
+          const y = r * th + artRng() * 4 - 2;
+          const bw = tw - 6, bh = th - 8;
+          const col = artRng() > 0.6 ? c1 : artRng() > 0.5 ? c2 : c3;
+          ctx.strokeStyle = `rgba(${col},${0.15 + artRng() * 0.4})`;
+          ctx.lineWidth = 1;
+          ctx.strokeRect(x, y, bw, bh);
+          ctx.fillStyle = `rgba(${col},0.04)`;
+          ctx.fillRect(x + 1, y + 1, bw - 2, bh - 2);
+          const lines = 4 + Math.floor(artRng() * 5);
+          for (let s = 0; s < lines; s++) {
+            const a = artRng() * 0.25;
+            ctx.fillStyle = `rgba(200,220,240,${a})`;
+            ctx.fillRect(x + 3, y + 4 + s * ((bh - 8) / lines), bw - 6, 1);
+          }
+        }
+      }
+      ctx.strokeStyle = `rgba(${c2},0.9)`;
+      ctx.lineWidth = 2;
+      const dx = w / 2 + (artRng() * 40 - 20);
+      ctx.strokeRect(dx - 14, h / 2 - 22, 28, 44);
+      ctx.fillStyle = `rgba(${c2},0.1)`;
+      ctx.fillRect(dx - 14, h / 2 - 22, 28, 44);
+    },
+    archive: () => {
+      const rows = 4 + Math.floor(artRng() * 2);
+      const rh = h / rows;
+      for (let r = 0; r < rows; r++) {
+        const y = r * rh + rh * 0.85;
+        ctx.strokeStyle = `rgba(${c3},0.18)`;
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(16, y); ctx.lineTo(w - 16, y); ctx.stroke();
+        const bookW = 10 + Math.floor(artRng() * 4);
+        let bx = 18;
+        while (bx < w - 18) {
+          const bh2 = rh * 0.4 + artRng() * rh * 0.4;
+          const bw2 = bookW + artRng() * 8 - 4;
+          const col = artRng() > 0.5 ? c1 : artRng() > 0.5 ? c2 : c3;
+          const a = 0.12 + artRng() * 0.28;
+          ctx.fillStyle = `rgba(${col},${a})`;
+          ctx.fillRect(bx, y - bh2, bw2, bh2);
+          ctx.strokeStyle = `rgba(${col},${a + 0.2})`;
+          ctx.lineWidth = 0.5;
+          ctx.strokeRect(bx, y - bh2, bw2, bh2);
+          bx += bw2 + 2;
+        }
+      }
+      const gr = ctx.createRadialGradient(w / 2 + artRng() * 60 - 30, h - 10, 0, w / 2, h - 10, 70);
+      gr.addColorStop(0, `rgba(${c2},0.18)`);
+      gr.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = gr;
+      ctx.fillRect(0, 0, w, h);
+    },
+    signal: () => {
+      const faders = 16 + Math.floor(artRng() * 8);
+      const spacing = (w - 40) / faders;
+      for (let i = 0; i < faders; i++) {
+        const x = 20 + i * spacing;
+        const fh = (0.2 + artRng() * 0.7) * (h - 40);
+        ctx.strokeStyle = `rgba(${c1},0.25)`;
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(x, h - 18); ctx.lineTo(x, h - 18 - fh); ctx.stroke();
+        ctx.fillStyle = `rgba(${c1},0.6)`;
+        ctx.fillRect(x - 4, h - 18 - fh - 3, 8, 5);
+      }
+      const waves = 2 + Math.floor(artRng() * 2);
+      for (let w2 = 0; w2 < waves; w2++) {
+        const col = w2 === 0 ? c2 : c3;
+        ctx.strokeStyle = `rgba(${col},${0.35 + artRng() * 0.3})`;
+        ctx.lineWidth = 1.2 + artRng();
+        ctx.beginPath();
+        const freq = 0.03 + artRng() * 0.06;
+        const amp = 10 + artRng() * 18;
+        const phase = artRng() * Math.PI * 2;
+        for (let x = 0; x <= w; x++) {
+          const y = h * 0.45 + Math.sin(x * freq + phase) * amp + Math.sin(x * freq * 2.3) * (amp * 0.4) + (artRng() - 0.5) * 3;
+          x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+    },
+    sublevel: () => {
+      const pipeCount = 4 + Math.floor(artRng() * 3);
+      for (let i = 0; i < pipeCount; i++) {
+        const y = 12 + i * ((h - 30) / pipeCount) + artRng() * 6;
+        const col = i % 2 === 0 ? c3 : c1;
+        const thick = 3 + artRng() * 3;
+        ctx.strokeStyle = `rgba(${col},${0.15 + artRng() * 0.25})`;
+        ctx.lineWidth = thick;
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+        const gr = ctx.createLinearGradient(0, y - 10, 0, y + 10);
+        gr.addColorStop(0, 'rgba(0,0,0,0)');
+        gr.addColorStop(0.5, `rgba(${col},${0.04 + artRng() * 0.04})`);
+        gr.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = gr;
+        ctx.fillRect(0, y - 10, w, 20);
+      }
+      const tx = w * 0.45 + artRng() * 60 - 30;
+      const ty = h * 0.45 + artRng() * 20 - 10;
+      ctx.strokeStyle = `rgba(${c1},0.45)`;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(tx - 48, ty - 22, 96, 50);
+      ctx.fillStyle = `rgba(${c1},0.03)`;
+      ctx.fillRect(tx - 48, ty - 22, 96, 50);
+      ctx.fillStyle = `rgba(${c1},0.7)`;
+      ctx.font = '10px "Share Tech Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('> _', tx, ty + 5);
+      ctx.textAlign = 'left';
+    },
+    mirror: () => {
+      const cols = 7 + Math.floor(artRng() * 4), rows = 5 + Math.floor(artRng() * 2);
+      const tw = w / cols, th = h / rows;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const col = (r + c) % 2 === 0 ? c1 : c2;
+          ctx.strokeStyle = `rgba(${col},0.14)`;
+          ctx.lineWidth = 0.5;
+          ctx.strokeRect(c * tw, r * th, tw, th);
+          const gr = ctx.createLinearGradient(c * tw, r * th, c * tw + tw, r * th + th);
+          gr.addColorStop(0, `rgba(${col},0.025)`);
+          gr.addColorStop(0.5, `rgba(${col},0.06)`);
+          gr.addColorStop(1, `rgba(${col},0.02)`);
+          ctx.fillStyle = gr;
+          ctx.fillRect(c * tw, r * th, tw, th);
+        }
+      }
+      const fx = w / 2 + artRng() * 20 - 10;
+      ctx.fillStyle = 'rgba(2,4,8,0.75)';
+      ctx.fillRect(fx - 10, h / 2 - 35, 20, 45);
+      ctx.beginPath();
+      ctx.arc(fx, h / 2 - 44, 11, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(2,4,8,0.75)';
+      ctx.fill();
+    },
+    booth: () => {
+      const gr = ctx.createRadialGradient(w / 2, 16, 0, w / 2, 16, 50);
+      gr.addColorStop(0, 'rgba(220,0,0,0.45)');
+      gr.addColorStop(1, 'rgba(220,0,0,0)');
+      ctx.fillStyle = gr;
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = 'rgba(200,0,0,0.85)';
+      ctx.fillRect(w / 2 - 32, 6, 64, 18);
+      ctx.fillStyle = 'rgba(3,5,8,0.9)';
+      ctx.font = 'bold 9px "Share Tech Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('ON AIR', w / 2, 19);
+      ctx.textAlign = 'left';
+      ctx.strokeStyle = `rgba(${c1},0.18)`;
+      ctx.lineWidth = 1.5;
+      const gy = h * 0.5 + artRng() * 20 - 10;
+      ctx.strokeRect(18, gy, w - 36, h - gy - 14);
+      ctx.beginPath();
+      ctx.arc(w / 2 + artRng() * 20 - 10, gy - 16, 14, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(6,8,14,0.95)';
+      ctx.fill();
+      ctx.strokeStyle = `rgba(${c2},0.65)`;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    },
+    outside: () => {
+      for (let i = 0; i < 220; i++) {
+        const x = artRng() * w, y = artRng() * h;
+        ctx.fillStyle = `rgba(200,220,240,${artRng() * 0.13})`;
+        ctx.fillRect(x, y, 1, 2 + artRng() * 5);
+      }
+      const px = 50 + artRng() * 30;
+      ctx.strokeStyle = `rgba(${c3},0.45)`;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(px, h * 0.3, 28, 58);
+      ctx.fillStyle = `rgba(${c3},0.04)`;
+      ctx.fillRect(px, h * 0.3, 28, 58);
+      const fy = h * 0.28 + artRng() * 20 - 10;
+      const fx = w - 60 - artRng() * 40;
+      ctx.fillStyle = `rgba(255,224,0,${0.4 + artRng() * 0.2})`;
+      ctx.fillRect(fx, fy + 14, 14, 38);
+      ctx.beginPath();
+      ctx.arc(fx + 7, fy + 6, 8, 0, Math.PI * 2);
+      ctx.fill();
+      const lineCount = 3 + Math.floor(artRng() * 3);
+      ctx.strokeStyle = `rgba(${c1},0.12)`;
+      ctx.lineWidth = 1;
+      for (let l = 0; l < lineCount; l++) {
+        ctx.beginPath();
+        ctx.moveTo(0, h * 0.55 + l * 14);
+        ctx.bezierCurveTo(w * 0.33, h * 0.45 + l * 14, w * 0.66, h * 0.6 + l * 14, w, h * 0.55 + l * 14);
+        ctx.stroke();
+      }
+    },
+    engine: () => {
+      const drawGear = (cx, cy, r, teeth) => {
+        const col = artRng() > 0.5 ? c1 : artRng() > 0.5 ? c2 : c3;
+        const a = 0.2 + artRng() * 0.25;
+        ctx.strokeStyle = `rgba(${col},${a})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+        for (let i = 0; i < teeth; i++) {
+          const ang = (i / teeth) * Math.PI * 2;
+          ctx.beginPath();
+          ctx.moveTo(cx + Math.cos(ang) * r, cy + Math.sin(ang) * r);
+          ctx.lineTo(cx + Math.cos(ang) * (r + 7 + artRng() * 4), cy + Math.sin(ang) * (r + 7 + artRng() * 4));
+          ctx.stroke();
+        }
+      };
+      drawGear(w * 0.18, h * 0.42, 28 + artRng() * 12, 10 + Math.floor(artRng() * 4));
+      drawGear(w * 0.5, h * 0.52, 42 + artRng() * 14, 14 + Math.floor(artRng() * 4));
+      drawGear(w * 0.82, h * 0.38, 24 + artRng() * 10, 9 + Math.floor(artRng() * 3));
+      const pistons = 4 + Math.floor(artRng() * 3);
+      for (let i = 0; i < pistons; i++) {
+        const x = 28 + i * ((w - 56) / pistons);
+        ctx.strokeStyle = `rgba(255,224,0,${0.15 + artRng() * 0.15})`;
+        ctx.lineWidth = 2 + artRng() * 2;
+        ctx.beginPath();
+        ctx.moveTo(x, h - 14);
+        ctx.lineTo(x, h * 0.45 + Math.sin(i * 1.3) * 18 + artRng() * 10 - 5);
+        ctx.stroke();
+      }
+    },
+    rooftop: () => {
+      for (let i = 0; i < 600; i++) {
+        const x = artRng() * w, y = artRng() * h * 0.65;
+        const col = artRng() > 0.5 ? c1 : '200,220,240';
+        ctx.fillStyle = `rgba(${col},${artRng() * 0.18})`;
+        ctx.fillRect(x, y, 1.5, 1.5);
+      }
+      const towerCount = 3 + Math.floor(artRng() * 3);
+      for (let i = 0; i < towerCount; i++) {
+        const x = 40 + i * ((w - 80) / towerCount) + artRng() * 20 - 10;
+        ctx.strokeStyle = `rgba(${c2},${0.18 + artRng() * 0.18})`;
+        ctx.lineWidth = 1 + artRng();
+        ctx.beginPath(); ctx.moveTo(x, h); ctx.lineTo(x, 8 + artRng() * 12); ctx.stroke();
+        const bars = 3 + Math.floor(artRng() * 3);
+        for (let j = 1; j <= bars; j++) {
+          const by = h - j * (h / (bars + 1));
+          const bw2 = 12 + artRng() * 10;
+          ctx.beginPath(); ctx.moveTo(x - bw2, by); ctx.lineTo(x + bw2, by); ctx.stroke();
+        }
+      }
+      const gr = ctx.createLinearGradient(0, h * 0.5, 0, h);
+      gr.addColorStop(0, `rgba(${c1},0)`);
+      gr.addColorStop(1, `rgba(${c1},0.07)`);
+      ctx.fillStyle = gr;
+      ctx.fillRect(0, 0, w, h);
+    },
+  };
+
+  (arts[type] || arts.gap)();
+}
+
+// ============================================================
+// STATE
+// ============================================================
+let state = { currentRoom: null, history: [], steps: 0 };
+let SESSION_SEED_HEX = '';
+
+// Per-room seed offsets so each room's art is independently seeded
+const ROOM_OFFSETS = {
+  the_gap: 1, the_archive: 2, the_signal_room: 3, sublevel_zero: 4,
+  the_mirror_room: 5, the_broadcast_booth: 6, the_outside_inside: 7,
+  the_engine_room: 8, the_rooftop: 9,
+};
+
+// ============================================================
+// RENDER
+// ============================================================
+function navigateTo(roomId) {
+  // Flash
+  const flash = document.createElement('div');
+  flash.className = 'transition-flash';
+  document.body.appendChild(flash);
+  setTimeout(() => flash.remove(), 400);
+
+  const room = WORLD.rooms[roomId];
+  if (!state.currentRoom || state.currentRoom !== room) {
+    if (state.currentRoom) state.history.push(state.currentRoom.name);
+  }
+  state.currentRoom = room;
+  state.steps++;
+
+  document.getElementById('breadcrumb').textContent = room.path;
+  document.getElementById('step-count').textContent = `STEPS: ${state.steps}`;
+
+  // Seed narrative rng per room+session+step for variety
+  const roomOffset = ROOM_OFFSETS[roomId] || 0;
+  const numericSeed = parseInt(SESSION_SEED_HEX, 16);
+  seedRng(numericSeed + roomOffset * 1337 + state.steps * 7);
+
+  // Pick narrative passage
+  const narratives = NARRATIVES[roomId] || NARRATIVES.the_gap;
+  const narrative = pick(narratives);
+
+  // Pick ambient detail
+  const ambients = AMBIENT[roomId] || AMBIENT.the_gap;
+  const ambient = pick(ambients);
+
+  // Pick sigil
+  const sigil = pick(SIGILS);
+
+  // Draw room art (independent seed)
+  seedArtRng(numericSeed + roomOffset * 9999);
+  setTimeout(() => drawRoomArt(room.art, roomOffset), 20);
+
+  // Render narrative
+  const panel = document.getElementById('narrative-panel');
+  panel.setAttribute('data-sigil', sigil);
+  const narEl = document.getElementById('narrative-text');
+  narEl.classList.remove('fade-in');
+  void narEl.offsetWidth;
+  narEl.classList.add('fade-in');
+  narEl.textContent = narrative;
+
+  // Render ambient
+  const ambEl = document.getElementById('ambient-strip');
+  ambEl.classList.remove('fade-in');
+  void ambEl.offsetWidth;
+  ambEl.classList.add('fade-in');
+  ambEl.textContent = '// ' + ambient;
+
+  // Render choices with flavor text
+  const choicesEl = document.getElementById('choices');
+  choicesEl.innerHTML = '';
+  const flavorSets = EXIT_FLAVORS[roomId] || [];
+
+  room.exits.forEach((exit, idx) => {
+    const flavors = flavorSets[idx] || [''];
+    const flavor = pick(flavors);
+
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn stagger-in';
+    btn.style.animationDelay = `${idx * 0.08 + 0.2}s`;
+    btn.innerHTML = `
+      <div class="choice-meta">
+        <span class="choice-num">0${idx + 1}</span>
+        <span class="choice-icon">${exit.icon}</span>
+      </div>
+      <div class="choice-body">
+        <span class="choice-label">${exit.label}</span>
+        <span class="choice-flavor">${flavor}</span>
+      </div>
+    `;
+    btn.onclick = () => navigateTo(exit.room);
+    choicesEl.appendChild(btn);
+  });
+}
+
+// ============================================================
+// START
+// ============================================================
+function startGame() {
+  SESSION_SEED_HEX = getSessionSeed();
+  document.getElementById('intro-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'block';
+  document.getElementById('visit-seed').textContent = `SESSION: ${SESSION_SEED_HEX.toUpperCase()}`;
+
+  window.addEventListener('resize', () => {
+    if (state.currentRoom) drawRoomArt(state.currentRoom.art, ROOM_OFFSETS[Object.keys(WORLD.rooms).find(k => WORLD.rooms[k] === state.currentRoom)] || 1);
+  });
+
+  navigateTo(WORLD.entrypoint);
+}
+
+// Show seed on intro
+document.getElementById('intro-seed-display').textContent =
+  `SESSION: ${getSessionSeed().toUpperCase()}`;
+</script>
+</body>
+</html>
