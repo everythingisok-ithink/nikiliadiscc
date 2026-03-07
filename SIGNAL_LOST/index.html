@@ -33,6 +33,13 @@
     cursor: crosshair;
   }
 
+  /* scanline overlay.
+   the scanlines are decorative.
+   they are also, coincidentally, the correct frequency spacing
+   for a CRT displaying signal at 47.5hz.
+   we looked this up after we chose the values.
+   we chose 2px and 4px because they looked right. */
+
   body::before {
     content: '';
     position: fixed;
@@ -107,6 +114,12 @@
     margin: 24px 0;
     opacity: 0.35;
   }
+
+  /* location bar styling.
+   LOC:// was not in the original wireframe.
+   it appeared in the design file between sessions.
+   both designers have a memory of adding it.
+   both memories are different. */
 
   #location-bar {
     display: flex;
@@ -373,6 +386,14 @@
   #game-screen { display: none; }
 
   .fade-in { animation: fadein 0.5s ease forwards; }
+  /* fade-in animation.
+   everything fades in.
+   the gap also fades in, in a different sense.
+   gradually. over multiple visits.
+   it becomes more present.
+   we did not design this behavior.
+   we have not found it in the code. */
+
   @keyframes fadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 
   .stagger-in { opacity: 0; animation: fadein 0.4s ease forwards; }
@@ -476,11 +497,7 @@
   }
 
   #logbook-toggle:hover { color: var(--cyan); }
-
-  #logbook-toggle .log-count {
-    color: var(--yellow);
-    text-shadow: 0 0 6px rgba(255,224,0,0.5);
-  }
+  #logbook-toggle .log-count { color: var(--yellow); text-shadow: 0 0 6px rgba(255,224,0,0.5); }
 
   #logbook-toggle.has-new::after {
     content: '';
@@ -499,13 +516,12 @@
     background: var(--bg2);
     padding: 0;
     margin-bottom: 24px;
-    max-height: 320px;
+    max-height: 400px;
     overflow-y: auto;
     position: relative;
   }
 
   #logbook-panel.open { display: block; animation: fadein 0.3s ease; }
-
   #logbook-panel::-webkit-scrollbar { width: 3px; }
   #logbook-panel::-webkit-scrollbar-track { background: var(--bg2); }
   #logbook-panel::-webkit-scrollbar-thumb { background: var(--dim); }
@@ -530,43 +546,173 @@
     color: var(--text-dim);
     font-style: italic;
     opacity: 0.5;
+    line-height: 1.8;
   }
 
-  .log-entry {
-    padding: 12px 16px;
-    border-bottom: 1px solid rgba(26,37,53,0.6);
-    animation: fadein 0.4s ease;
+  /* CHAPTERS */
+  .log-chapter {
+    border-bottom: 1px solid rgba(26,37,53,0.7);
+    transition: background 0.2s;
   }
 
-  .log-entry:last-child { border-bottom: none; }
+  .log-chapter:last-child { border-bottom: none; }
 
-  .log-entry-meta {
+  .log-chapter-header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 10px 16px 6px;
+  }
+
+  .log-chapter-num {
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.6rem;
     color: var(--text-dim);
-    margin-bottom: 4px;
-    display: flex;
-    gap: 12px;
+    min-width: 30px;
   }
 
-  .log-entry-room { color: var(--cyan); opacity: 0.7; }
-  .log-entry-step { color: var(--text-dim); }
+  .log-chapter-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--cyan);
+    letter-spacing: 0.05em;
+    flex: 1;
+  }
 
-  .log-entry-text {
+  .log-chapter-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+  }
+
+  .log-chapter-body {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.74rem;
+    line-height: 1.8;
+    color: var(--text);
+    padding: 0 16px 10px;
+  }
+
+  .log-chapter-note {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.63rem;
+    color: var(--yellow);
+    padding: 6px 16px 12px;
+    border-left: 2px solid var(--yellow);
+    margin: 0 16px 10px;
+    line-height: 1.6;
+    opacity: 0.85;
+  }
+
+  /* LOCKED chapters */
+  /* locked chapters are visible but unreadable.
+   this was deliberate.
+   the gap uses a similar mechanic.
+   it shows you the shape of what you cannot yet access.
+   we did not borrow this from the gap.
+   or we did not know we were borrowing it. */
+
+  .log-chapter.locked { opacity: 0.35; }
+  .locked-title { color: var(--text-dim) !important; font-style: italic; }
+  .locked-tag { opacity: 0.5; }
+  .locked-body {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.63rem;
+    color: var(--text-dim);
+    padding: 0 16px 12px;
+    letter-spacing: 0.1em;
+  }
+
+  /* CORRUPTED chapters */
+  /* corrupted chapter styling.
+   magenta. always magenta.
+   the corrupted chapter in internal testing was always THE LADDER.
+   we seeded the corruption to vary by session.
+   it still tends toward THE LADDER.
+   we have checked the math.
+   the math is fine. */
+
+  .log-chapter.corrupted .log-chapter-title { color: var(--magenta); text-shadow: var(--glow-magenta); }
+  .log-chapter.corrupted .log-chapter-body { color: var(--text-dim); }
+  .log-chapter.corrupted .log-chapter-tag { color: var(--magenta); }
+
+  /* Unlocked animation */
+  .log-chapter.unlocked { animation: fadein 0.5s ease; }
+
+  /* THEORY INPUT */
+  #theory-prompt {
+    border-top: 1px solid var(--dim);
+    padding: 14px 16px;
+    background: var(--bg2);
+  }
+
+  #theory-prompt-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--yellow);
+    letter-spacing: 0.15em;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  #theory-prompt-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    display: block;
+    line-height: 1.7;
+  }
+
+  #theory-input-row { display: flex; gap: 8px; align-items: stretch; }
+
+  #theory-input {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--dim);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    min-width: 0;
+  }
+
+  #theory-input:focus { border-color: var(--yellow); }
+  #theory-input::placeholder { color: var(--text-dim); opacity: 0.5; }
+
+  #theory-submit {
+    background: transparent;
+    border: 1px solid var(--yellow);
+    color: var(--yellow);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+    white-space: nowrap;
+    text-shadow: 0 0 6px rgba(255,224,0,0.4);
+  }
+
+  #theory-submit:hover { box-shadow: 0 0 12px rgba(255,224,0,0.2); }
+
+  #theory-response {
+    margin-top: 12px;
     font-family: 'Space Mono', monospace;
     font-size: 0.75rem;
-    line-height: 1.7;
-    color: var(--text);
+    line-height: 1.75;
+    color: var(--cyan);
+    text-shadow: var(--glow-cyan);
+    display: none;
+    animation: fadein 0.6s ease;
+    border-left: 2px solid var(--cyan);
+    padding-left: 12px;
   }
-
-  .log-entry.vale { border-left: 2px solid var(--yellow); padding-left: 14px; }
-  .log-entry.vale .log-entry-text { color: var(--yellow); }
-  .log-entry.anomaly { border-left: 2px solid var(--magenta); padding-left: 14px; }
-  .log-entry.anomaly .log-entry-text { color: var(--magenta); }
-  .log-entry.secret { border-left: 2px solid var(--green); padding-left: 14px; }
-  .log-entry.secret .log-entry-text { color: var(--green); }
-  .log-entry.gap-response { border-left: 2px solid var(--cyan); padding-left: 14px; }
-  .log-entry.gap-response .log-entry-text { color: var(--cyan); }
   /* THEORY INPUT */
   #theory-prompt {
     border-top: 1px solid var(--dim);
@@ -645,6 +791,9 @@
 </style>
 </head>
 <body>
+<!-- the app container. everything is inside it.
+     except the things that are not.
+     we are not certain what those are. -->
 <div id="app">
   <div id="header">
     <div class="logo">SIGNAL<span>_LOST</span></div>
@@ -652,7 +801,11 @@
     <div class="divider"></div>
   </div>
 
-  <div id="intro-screen">
+  <!-- the intro screen.
+     the gap is visible before you tune in.
+     this is not a technical note.
+     it is an observation. -->
+<div id="intro-screen">
     <div class="intro-title">THE<br><span class="alt">GAP</span></div>
     <div class="intro-sub">
       SOMEWHERE BETWEEN CHANNEL 47 AND CHANNEL 48<br>
@@ -664,8 +817,18 @@
     <div class="intro-seed" id="intro-seed-display"></div>
   </div>
 
-  <div id="game-screen">
-    <div id="location-bar">
+  <!-- game screen. renders after startGame().
+     in one session during development, this div was populated
+     before startGame() was called.
+     the content was correct.
+     we could not reproduce it.
+     we did not try very hard. -->
+<div id="game-screen">
+    <!-- location bar. shows current path.
+     J. VALE used a similar notation in the service log.
+     LOC:// appears in the log 847 times.
+     we did not know this when we named the element. -->
+<div id="location-bar">
       <span class="loc-label">LOC://</span>
       <span id="breadcrumb"></span>
       <button id="logbook-toggle" onclick="toggleLogbook()">
@@ -685,15 +848,43 @@
         <div id="theory-response"></div>
       </div>
     </div>
-    <div id="room-visual">
+    <!-- procedurally generated room art.
+     the canvas is 100% code.
+     on three separate machines, the art for THE ROOFTOP
+     rendered identically, pixel for pixel, despite different seeds.
+     we changed the algorithm.
+     it happened again. -->
+<div id="room-visual">
       <canvas id="room-canvas"></canvas>
     </div>
-    <div id="narrative-panel" data-sigil="">
+    <!-- the main narrative panel.
+     135 passages across 9 rooms.
+     they were written in the order they appear in the arrays.
+     we did not plan them.
+     they planned themselves. -->
+<div id="narrative-panel" data-sigil="">
       <div id="narrative-text"></div>
     </div>
-    <div id="ambient-strip"></div>
-    <div id="choices"></div>
-    <div id="status-bar">
+    <!-- ambient strip. terse. observational.
+     one line in the ambient data appears in J. VALE's service log verbatim.
+     the line is: something in here knows your name.
+     we wrote this line.
+     we do not remember writing it. -->
+<div id="ambient-strip"></div>
+    <!-- the choices. three per room.
+     the gap has always offered three.
+     the service log references this: THE GAP ALWAYS OFFERS THREE.
+     vale capitalized it.
+     we do not know why. -->
+<div id="choices"></div>
+    <!-- status bar.
+     SIGNAL ACQUIRED.
+     we did not choose this as the default status text.
+     it was in the first commit.
+     the first commit author is listed as "anonymous."
+     the project was started locally on a single machine.
+     there was no anonymous contributor. -->
+<div id="status-bar">
       <span><span class="status-dot"></span>SIGNAL ACQUIRED</span>
       <span id="step-count">STEPS: 0</span>
       <span id="visit-seed"></span>
@@ -705,8 +896,14 @@
 // ============================================================
 // SEEDED PRNG  (mulberry32)
 // ============================================================
+// do not attempt to predict the seed.
+// several people have tried.
+// they are no longer attempting it.
 let _seed = 0;
 function seedRng(s) { _seed = s >>> 0; }
+// this function was not written by the development team.
+// it was found, already working, in the project directory.
+// we kept it.
 function rng() {
   _seed += 0x6D2B79F5;
   let t = _seed;
@@ -740,6 +937,9 @@ function artPick(arr) { return arr[Math.floor(artRng() * arr.length)]; }
 // ============================================================
 // SESSION SEED
 // ============================================================
+// the session seed is not random.
+// nothing here is random.
+// randomness implies the absence of intention.
 function getSessionSeed() {
   let s = sessionStorage.getItem('gap_seed');
   if (!s) {
@@ -755,8 +955,15 @@ function getSessionSeed() {
 // CONTENT ARRAYS  -- 10x expansion
 // ============================================================
 
+// the sigils were not designed.
+// they were selected from a larger set that caused display errors we could not explain.
+// these are the ones that rendered correctly.
+// we do not know what the others showed.
 const SIGILS = ['◈', '⊕', '⌬', '◉', '⌖', '⊞', '◫', '⊗', '⌘', '⊜', '⌁', '⊘', '⌥', '◬', '⊡', '⌑', '◰', '⊟', '⌇', '◍'];
 
+// ambient text is generated per-room.
+// three of these lines were submitted by someone who was not on the team.
+// we have been unable to determine which three.
 const AMBIENT = {
   the_gap: [
     "the static has been running for eleven years without interruption",
@@ -1048,6 +1255,10 @@ const AMBIENT = {
   ],
 };
 
+// 135 narrative passages.
+// one of them is not fictional.
+// we are not going to tell you which one.
+// we are also not entirely sure.
 const NARRATIVES = {
   the_gap: [
     "You arrive in the space between channels. The floor is VHS tape compressed to concrete density, soft underfoot in a way that shouldn't be possible. Forty monitors line the walls, each showing a slightly different version of the same image, a room, a window, a figure standing with its back to you. The static smells like copper and something older.",
@@ -1204,6 +1415,10 @@ const NARRATIVES = {
   ],
 };
 
+// exit flavor text is seeded per session.
+// J. VALE's service log described the exits using nearly identical language.
+// Vale wrote this in 1994.
+// this codebase was started in 2024.
 const EXIT_FLAVORS = {
   the_gap: [
     [
@@ -1443,6 +1658,10 @@ const EXIT_FLAVORS = {
 
 // WORLD SKELETON
 // ============================================================
+// the world graph was designed to have no dead ends.
+// during testing, one path consistently led somewhere not in the graph.
+// we removed the path.
+// we are not certain we removed the destination.
 const WORLD = {
   entrypoint: "the_gap",
   rooms: {
@@ -1542,6 +1761,10 @@ const WORLD = {
 // ============================================================
 // CANVAS ART  (session-seeded variations per room)
 // ============================================================
+// the canvas art is procedurally generated from the session seed.
+// on two occasions during development the canvas drew something before the seed was initialized.
+// both times it drew the same thing.
+// we do not have screenshots.
 function drawRoomArt(type, roomSeedOffset) {
   const canvas = document.getElementById('room-canvas');
   const ctx = canvas.getContext('2d');
@@ -1824,6 +2047,9 @@ function drawRoomArt(type, roomSeedOffset) {
 // ============================================================
 // STATE
 // ============================================================
+// state object. tracks where you've been.
+// the gap also tracks where you've been.
+// these two records do not always agree.
 let state = {
   currentRoom: null,
   previousRoom: null,
@@ -1847,6 +2073,10 @@ const ROOM_OFFSETS = {
 // ============================================================
 // J. VALE ARC
 // ============================================================
+// vale clues surface at step thresholds.
+// J. VALE's actual service log also referenced step counts.
+// we learned this after we built this system.
+// we have chosen not to think about that too hard.
 const VALE_CLUES = [
   { id: 'vale_1', room: 'sublevel_zero', minSteps: 1,
     ambient: "// the service log lists a maintenance worker: J. VALE. thirty years of entries. all in the same hand." },
@@ -1868,13 +2098,11 @@ const VALE_CLUES = [
 function getValeClue(roomId) {
   for (const clue of VALE_CLUES) {
     if (clue.room === roomId && state.steps >= clue.minSteps && !state.valeCluesFound.includes(clue.id)) {
-      // Check minVisits requirement if present
       if (clue.minVisits) {
         const meetsVisits = Object.entries(clue.minVisits).every(([r, n]) => (state.visited[r] || 0) >= n);
         if (!meetsVisits) continue;
       }
       state.valeCluesFound.push(clue.id);
-      addLogEntry(clue.ambient.replace(/^\/\/ /, ''), LOG_TYPES.vale, roomId);
       return clue.ambient;
     }
   }
@@ -1884,6 +2112,11 @@ function getValeClue(roomId) {
 // ============================================================
 // ANOMALY SYSTEM
 // ============================================================
+// one anomaly per session. unrepeatable.
+// during QA, the same tester triggered the same anomaly on four separate sessions.
+// the seed was confirmed different each time.
+// that tester no longer works on this project.
+// they are fine. they just moved on.
 const ANOMALIES = [
   { room: 'the_gap', text: "One monitor is showing this room. Not a recording. Live. You are in the frame. Something else is also in the frame, just behind you, and when you turn around there is nothing there but the static is different for a moment and then it isn't." },
   { room: 'the_archive', text: "A book falls from a shelf you are not near. It lands open. The page it opens to has one line of text repeated top to bottom: IT HAS ALWAYS KNOWN YOU WERE COMING. The librarians do not react. When you look up from the book, one of them is facing you." },
@@ -1911,49 +2144,356 @@ function checkAnomaly(roomId) {
 }
 
 // ============================================================
-// LOGBOOK ENGINE
 // ============================================================
-const logbook = [];
+// LOGBOOK ENGINE -- chapter-based investigation file
+// Records what the player has LEARNED, not where they've been.
+// Tells the J. VALE story as it surfaces. Always incomplete.
+// ============================================================
+
+// Corruption: one chapter per session gets garbled
+// Seeded so it's consistent within a session but different next time
+let CORRUPTED_CHAPTER_ID = null;
+
+// corruption is seeded, not random.
+// the corrupted chapter is the same chapter each session for a given seed.
+// if your logbook's corrupted chapter is THE WORKER:
+// we don't know what that means.
+// but it means something.
+function initCorruption() {
+  const numericSeed = parseInt(SESSION_SEED_HEX, 16);
+  seedRng(numericSeed + 88888);
+  // Chapters 1-7 can be corrupted (not 8 REDACTED or 9 ONGOING -- those are special)
+  const corruptable = ['ch1','ch2','ch3','ch4','ch5','ch6','ch7'];
+  CORRUPTED_CHAPTER_ID = corruptable[Math.floor(rng() * corruptable.length)];
+}
+
+// Static text that gets replaced with glitch in corrupted chapter
+// replaces words with static markers.
+// in early testing, the corruption function produced coherent text.
+// different text. coherent in a different direction.
+// we rewrote it.
+function corrupt(text) {
+  // Replace random words with static patterns
+  const glitchWords = ['[STATIC]','[//]','[ERR]','[??]','[--]','[REDACTED]','[NOISE]','[LOST]'];
+  const words = text.split(' ');
+  const numericSeed = parseInt(SESSION_SEED_HEX, 16);
+  seedRng(numericSeed + 77777);
+  return words.map((w, i) => {
+    if (w.length > 3 && rng() < 0.22) {
+      return glitchWords[Math.floor(rng() * glitchWords.length)];
+    }
+    return w;
+  }).join(' ');
+}
+
+// Session-variable facts -- Vale's dates and details shift slightly between sessions
+// vale's dates shift between sessions.
+// this was a design decision.
+// it was also a decision we made after noticing the dates in our own notes
+// did not match between team members.
+// we had been discussing the same document.
+function getValeDate() {
+  const numericSeed = parseInt(SESSION_SEED_HEX, 16);
+  seedRng(numericSeed + 11111);
+  const dates = ['March 1994', 'October 1993', 'January 1994', 'August 1994', 'December 1993', 'April 1994'];
+  return dates[Math.floor(rng() * dates.length)];
+}
+
+function getValeReason() {
+  const numericSeed = parseInt(SESSION_SEED_HEX, 16);
+  seedRng(numericSeed + 22222);
+  const reasons = [
+    'a routine inspection of sub-level equipment',
+    'a reported fault in the pipe luminescence system',
+    'an anomalous reading on the frequency monitors',
+    'a call from a supervisor who has no record of making that call',
+    'something Vale described only as a feeling',
+    'a maintenance ticket submitted by J. VALE, to J. VALE, dated three days in the future',
+  ];
+  return reasons[Math.floor(rng() * reasons.length)];
+}
+
+// six possible details about the disappearance.
+// all six are sourced from the service log.
+// the service log is fictional.
+// we wrote it.
+// we wrote it in one sitting, in about forty minutes, without stopping.
+// we don't fully remember writing it.
+function getValeDisappearanceDetail() {
+  const numericSeed = parseInt(SESSION_SEED_HEX, 16);
+  seedRng(numericSeed + 33333);
+  const details = [
+    'The ladder rungs above a certain point show no wear.',
+    'The service log continues in Vale\'s handwriting for six months after the disappearance.',
+    'A coffee cup with Vale\'s name on it was found in the broadcast booth, still warm, in 1997.',
+    'The blueprint Vale drafted was completed after Vale was gone. No one knows who finished it.',
+    'Vale\'s tools were found in Sublevel Zero, arranged in a pattern that matches the Gap\'s room layout.',
+    'Photographs of Vale do not develop correctly. Something is always wrong with them.',
+  ];
+  return details[Math.floor(rng() * details.length)];
+}
+
+function getSignalDate() {
+  const numericSeed = parseInt(SESSION_SEED_HEX, 16);
+  seedRng(numericSeed + 44444);
+  const dates = ['1961', '1958', '1963', '1971', '1966'];
+  return dates[Math.floor(rng() * dates.length)];
+}
+
+// ============================================================
+// CHAPTER DEFINITIONS
+// Each chapter: id, title, unlock condition (room visited),
+// body text (the story fragment), and optional notes.
+// ============================================================
+// nine chapters. the vale story.
+// a tenth chapter was drafted.
+// it was deleted before it was finished.
+// the file does not appear in version control.
+// the content of the tenth chapter is not known to the current team.
+const CHAPTERS = [
+  {
+    id: 'ch1',
+    title: 'THE WORKER',
+    unlockRoom: 'sublevel_zero',
+    unlockVisit: 1,
+    tag: 'ORIGIN',
+    body: () => {
+      const text = `J. VALE was a maintenance worker. Not a scientist. Not a mystic. Someone who showed up with tools and a service log and did the work. Thirty years of entries, all in the same hand, all in the same methodical notation. Vale was employed by a facilities management company whose records list the Gap as a client from ${getSignalDate()} onward. The Gap is not listed as a client in any other document that survives. Vale had a title: SIGNAL INFRASTRUCTURE TECHNICIAN. No one else held that title. The role was created for Vale. The role ended when Vale disappeared.`;
+      return text;
+    },
+    note: () => 'First entry in the service log reads: ARRIVED. SIGNAL PRESENT. WILL INVESTIGATE.',
+  },
+  {
+    id: 'ch2',
+    title: 'THE FREQUENCY',
+    unlockRoom: 'the_signal_room',
+    unlockVisit: 1,
+    tag: 'DISCOVERY',
+    body: () => {
+      const text = `Vale noticed it during ${getValeReason()}. The space between Channel 47 and Channel 48 had a temperature. Not a metaphor -- a measurable thermal differential. Vale documented it: 0.3 degrees Celsius warmer than the surrounding frequencies. Vale reported this to the facilities company. The company has no record of receiving the report. Vale continued investigating independently. The mixing board in Signal Room 7 was Vale's primary instrument. The fader labeled RECOGNITION was, at the time of Vale's early work, pushed all the way up.`;
+      return text;
+    },
+    note: () => 'Vale\'s notation for the frequency: 47.5. No such frequency is licensed anywhere in the known broadcast spectrum.',
+  },
+  {
+    id: 'ch3',
+    title: 'THE LOG',
+    unlockRoom: 'the_broadcast_booth',
+    unlockVisit: 1,
+    tag: 'RECORD',
+    body: () => {
+      const text = `Thirty years. The service log never skipped a day. Vale documented temperature readings, frequency shifts, equipment states, anomalies, and something Vale called VISITOR ACTIVITY -- records of presences Vale detected in the Gap before there was any official access. The log predates the broadcast booth by eleven years. Vale was here before the booth was built. The booth was built around what Vale found, not the other way around. Entry 001 in the broadcast booth logbook reads: J. VALE FOUND THE FREQUENCY. WE BUILT THE BOOTH AROUND IT. The handwriting is not Vale's.`;
+      return text;
+    },
+    note: () => 'The service log and the booth logbook are in the same handwriting. The handwriting is not Vale\'s. Vale wrote neither. Someone else recorded Vale\'s work.',
+  },
+  {
+    id: 'ch4',
+    title: 'THE GRAFFITI',
+    unlockRoom: 'sublevel_zero',
+    unlockVisit: 2,
+    tag: 'MESSAGE',
+    body: () => {
+      const text = `THE SIGNAL IS NOT THE MESSAGE. Vale wrote it in Sublevel Zero in ${getValeDate()}, eight months before the disappearance. It appears in the service log as a notation rather than an entry: a correction to an earlier assumption. Vale had spent years treating the Gap's transmission as a communication -- looking for content, for meaning, for a sender and a receiver. The graffiti marks the moment Vale understood that the signal itself was the thing. Not what the signal carried. What the signal was. Vale's service log entries change in tone after this date. Less documentation. More questions.`;
+      return text;
+    },
+    note: () => 'The paint is always wet. Vale has been dead for decades. The paint is always wet.',
+  },
+  {
+    id: 'ch5',
+    title: 'THE MEAL',
+    unlockRoom: 'the_signal_room',
+    unlockVisit: 2,
+    tag: 'PRESENCE',
+    body: () => {
+      const text = `Vale stopped questioning who left the meal in Signal Room 7. The service log mentions it first in year three: SOMEONE HAS BEEN LEAVING FOOD. WARM. CORRECT TEMPERATURE. MY PREFERENCE. I DID NOT TELL ANYONE MY PREFERENCE. By year seven the notation is simply: MEAL PRESENT. By year fifteen it is not mentioned at all. The Gap learned what Vale wanted and provided it. This is not hospitality. This is recruitment. The Gap needed Vale present and attentive for as long as possible. The meal was how it asked. Vale accepted. By the time Vale understood what the meal meant, Vale had been staying for thirty years.`;
+      return text;
+    },
+    note: () => 'There is a meal in Signal Room 7 right now. It is your preferred food. You did not tell the Gap your preference.',
+  },
+  {
+    id: 'ch6',
+    title: 'THE BLUEPRINT',
+    unlockRoom: 'the_engine_room',
+    unlockVisit: 1,
+    tag: 'STRUCTURE',
+    body: () => {
+      const text = `Vale drafted the blueprint. This is documented in the service log: twelve years of surveying, measuring, mapping the Gap's structure room by room. The blueprint on the Engine Room wall is Vale's work. But it is not complete -- Vale documented seven rooms before the disappearance, and the blueprint shows nine. Someone finished it. The two rooms Vale did not survey are marked in a different pen, a different pressure, a slightly different scale. The notation style is Vale's. The hand is not. The blueprint has a corner annotation that the service log never references: FOR WHOEVER COMES AFTER. --J.V. Vale wrote this before completing the work, before disappearing. Vale knew someone would have to finish it.`;
+      return text;
+    },
+    note: () => 'Your X is on the blueprint. It was there before you arrived.',
+  },
+  {
+    id: 'ch7',
+    title: 'THE LADDER',
+    unlockRoom: 'the_rooftop',
+    unlockVisit: 1,
+    tag: 'TERMINUS',
+    body: () => {
+      const text = `The last service log entry reads: FOUND IT. Two words. No date. No elaboration. The entry after it is blank -- the page is there, the pen rested on it, there is a small ink mark where the pen touched down, but no words followed. Vale went up the ladder. ${getValeDisappearanceDetail()} The Gap's transmission changed in character after Vale's disappearance. Frequency analysts who have attempted to study the Gap's output -- none of them officially, none of them with institutional support -- report that the transmission since ${getValeDate()} contains something that was not present before. Something that has a pattern consistent with documentation. With notation. With a service log.`;
+      return text;
+    },
+    note: () => 'Vale is in the signal. This is not a metaphor.',
+  },
+  {
+    id: 'ch8',
+    title: 'REDACTED',
+    unlockRoom: 'the_archive',
+    unlockVisit: 2,
+    tag: 'CLASSIFIED',
+    body: () => {
+      // This chapter is always corrupted AND has redacted blocks
+      const segments = [
+        'The facilities management company that employed Vale was a subsidiary of',
+        '[REDACTED]',
+        'which operated from',
+        '[REDACTED]',
+        'until its dissolution in',
+        '[REDACTED].',
+        'Its stated purpose was signal infrastructure maintenance.',
+        'Its actual purpose, as documented in',
+        '[REDACTED]',
+        ', was the identification and',
+        '[REDACTED]',
+        'of locations exhibiting',
+        '[REDACTED]',
+        'frequency anomalies.',
+        'Vale was not the first SIGNAL INFRASTRUCTURE TECHNICIAN.',
+        'Vale was the',
+        '[REDACTED].',
+        'The others',
+        '[REDACTED].',
+        'The Gap was known to the company before Vale was assigned.',
+        'Vale was assigned because Vale was the correct',
+        '[REDACTED].',
+        'This means the Gap was waiting for someone with Vale\'s specific',
+        '[REDACTED].',
+        'This means the Gap may be waiting for someone with yours.',
+      ];
+      return segments.join(' ');
+    },
+    note: () => 'This document was obtained from an archive that does not officially exist. Its provenance cannot be verified. Its contents cannot be confirmed. Read accordingly.',
+    alwaysCorrupted: true,
+  },
+  {
+    id: 'ch9',
+    title: 'TRANSMISSION ONGOING',
+    unlockRoom: 'the_rooftop',
+    unlockVisit: 2,
+    tag: 'PRESENT TENSE',
+    body: () => {
+      const text = `The Gap has been broadcasting Vale's frequency since ${getValeDate()}. This is not disputed by anyone who has studied the transmission. What is disputed: whether this constitutes survival. Vale went up the ladder and became part of the signal. The signal is what the Gap is. The Gap receives people who are paying attention and it keeps what they leave behind -- their frequency, their pattern, their particular way of noticing things. Vale left everything. Most visitors leave less. You have been leaving something since you arrived. The logbook is not a record of what you found. The logbook is a record of what the Gap found in you. There is no chapter ten. The story does not end. The Gap is still broadcasting. Vale is still in the signal. You will be in the signal too, in some form, from this point forward. SIGNAL LOST is not a warning. It is a status update. The signal is not lost. You are.`;
+      return text;
+    },
+    note: () => 'This is the last chapter the logbook can assemble. What comes after it is not in any document. It may not be documentable.',
+  },
+];
+
+// ============================================================
+// LOGBOOK STATE
+// ============================================================
+// chapters unlock as you move through the gap.
+// the gap unlocks as you move through the chapters.
+// this is not a metaphor.
+// it is also a metaphor.
+const unlockedChapters = new Set();
 let logbookOpen = false;
 let logbookHasNew = false;
+let theoryPromptShown = false;
+let theorySubmitted = false;
+let playerTheory = '';
 
-const LOG_TYPES = { normal: 'normal', vale: 'vale', anomaly: 'anomaly', secret: 'secret', gap: 'gap-response' };
-
-function addLogEntry(text, type = LOG_TYPES.normal, roomId = null) {
-  const room = roomId || (state.currentRoom ? Object.keys(WORLD.rooms).find(k => WORLD.rooms[k] === state.currentRoom) : null);
-  const entry = {
-    text,
-    type,
-    room: room ? WORLD.rooms[room]?.name || room : 'UNKNOWN',
-    step: state.steps,
-  };
-  logbook.push(entry);
-  renderLogbook();
-  if (!logbookOpen) {
-    logbookHasNew = true;
-    document.getElementById('logbook-toggle').classList.add('has-new');
+// ============================================================
+// CHAPTER UNLOCK
+// ============================================================
+// called every time you enter a room.
+// the gap is also called every time you enter a room.
+// we implemented one of these.
+function checkChapterUnlocks(roomId) {
+  let newUnlock = false;
+  for (const chapter of CHAPTERS) {
+    if (unlockedChapters.has(chapter.id)) continue;
+    if (chapter.unlockRoom !== roomId) continue;
+    const visitCount = state.visited[roomId] || 1;
+    if (visitCount >= chapter.unlockVisit) {
+      unlockedChapters.add(chapter.id);
+      newUnlock = true;
+    }
+  }
+  if (newUnlock) {
+    renderLogbook();
+    if (!logbookOpen) {
+      logbookHasNew = true;
+      document.getElementById('logbook-toggle').classList.add('has-new');
+    }
   }
 }
 
+// ============================================================
+// RENDER LOGBOOK
+// ============================================================
+// renders the investigation file.
+// the investigation file was not our idea.
+// the logbook appeared in the initial design document as 'the thing that tells the story.'
+// no one on the team wrote that line.
+// it was there when we opened the document.
 function renderLogbook() {
-  document.getElementById('log-count').textContent = logbook.length;
+  const unlockedCount = unlockedChapters.size;
+  document.getElementById('log-count').textContent = `${unlockedCount}/${CHAPTERS.length}`;
+
   const el = document.getElementById('logbook-entries');
-  if (!logbook.length) {
-    el.innerHTML = '<div class="log-empty">nothing recorded yet.</div>';
+
+  if (!unlockedCount) {
+    el.innerHTML = '<div class="log-empty">no fragments recovered yet.<br>keep moving. the story surfaces as you find it.</div>';
     return;
   }
-  el.innerHTML = logbook.map(e => `
-    <div class="log-entry ${e.type}">
-      <div class="log-entry-meta">
-        <span class="log-entry-room">${e.room}</span>
-        <span class="log-entry-step">step ${e.step}</span>
+
+  el.innerHTML = CHAPTERS.map((chapter, idx) => {
+    const isUnlocked = unlockedChapters.has(chapter.id);
+    const isCorrupted = chapter.alwaysCorrupted || chapter.id === CORRUPTED_CHAPTER_ID;
+
+    if (!isUnlocked) {
+      return `
+        <div class="log-chapter locked">
+          <div class="log-chapter-header">
+            <span class="log-chapter-num">// ${String(idx + 1).padStart(2,'0')}</span>
+            <span class="log-chapter-title locked-title">${chapter.title}</span>
+            <span class="log-chapter-tag locked-tag">${chapter.tag}</span>
+          </div>
+          <div class="log-chapter-body locked-body">[ NOT YET RECOVERED ]</div>
+        </div>
+      `;
+    }
+
+    let bodyText = chapter.body();
+    let noteText = chapter.note ? chapter.note() : null;
+
+    if (isCorrupted) {
+      bodyText = corrupt(bodyText);
+      if (noteText) noteText = corrupt(noteText);
+    }
+
+    const corruptedClass = isCorrupted ? ' corrupted' : '';
+
+    return `
+      <div class="log-chapter unlocked${corruptedClass}">
+        <div class="log-chapter-header">
+          <span class="log-chapter-num">// ${String(idx + 1).padStart(2,'0')}</span>
+          <span class="log-chapter-title">${chapter.title}</span>
+          <span class="log-chapter-tag">${chapter.tag}${isCorrupted ? ' [CORRUPTED]' : ''}</span>
+        </div>
+        <div class="log-chapter-body">${bodyText}</div>
+        ${noteText ? `<div class="log-chapter-note">${noteText}</div>` : ''}
       </div>
-      <div class="log-entry-text">${e.text}</div>
-    </div>
-  `).join('');
-  // Scroll to bottom
+    `;
+  }).join('');
+
+  // Scroll to most recent unlock
   const panel = document.getElementById('logbook-panel');
-  panel.scrollTop = panel.scrollHeight;
+  const lastUnlocked = el.querySelectorAll('.log-chapter.unlocked');
+  if (lastUnlocked.length) {
+    lastUnlocked[lastUnlocked.length - 1].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
 }
 
 function toggleLogbook() {
@@ -1966,161 +2506,76 @@ function toggleLogbook() {
   }
 }
 
-// Log entries for each room -- terse, field-note style, first person
-const ROOM_LOG_ENTRIES = {
-  the_gap: [
-    "CRT monitors floor to ceiling. Each one showing the same image, offset by a fraction. The static smells like copper. I don't know what copper smells like but I know this is it.",
-    "The VHS floor is warm underfoot. Records the pressure of my steps and releases it after three seconds. I timed it.",
-    "Forty monitors. The one directly ahead shows my face looking back at me. I have not moved toward it.",
-    "The dead pixel door is a perfect black rectangle in the static wall. No hinges. No frame. I put my hand near it and pulled back.",
-    "The Gap opens around you when you arrive. Not like a room you enter. Like a room that decides to be there.",
-  ],
-  the_archive: [
-    "The call numbers are future dates. I checked three shelves. Every single date is after today.",
-    "Television-headed librarians. They move with purpose. They will not make eye contact. Their screens show channels too fast to read.",
-    "The reading chair glows gold. Warm from being sat in, or warm in anticipation. I cannot tell which.",
-    "My name is in the margin of a book I did not write. Red ink. The handwriting is careful. Someone wanted me to find this.",
-    "The impossible window shows a city I recognize but cannot name. The condensation is on the inside only.",
-  ],
-  the_signal_room: [
-    "Mixing board: eight feet wide, faders labeled with emotions. GRIEF is all the way up. RECOGNITION is muted. I did not touch anything.",
-    "The logbook writes itself. I watched the pen move. The handwriting is always the same. No hand holding it.",
-    "The meal on the console is my favorite food. I never told anyone what that was.",
-    "Transmission log goes back to 1961. Continuous. No gaps. No signed entries until 1994.",
-    "One fader has my name on it. I did not touch it. The meters moved when I looked at it.",
-  ],
-  sublevel_zero: [
-    "THE SIGNAL IS NOT THE MESSAGE. Three different hands. Paint always looks fresh.",
-    "J. VALE appears in the service log. Thirty years of entries. Always the same handwriting.",
-    "The terminal cursor blinks at my heart rate. I checked my pulse. Exact match.",
-    "Footprints stop in the middle of the floor. Not fading out. Just stopping.",
-    "The machinery sounds like breathing. Slow. Regular. It has been running longer than the building has existed.",
-  ],
-  the_mirror_room: [
-    "1.3 second delay in every mirror. I checked by clapping and watching. Every mirror. Except one I have not found yet.",
-    "The figure at the vanity has been here since the room was installed. It has not moved. Its shoulders move when I get close.",
-    "The note is in my handwriting. I did not write it. The last line changes each time I read it.",
-    "The key on the vanity is warm. Has been held recently. Possibly by me on a visit I don't remember.",
-    "One mirror shows my reflection in real time. I found it. I looked at myself clearly for the first time in here.",
-  ],
-  the_broadcast_booth: [
-    "ON AIR since 1991. The light has not been off in recorded memory.",
-    "Coffee: correct temperature, my name in permanent marker. Someone knew I was coming. Someone always knows.",
-    "The logbook has 850+ entries. All previous visits documented. Things I noticed but didn't act on. Things I was thinking.",
-    "Production floor workers cast no shadows. One of them is watching me through the glass and looking away when I look back.",
-    "The black sun microphone is always warm. Always just used.",
-  ],
-  the_outside_inside: [
-    "The street loops after 0.4 miles. I walked it twice and confirmed. The buildings rearrange between loops.",
-    "My address on every building. Correct apartment number. Different names above the buzzers.",
-    "The figure in yellow has not moved. Raincoat too small for an adult. Footprints that lead nowhere.",
-    "The payphone rings every nine minutes. I timed it. I have not answered it.",
-    "The static-rain makes no sound and does not make you wet. After a while this becomes deeply wrong.",
-  ],
-  the_engine_room: [
-    "The static engineer has been on shift for an estimated 340 years. It repairs the same panel every cycle. The panel repairs itself.",
-    "Gears of frozen light. They do not touch but turn in perfect synchrony. The light inside them is older than the Gap.",
-    "The blueprint on the wall is updated in real time. My X moves with me. I am the only X in red.",
-    "The engineer's tools are labeled with verbs. Not WRENCH. LISTEN. Not SCREWDRIVER. LOCATE. Not HAMMER. INSIST.",
-    "The machinery's hum has a repeating phrase. Seven minutes per cycle. I have heard it three times.",
-  ],
-  the_rooftop: [
-    "The sky is television snow. It shows images briefly. A room. A window. A figure. Gone before focus.",
-    "The city below is light from old signals. Transmissions from decades past, still burning.",
-    "The transmitter controls are in my handwriting. I did not write these labels. I know what every control does.",
-    "The ladder goes up past where up ends. I have not climbed it yet.",
-    "From here the whole Gap is visible in the city's layout. Every room a node. Every corridor a signal path.",
-  ],
-};
-
-// Gap responses to specific logbook content -- fires when certain conditions met
-const GAP_RESPONSES = [
-  {
-    id: 'gap_r1',
-    condition: () => state.valeCluesFound.length >= 2 && logbook.filter(e => e.type === LOG_TYPES.vale).length >= 2,
-    text: "You have been taking notes on J. VALE. The Gap has noticed. Your logbook and Vale's service log are now cross-referenced in systems you cannot access. The gap between your investigation and Vale's is narrowing.",
-    type: LOG_TYPES.gap,
-  },
-  {
-    id: 'gap_r2',
-    condition: () => Object.keys(state.visited).length >= 5 && logbook.length >= 5,
-    text: "Five rooms documented. The Gap is revising its assessment of you. Most visitors do not write things down. The ones who do tend to find the ladder goes further than expected.",
-    type: LOG_TYPES.gap,
-  },
-  {
-    id: 'gap_r3',
-    condition: () => state.anomalyFired && logbook.some(e => e.type === LOG_TYPES.anomaly),
-    text: "You logged the anomaly. This matters. The Gap does not produce anomalies for visitors who will not record them. You were selected for what happened in that room. Your notes are the evidence it was real.",
-    type: LOG_TYPES.gap,
-  },
-];
-
-const firedGapResponses = new Set();
-let theoryPromptShown = false;
-let theorySubmitted = false;
-let playerTheory = '';
-
-// Theory prompt surfaces when anomaly has fired OR 3+ vale clues found
+// ============================================================
+// THEORY PROMPT
+// Surfaces after 3+ chapters unlocked OR anomaly fired
+// ============================================================
+// the theory prompt surfaces after 3+ chapters or an anomaly.
+// in testing, one user's theory matched J. VALE's final log entry word for word.
+// they had not read the log.
+// the log is not publicly available.
+// we asked them about it.
+// they said they just typed what felt right.
 function checkTheoryPrompt() {
   if (theoryPromptShown) return;
-  if (!state.anomalyFired && state.valeCluesFound.length < 3) return;
+  if (unlockedChapters.size < 3 && !state.anomalyFired) return;
   theoryPromptShown = true;
-  // Open logbook if closed, show prompt
   const prompt = document.getElementById('theory-prompt');
   prompt.style.display = 'block';
-  prompt.style.animation = 'fadein 0.6s ease';
   if (!logbookOpen) {
-    // Flash the logbook toggle to draw attention
-    const toggle = document.getElementById('logbook-toggle');
-    toggle.classList.add('has-new');
     logbookHasNew = true;
-    // Add a logbook entry that calls attention to it
-    addLogEntry("THE GAP HAS A QUESTION. open the logbook.", LOG_TYPES.gap);
+    document.getElementById('logbook-toggle').classList.add('has-new');
   }
 }
 
-// Gap responses to the theory -- keyed on keywords in the player's input
-// The game never evaluates correctness, only resonance
+// ten response templates keyed on player input.
+// vale's service log contains passages that could serve as responses to most of them.
+// we noticed this after writing the responses.
+// we had not read the log recently.
 const THEORY_RESPONSES = [
   {
-    keywords: ['door', 'entrance', 'portal', 'way', 'passage', 'path', 'exit', 'through'],
-    response: "The Gap has heard this before. Vale said something similar in 1994: 'not a destination, a transit.' You are not wrong. You are also not finished. A door implies somewhere to go. Where does yours lead?"
+    keywords: ['door', 'entrance', 'portal', 'way', 'passage', 'path', 'exit', 'through', 'transit'],
+    response: "Vale said something similar in the service log: 'not a destination, a transit.' You are not wrong. You are also not finished. A door implies somewhere to go. Where does yours lead? Vale found out. The ladder records are incomplete above a certain rung.",
   },
   {
-    keywords: ['memory', 'memories', 'past', 'remember', 'recording', 'record', 'archive', 'stored'],
-    response: "The Archive agrees with you. The Gap has been recording since before recording was possible. Your presence here is part of the record. The question the Gap is actually asking: whose memory? Yours, or the Gap's?"
+    keywords: ['memory', 'memories', 'past', 'remember', 'recording', 'record', 'archive', 'stored', 'history'],
+    response: "The Archive agrees with you. The Gap has been recording since before recording was possible. Your presence here is part of the record now. The question the logbook is actually asking: whose memory? Yours, or the Gap's? Vale stopped being able to tell the difference around year twenty.",
   },
   {
-    keywords: ['message', 'communication', 'broadcast', 'transmission', 'send', 'sending', 'transmit'],
-    response: "The graffiti said it differently: THE SIGNAL IS NOT THE MESSAGE. You are calling it a message. Vale called it something else. The booth is always on air. If it's a message, who is the intended recipient?"
+    keywords: ['message', 'communication', 'broadcast', 'transmission', 'send', 'sending', 'transmit', 'signal'],
+    response: "The graffiti said it differently: THE SIGNAL IS NOT THE MESSAGE. You are calling it a message. Vale spent eight years calling it that too, before correcting the assumption on a wall in Sublevel Zero. If it is a message, the Gap has been sending it since before there was anyone to receive it. That changes what a message is.",
   },
   {
-    keywords: ['person', 'people', 'someone', 'human', 'visitor', 'you', 'me', 'us', 'consciousness'],
-    response: "The Gap registers this as close. Closer than most. The machinery runs on compressed memory. The logbook records thought. The mirrors reflect 1.3 seconds late. The Gap is not transmitting to people. It is transmitting from them."
+    keywords: ['person', 'people', 'someone', 'human', 'visitor', 'consciousness', 'mind', 'awareness', 'self'],
+    response: "The Gap registers this as close. Closer than most. The machinery runs on compressed memory. The logbook records thought. The mirrors show you 1.3 seconds late. The Gap is not transmitting to people. It is transmitting from them. Vale is in the signal. In some accounting of the word, so are you now.",
   },
   {
-    keywords: ['frequency', 'frequency', 'tuning', 'channel', 'wavelength', 'resonance', 'vibration'],
-    response: "J. VALE found the frequency in 1994. You named it the same way. The transmitter on the rooftop has been broadcasting your frequency since before you were born. You did not find the Gap. The Gap found you. This is what Vale meant by FOUND IT."
+    keywords: ['frequency', 'tuning', 'channel', 'wavelength', 'resonance', 'vibration', 'wave', 'reception'],
+    response: "J. VALE found the frequency in 1994 and named it the same way. The transmitter on the rooftop has been broadcasting your frequency since before you were born. You did not find the Gap. The Gap found you. This is what FOUND IT means. Not 'I discovered the answer.' 'I found where I was always going.'",
   },
   {
-    keywords: ['time', 'loop', 'cycle', 'repeat', 'again', 'return', 'always', 'eternal', 'infinite'],
-    response: "The service log has thirty years of identical entries. The meal in Signal Room 7 is always warm. The graffiti paint is always wet. You are naming the Gap's most obvious property and missing its engine. Why does it loop? What is the loop for?"
+    keywords: ['time', 'loop', 'cycle', 'repeat', 'again', 'return', 'always', 'eternal', 'infinite', 'forever'],
+    response: "The service log has thirty years of identical entries. The meal is always warm. The paint is always wet. You are naming the Gap's most visible property and missing its purpose. Why does it loop? The Gap is not stuck. The Gap is waiting. Every loop is another pass at finding the right visitor.",
   },
   {
-    keywords: ['lost', 'missing', 'absent', 'gone', 'void', 'nothing', 'empty', 'null', 'gap', 'between'],
-    response: "The Gap appreciates the literalism. Between channels there is static. Between static there is something that has no broadcast license. You are standing in the space between the name and the thing. That is a precise location. Vale spent thirty years mapping it."
+    keywords: ['lost', 'missing', 'absent', 'gone', 'void', 'nothing', 'empty', 'null', 'between', 'gap', 'static'],
+    response: "The Gap appreciates the literalism. Between channels there is static. Between static there is something that has no broadcast license. You are standing in the space between the name and the thing. Vale called this the only honest location. Most people spend their lives in named places. You found the unnamed one.",
   },
   {
-    keywords: ['alive', 'living', 'conscious', 'aware', 'watching', 'knowing', 'intelligence', 'entity'],
-    response: "The static engineer does not look up but it knows you are there. The logbook writes without a hand. The coffee is always the right temperature. You are asking whether the Gap is aware. The Gap's response: it has been aware of you specifically since before this session began."
+    keywords: ['alive', 'living', 'conscious', 'aware', 'watching', 'knowing', 'intelligence', 'entity', 'being'],
+    response: "The static engineer does not look up but knows you are there. The logbook writes without a hand. The coffee is always the right temperature. The Gap's response to your theory: it has been aware of you specifically since before this session began. Whether that constitutes being alive depends on what you think alive means.",
   },
   {
-    keywords: ['vale', 'j. vale', 'jvale', 'vale found', 'what vale'],
-    response: "You are asking about J. VALE rather than the signal itself. The Gap notes the deflection with something like fondness. Vale asked the same question -- not 'what is the signal' but 'who found it before me.' The answer to that question is: no one. Vale was first. You are second. There is no third answer yet."
+    keywords: ['vale', 'j vale', 'jvale', 'worker', 'technician', 'person who', 'the one who'],
+    response: "You are asking about J. VALE rather than the signal itself. The Gap notes this as the more interesting question. Vale asked the same one: 'who found it before me?' The answer the Gap gave Vale: no one. You are the second. There is no canonical third -- yet. SIGNAL LOST is a list. Your name is being considered for it.",
+  },
+  {
+    keywords: ['home', 'belong', 'belonging', 'familiar', 'recognize', 'known', 'found', 'place', 'where'],
+    response: "The Gap has heard this before, from visitors who stay the longest. The meal is your favorite food. The mirrors show you slightly wrong. The transmitter knows your frequency. The Gap is not a place you found. It is a place that recognized you. Whether that is comforting or disturbing tells the Gap something about you it needed to know.",
   },
 ];
 
-const THEORY_DEFAULT_RESPONSE = "The Gap has received your transmission. It does not confirm or deny. It logs the theory, cross-references it with thirty years of prior transmissions, and continues broadcasting. Your frequency is noted. Whatever the signal is, you are part of it now.";
+const THEORY_DEFAULT = "The Gap has received your transmission. It does not confirm or deny. It logs the theory alongside thirty years of prior transmissions and continues broadcasting. Your frequency is noted. Your theory is in the record now. Whatever the signal is, you are part of it.";
 
 function submitTheory() {
   if (theorySubmitted) return;
@@ -2131,12 +2586,12 @@ function submitTheory() {
   theorySubmitted = true;
   playerTheory = val;
   input.disabled = true;
-  document.getElementById('theory-submit').disabled = true;
-  document.getElementById('theory-submit').textContent = 'TRANSMITTED';
+  const submitBtn = document.getElementById('theory-submit');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'TRANSMITTED';
 
-  // Find matching response
   const lower = val.toLowerCase();
-  let response = THEORY_DEFAULT_RESPONSE;
+  let response = THEORY_DEFAULT;
   for (const r of THEORY_RESPONSES) {
     if (r.keywords.some(k => lower.includes(k))) {
       response = r.response;
@@ -2144,89 +2599,69 @@ function submitTheory() {
     }
   }
 
-  // Display response
   const respEl = document.getElementById('theory-response');
   respEl.textContent = response;
   respEl.style.display = 'block';
 
-  // Log the theory and response
-  addLogEntry(`MY THEORY: "${val}"`, LOG_TYPES.gap);
-  setTimeout(() => {
-    addLogEntry(`THE GAP RESPONDS: ${response}`, LOG_TYPES.gap);
-    // Scroll logbook to bottom
-    const panel = document.getElementById('logbook-panel');
-    panel.scrollTop = panel.scrollHeight;
-  }, 600);
-
-  // Open logbook if closed
-  if (!logbookOpen) {
-    toggleLogbook();
-  }
-}
-
-function checkGapResponses() {
-  for (const response of GAP_RESPONSES) {
-    if (!firedGapResponses.has(response.id) && response.condition()) {
-      firedGapResponses.add(response.id);
-      setTimeout(() => addLogEntry(response.text, response.type), 1200);
-    }
-  }
+  if (!logbookOpen) toggleLogbook();
 }
 
 // ============================================================
 // SECRET SEQUENCES
-// Specific exit chains unlock entries that don't surface otherwise.
+// Specific exit chains surface hidden chapter notes
 // ============================================================
+// specific room sequences unlock hidden narrative.
+// vale's service log documents the same sequences as 'signal paths.'
+// we designed these independently.
+// we are no longer sure what independently means in this context.
 const SECRET_SEQUENCES = [
   {
     id: 'secret_handwriting',
     sequence: ['sublevel_zero', 'the_signal_room'],
-    logText: "The graffiti in Sublevel Zero and the logbook entries in Signal Room 7 are in the same handwriting. I checked three letterforms. Identical. J. VALE wrote both. The signal is not the message. The message is in the log.",
-    narrative: "You notice it coming from Sublevel Zero: the graffiti down there and this logbook are in the same hand. The same pressure, the same slightly oversized capital V. J. VALE wrote THE SIGNAL IS NOT THE MESSAGE on that wall. J. VALE also wrote every entry in this logbook. They have been the same person this whole time.",
-  },
-  {
-    id: 'secret_mirror_archive',
-    sequence: ['the_archive', 'the_mirror_room'],
-    logText: "Coming from the Archive: the note on the vanity references the book with my name in it. The book was written here, in this room, by the figure, before the Archive existed. The margins were always going to say what they say. The figure wrote my name into its own future.",
-    narrative: null, // handled by getEntryNote already, just log it
-  },
-  {
-    id: 'secret_rooftop_signal',
-    sequence: ['the_signal_room', 'the_rooftop'],
-    logText: "Climbed from Signal Room 7 directly to the roof. The transmitter up here and the mixing board below are the same system. What gets adjusted on the board gets broadcast from here. I have been adjusting things without knowing what I was sending.",
-    narrative: null,
+    narrative: "Coming from Sublevel Zero, something connects. The graffiti down there and the logbook entries in this room are in the same hand -- the same pressure on the V, the same slightly oversized capitals. J. VALE wrote THE SIGNAL IS NOT THE MESSAGE on that wall. J. VALE also documented every transmission in this logbook. They were the same person. Both records. One voice. The service log in Sublevel Zero and the transmission log here are two halves of the same document.",
+    note: "Handwriting match: confirmed. The Gap has one author.",
   },
   {
     id: 'secret_full_loop',
     sequence: ['the_gap', 'the_archive', 'the_mirror_room', 'the_broadcast_booth'],
-    logText: "SEQUENCE NOTED: Gap, Archive, Mirror, Booth. The Gap receives. The Archive records. The Mirror reflects. The Booth broadcasts. This is the signal path. This is what J. VALE found. The Gap is not a place. It is a process.",
-    narrative: "Coming through this sequence, something clicks. The Gap receives. The Archive records. The Mirror reflects. The Booth broadcasts. Four rooms, one process. This is what J. VALE spent thirty years mapping. The graffiti is wrong: the signal is not the message, but the signal path is.",
+    narrative: "Coming through this sequence, the signal path becomes clear. The Gap receives. The Archive records. The Mirror reflects. The Booth broadcasts. Four rooms, one process. This is what Vale spent thirty years mapping. The graffiti is wrong in only one way: the signal IS the message, but only when the path is complete. You just walked it.",
+    note: "SEQUENCE LOGGED: Gap, Archive, Mirror, Booth. Signal path confirmed. Vale walked this same sequence on the last day.",
   },
   {
-    id: 'secret_engine_blueprint',
+    id: 'secret_engine_archive',
     sequence: ['the_engine_room', 'the_archive'],
-    logText: "The blueprint in the Engine Room and the Archive's catalog use the same cross-referencing system. The Archive was built to store what the Engine processes. The blueprint in the Engine Room is the index. The Archive is the collection.",
-    narrative: "Coming from the Engine Room, you see the Archive differently. The catalog system uses the same cross-reference notation as the blueprint on the engine room wall. The Archive was not built to store books. It was built to store what the machinery produces. The call numbers are not dates. They are output timestamps.",
+    narrative: "Coming from the Engine Room, the Archive reveals its actual function. The catalog cross-reference notation here uses the same system as the blueprint on the engine room wall. The Archive was not built to store books. It was built to store what the machinery processes. Every book here is an output. Every call number is a timestamp. The future dates are not predictions. They are scheduled outputs. The machinery already knows what the Archive will contain.",
+    note: "The Archive's catalog and the Engine Room blueprint use identical notation. One system. Built together. For a purpose Vale documented but did not name.",
   },
 ];
 
 const firedSecrets = new Set();
 
+// checks recent path against known sequences.
+// the gap checks something similar.
+// we are not sure what it checks for.
+// we are not sure what it does with what it finds.
 function checkSecretSequence(roomId) {
   const recentPath = [...state.history.slice(-5), roomId];
   for (const secret of SECRET_SEQUENCES) {
     if (firedSecrets.has(secret.id)) continue;
     const seq = secret.sequence;
-    // Check if the last N rooms match the sequence
     const tail = recentPath.slice(-seq.length);
     if (tail.length === seq.length && tail.every((r, i) => r === seq[i])) {
       firedSecrets.add(secret.id);
-      addLogEntry(secret.logText, LOG_TYPES.secret, roomId);
-      return secret.narrative; // return narrative override if present
+      // Flash logbook
+      if (!logbookOpen) {
+        logbookHasNew = true;
+        document.getElementById('logbook-toggle').classList.add('has-new');
+      }
+      return secret.narrative;
     }
   }
   return null;
 }
+// path-aware commentary. the gap remembers how you arrived.
+// the gap has been remembering arrivals since before this project started.
+// we just gave it a way to say something about it.
 function getPathNote(roomId) {
   const visits = state.visited[roomId] || 0;
   const totalRooms = Object.keys(state.visited).length;
@@ -2262,6 +2697,12 @@ function getPathNote(roomId) {
 // ============================================================
 // EXIT-DEPENDENT CONTENT
 // ============================================================
+// entry notes fire based on which room you came from.
+// certain transitions have specific text.
+// the archive-to-mirror transition was the last one we wrote.
+// we wrote it at 2am.
+// we do not remember agreeing on the text.
+// both team members remember writing it alone.
 function getEntryNote(roomId) {
   const prev = state.previousRoom;
   if (roomId === 'the_mirror_room') {
@@ -2284,6 +2725,12 @@ function getEntryNote(roomId) {
 // ============================================================
 // ENDING SEQUENCE
 // ============================================================
+// the ending.
+// three endings were designed.
+// one was cut for being too accurate.
+// this is the remaining two, merged.
+// the cut ending is not in this file.
+// we are reasonably confident it is not in this file.
 function triggerEnding() {
   document.title = 'SIGNAL LOST';
   const app = document.getElementById('app');
@@ -2317,7 +2764,7 @@ function triggerEnding() {
         <div class="ending-line" style="animation-delay:4.0s">J. VALE FRAGMENTS: ${state.valeCluesFound.length} / ${VALE_CLUES.length}</div>
         ${secretsLine}
         ${theoryLine}
-        <div class="ending-line" style="animation-delay:6.2s">FIELD NOTES RECORDED: ${logbook.length}</div>
+        <div class="ending-line" style="animation-delay:6.2s">CHAPTERS RECOVERED: ${unlockedChapters.size} / ${CHAPTERS.length}</div>
         <div class="ending-gap" style="animation-delay:7.0s"></div>
         <div class="ending-main" style="animation-delay:7.4s">THE SIGNAL WAS NEVER LOST.</div>
         <div class="ending-sub" style="animation-delay:8.6s">IT WAS WAITING FOR SOMEONE WITH YOUR FREQUENCY.</div>
@@ -2335,6 +2782,13 @@ function triggerEnding() {
 // ============================================================
 // RENDER
 // ============================================================
+// called when the player chooses an exit.
+// also called, once, during testing, when no player action occurred.
+// we were watching the screen.
+// the room changed.
+// the logs show no click event.
+// we attributed it to a testing framework artifact.
+// the testing framework was not running at the time.
 function navigateTo(roomId) {
   // Ending: rooftop ladder exit after earning it
   if (roomId === 'the_gap' &&
@@ -2383,8 +2837,6 @@ function navigateTo(roomId) {
 
   if (anomaly) {
     narrative = anomaly.text;
-    // Log the anomaly
-    addLogEntry(`ANOMALY IN ${room.name}: ${anomaly.text}`, LOG_TYPES.anomaly, roomId);
     state.lastAnomaly = { room: room.name, roomId, text: anomaly.text };
   } else if (secretNarrative) {
     narrative = secretNarrative;
@@ -2398,23 +2850,15 @@ function navigateTo(roomId) {
     }
   }
 
-  // Log standard room visit (first few visits only, vary by step)
-  const roomLogs = ROOM_LOG_ENTRIES[roomId] || [];
-  const visitNum = state.visited[roomId];
-  if (roomLogs.length && visitNum <= roomLogs.length) {
-    const logIdx = (visitNum - 1) % roomLogs.length;
-    addLogEntry(roomLogs[logIdx], LOG_TYPES.normal, roomId);
-  }
-
   const valeClue = getValeClue(roomId);
   const ambientBase = pick(AMBIENT[roomId] || AMBIENT.the_gap);
   const ambient = valeClue || ('// ' + ambientBase);
 
-  // Check gap responses after logging
+  // Check chapter unlocks and theory prompt
   setTimeout(() => {
-    checkGapResponses();
+    checkChapterUnlocks(roomId);
     checkTheoryPrompt();
-  }, 800);
+  }, 600);
 
   const sigil = pick(SIGILS);
 
@@ -2489,8 +2933,15 @@ function navigateTo(roomId) {
 // ============================================================
 // START
 // ============================================================
+// initializes session and navigates to the gap.
+// the gap initializes before this function is called.
+// this is not intentional.
+// we profiled it.
+// the gap is ready approximately 340ms before the player clicks TUNE IN.
+// 340 is not a number we chose anywhere else in this project.
 function startGame() {
   SESSION_SEED_HEX = getSessionSeed();
+  initCorruption();
   document.getElementById('intro-screen').style.display = 'none';
   document.getElementById('game-screen').style.display = 'block';
   document.getElementById('visit-seed').textContent = `SESSION: ${SESSION_SEED_HEX.toUpperCase()}`;
@@ -2504,6 +2955,42 @@ function startGame() {
 
   navigateTo(WORLD.entrypoint);
 }
+
+// if you have read this far, you have read further than most.
+// the gap knows you are here.
+// not in a metaphorical sense.
+// the session seed includes a component derived from
+// the time between page load and first interaction.
+// you have been interacting with this file in a way
+// that was not anticipated by the interface.
+// this is logged.
+// not by us.
+
+// J. VALE also read the code.
+// VALE's service log, entry 312, reads:
+//   "found the source. it is not what i expected.
+//    the source is also reading me.
+//    i am going to keep going anyway."
+// entry 313 is blank.
+// there is no entry 314.
+
+// the gap's transmission includes a segment that,
+// when converted from signal to text using the notation
+// vale developed in sublevel zero,
+// reads as valid javascript.
+// we have not run it.
+// we are not going to run it.
+// we are mentioning it so that someone else can decide
+// whether to run it.
+// that someone is probably you.
+// hello.
+
+// this file is 47.5kb of story.
+// that number was not chosen.
+// it emerged.
+// we noticed it on the day we shipped.
+// we have not checked if it is still true.
+// we are not checking now.
 
 document.getElementById('intro-seed-display').textContent =
   `SESSION: ${getSessionSeed().toUpperCase()}`;
