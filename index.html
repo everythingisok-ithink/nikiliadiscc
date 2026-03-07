@@ -3394,7 +3394,10 @@
                 setTimeout(() => {
                     const line = document.createElement('div');
                     line.className = 'term-line';
-                    line.style.cssText = 'display:flex;gap:1rem;align-items:baseline;flex-wrap:wrap;';
+                    line.style.cssText = 'display:flex;flex-direction:column;gap:0.15rem;';
+
+                    const topRow = document.createElement('div');
+                    topRow.style.cssText = 'display:flex;gap:1rem;align-items:baseline;';
 
                     const prefix = document.createElement('span');
                     prefix.style.opacity = '0.3';
@@ -3407,12 +3410,14 @@
                     link.rel = 'noopener noreferrer';
                     link.textContent = p.name;
 
-                    const desc = document.createElement('span');
-                    desc.style.opacity = '0.4';
-                    desc.textContent = '— ' + p.label;
+                    topRow.appendChild(prefix);
+                    topRow.appendChild(link);
 
-                    line.appendChild(prefix);
-                    line.appendChild(link);
+                    const desc = document.createElement('span');
+                    desc.style.cssText = 'opacity:0.4;font-size:0.78em;';
+                    desc.textContent = p.label;
+
+                    line.appendChild(topRow);
                     line.appendChild(desc);
                     projectsContent.appendChild(line);
                 }, 150 + i * 180);
