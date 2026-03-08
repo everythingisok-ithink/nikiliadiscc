@@ -2994,6 +2994,66 @@ function startGame() {
 
 document.getElementById('intro-seed-display').textContent =
   `SESSION: ${getSessionSeed().toUpperCase()}`;
+
+// ============================================================
+// AUDIO FEEDBACK
+// ============================================================
+// low-register click sounds. synthesized via web audio api.
+// no external files. no loud transients.
+// just the feeling of something being pressed.
+const _getAudioCtx = (() => {
+  let ctx = null;
+  return () => {
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    return ctx;
+  };
+})();
+
+function playClickSound(variant) {
+  try {
+    const ctx = _getAudioCtx();
+    const t = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    if (variant === 'heavy') {
+      // enter / start — a heavier low thud
+      osc.frequency.setValueAtTime(68, t);
+      osc.frequency.exponentialRampToValueAtTime(26, t + 0.11);
+      gain.gain.setValueAtTime(0.18, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.14);
+      osc.start(t); osc.stop(t + 0.15);
+    } else if (variant === 'confirm') {
+      // transmit — medium weight
+      osc.frequency.setValueAtTime(95, t);
+      osc.frequency.exponentialRampToValueAtTime(48, t + 0.07);
+      gain.gain.setValueAtTime(0.13, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.1);
+      osc.start(t); osc.stop(t + 0.12);
+    } else {
+      // navigation / toggle — subtle low click
+      osc.frequency.setValueAtTime(82, t);
+      osc.frequency.exponentialRampToValueAtTime(38, t + 0.05);
+      gain.gain.setValueAtTime(0.09, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+      osc.start(t); osc.stop(t + 0.08);
+    }
+  } catch(e) {}
+}
+
+document.addEventListener('click', (e) => {
+  const target = e.target.closest('button, a, [role="button"]');
+  if (!target) return;
+  if (target.classList.contains('enter-btn')) {
+    playClickSound('heavy');
+  } else if (target.id === 'theory-submit') {
+    playClickSound('confirm');
+  } else {
+    playClickSound('default');
+  }
+}, true);
 </script>
 </body>
 </html>
