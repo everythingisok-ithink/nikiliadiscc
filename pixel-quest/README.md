@@ -1,14 +1,14 @@
 # PIXEL QUEST
 
 A self-contained retro platformer. Drop the files in a folder, serve with any local web
-server, and open `pixel-quest.html` in a browser.
+server, and open `index.html` in a browser.
 
 ---
 
 ## File layout
 
 ```
-pixel-quest.html    game engine
+index.html    game engine
 level-1.md          Grasslands
 level-2.md          Underground Caves
 level-3.md          Sky Fortress
@@ -31,12 +31,12 @@ python3 -m http.server 8000
 npx serve .
 
 # VS Code
-Install the "Live Server" extension, right-click pixel-quest.html > Open with Live Server
+Install the "Live Server" extension, right-click index.html > Open with Live Server
 ```
 
-Then open `http://localhost:8000/pixel-quest.html`.
+Then open `http://localhost:8000/index.html`.
 
-Opening `pixel-quest.html` directly as a `file://` URL will show a load error.
+Opening `index.html` directly as a `file://` URL will show a load error.
 
 ---
 
@@ -71,7 +71,7 @@ Copy any existing level file as a starting point. The engine reads two sections:
 \`\`\`
 ```
 
-### 2. Register it in pixel-quest.html
+### 2. Register it in index.html
 
 Find `LEVEL_CONFIG` near the top of the `<script>` block and add an entry:
 
@@ -85,7 +85,7 @@ const LEVEL_CONFIG = [
 ];
 ```
 
-`name` overrides the title shown on the HUD. `file` is relative to `pixel-quest.html`.
+`name` overrides the title shown on the HUD. `file` is relative to `index.html`.
 
 ---
 

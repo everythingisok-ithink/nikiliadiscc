@@ -72,7 +72,7 @@
 //   2. Adding an entry to LEVEL_CONFIG below
 //
 // LEVEL_CONFIG fields:
-//   file  (required)  path to .md file, relative to pixel-quest.html
+//   file  (required)  path to .md file, relative to index.html
 //   name  (optional)  overrides the title in the md file
 //
 // NOTE: fetch() requires a web server -- open via http://localhost/...
@@ -661,7 +661,7 @@ function showScreen(type,data={}){
     if(!customs.length){html=`<div class="screen-title" style="font-size:14px">CUSTOM LEVELS</div><div class="screen-subtitle">No custom levels saved yet.<br><br>Open the Map Editor to create one!</div><button class="screen-btn" onclick="openEditor()" style="background:#aa44ff;color:#000">OPEN EDITOR</button><button class="screen-btn secondary" onclick="goToTitle()">BACK</button>`;}
     else{const sl=customs.map((c,i)=>`<div class="save-slot" onclick="playCustom(${i})" style="cursor:pointer"><span class="slot-name">${c.name||'Untitled'}</span><span style="font-size:7px;color:#888">${c.meta?.background||'sky'} &middot; ${c.savedAt||''}</span></div>`).join('');html=`<div class="screen-title" style="font-size:14px">CUSTOM LEVELS</div><div class="save-slots" style="max-height:280px;overflow-y:auto">${sl}</div><button class="screen-btn secondary" onclick="openEditor()" style="border-color:#aa44ff;color:#aa44ff">EDITOR</button><button class="screen-btn secondary" onclick="goToTitle()">BACK</button>`;}
   }else if(type==='loaderror'){
-    html=`<div class="screen-title" style="font-size:14px;color:#e63232">LOAD ERROR</div><div class="screen-subtitle" style="max-width:500px">${data.msg||'Could not load level files.'}<br><br>Make sure all .md files are in the same folder as pixel-quest.html and you are serving via http:// (not file://).</div>`;
+    html=`<div class="screen-title" style="font-size:14px;color:#e63232">LOAD ERROR</div><div class="screen-subtitle" style="max-width:500px">${data.msg||'Could not load level files.'}<br><br>Make sure all .md files are in the same folder as index.html and you are serving via http:// (not file://).</div>`;
   }
   screenEl.innerHTML=html;
 }
