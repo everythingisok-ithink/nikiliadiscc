@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIXEL QUEST -- Map Editor</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+  --bg:       #0a0a0f;
+  --surface:  #111118;
+  --panel:    #16161e;
+  --border:   #2a2a3a;
+  --accent:   #f0bc3c;
+  --accent2:  #e63232;
+  --text:     #ccccdd;
+  --dim:      #555566;
+  --tile-px:  22px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; image-rendering:pixelated; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Header ---- */
+#header {
+  background: var(--surface);
+  border-bottom: 2px solid var(--border);
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-shrink: 0;
+}
+#header h1 { font-size: 11px; color: var(--accent); letter-spacing: 1px; white-space: nowrap; }
+#header .sep { color: var(--border); }
+#nav-back { font-family: 'Press Start 2P', monospace; font-size: 8px; padding: 5px 10px; background: transparent; border: 1px solid var(--border); color: var(--dim); cursor: pointer; }
+#nav-back:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ---- Layout ---- */
+#layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ---- Left panel ---- */
+#left-panel {
+  width: 190px;
+  flex-shrink: 0;
+  background: var(--panel);
+  border-right: 2px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 12px 10px;
+  gap: 16px;
+}
+
+.panel-section { display: flex; flex-direction: column; gap: 8px; }
+.panel-label { font-size: 7px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+
+/* Tile palette */
+#palette {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+.tile-btn {
+  position: relative;
+  aspect-ratio: 1;
+  border: 2px solid var(--border);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  font-weight: bold;
+  transition: border-color .1s, transform .1s;
+  background: var(--surface);
+  color: var(--text);
+}
+.tile-btn:hover { border-color: var(--accent); transform: scale(1.05); }
+.tile-btn.active { border-color: var(--accent); background: #2a2000; color: var(--accent); box-shadow: 0 0 6px var(--accent); }
+.tile-btn .tip {
+  display: none;
+  position: absolute;
+  left: calc(100% + 6px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: #000;
+  border: 1px solid var(--accent);
+  padding: 4px 8px;
+  font-size: 7px;
+  white-space: nowrap;
+  z-index: 99;
+  pointer-events: none;
+  color: var(--accent);
+}
+.tile-btn:hover .tip { display: block; }
+
+/* Tile colors */
+.t-dot  { color: var(--dim); }
+.t-hash { background: #3d6b2c; color: #6aaa40; }
+.t-B    { background: #8B3000; color: #e05a20; }
+.t-P    { background: #1a3a7a; color: #5599ff; }
+.t-S    { background: #5a1a00; color: #e63232; }
+.t-C    { background: #3a2800; color: #f0bc3c; }
+.t-E    { background: #3a1800; color: #c87040; }
+.t-H    { background: #1a1a1a; color: #aaaaaa; }
+.t-Q    { background: #1a0030; color: #aa44ff; }
+
+/* Brush sizes */
+#brushes { display: flex; gap: 4px; }
+.brush-btn {
+  flex: 1; padding: 6px 4px; border: 2px solid var(--border); cursor: pointer;
+  background: var(--surface); color: var(--dim); font-family: 'Press Start 2P', monospace; font-size: 8px;
+  text-align: center;
+}
+.brush-btn:hover { border-color: var(--accent); color: var(--text); }
+.brush-btn.active { border-color: var(--accent); color: var(--accent); background: #1a1400; }
+
+/* Meta fields */
+.meta-field { display: flex; flex-direction: column; gap: 4px; }
+.meta-field label { font-size: 7px; color: var(--dim); }
+.meta-field input, .meta-field select {
+  font-family: 'Press Start 2P', monospace; font-size: 8px;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); padding: 5px 7px; width: 100%;
+}
+.meta-field input:focus, .meta-field select:focus { outline: none; border-color: var(--accent); }
+.meta-field select option { background: #111; }
+
+/* Grid size */
+#size-controls { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.size-btn {
+  flex: 1; padding: 5px 3px; border: 1px solid var(--border); cursor: pointer;
+  background: var(--surface); color: var(--dim); font-family: 'Press Start 2P', monospace; font-size: 7px;
+  text-align: center; white-space: nowrap;
+}
+.size-btn:hover { border-color: var(--accent); color: var(--text); }
+#size-display { font-size: 7px; color: var(--accent); width: 100%; text-align: center; }
+
+/* Action buttons */
+.action-btn {
+  width: 100%; padding: 8px 6px; border: 2px solid var(--border);
+  background: var(--surface); color: var(--text);
+  font-family: 'Press Start 2P', monospace; font-size: 8px;
+  cursor: pointer; text-align: center; transition: all .1s;
+}
+.action-btn:hover { border-color: var(--accent); color: var(--accent); background: #1a1400; }
+.action-btn.danger:hover { border-color: var(--accent2); color: var(--accent2); background: #1a0000; }
+.action-btn.primary { border-color: var(--accent); color: #000; background: var(--accent); }
+.action-btn.primary:hover { background: #fff; border-color: #fff; }
+
+/* ---- Canvas area ---- */
+#canvas-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+#canvas-toolbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.toolbar-item { display: flex; align-items: center; gap: 6px; font-size: 7px; color: var(--dim); }
+#cursor-pos { color: var(--accent); min-width: 80px; }
+#tile-indicator { padding: 3px 8px; border: 1px solid var(--border); font-size: 8px; min-width: 40px; text-align: center; }
+#undo-btn, #redo-btn {
+  font-family: 'Press Start 2P', monospace; font-size: 7px;
+  padding: 4px 8px; border: 1px solid var(--border);
+  background: transparent; color: var(--dim); cursor: pointer;
+}
+#undo-btn:hover, #redo-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+#canvas-scroll {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  cursor: crosshair;
+}
+#editor-canvas {
+  display: block;
+  image-rendering: pixelated;
+}
+
+/* ---- Right panel (save/load) ---- */
+#right-panel {
+  width: 200px;
+  flex-shrink: 0;
+  background: var(--panel);
+  border-left: 2px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 12px 10px;
+  gap: 14px;
+  overflow-y: auto;
+}
+
+.slot-list { display: flex; flex-direction: column; gap: 5px; }
+.slot-item {
+  padding: 7px 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  transition: border-color .1s;
+}
+.slot-item:hover { border-color: var(--accent); }
+.slot-item.active-slot { border-color: var(--accent); background: #1a1400; }
+.slot-name { font-size: 8px; color: var(--accent); }
+.slot-meta { font-size: 6px; color: var(--dim); }
+.slot-empty .slot-name { color: var(--dim); }
+
+/* ---- Toast ---- */
+#toast {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: #000; border: 2px solid var(--accent);
+  padding: 10px 18px; font-size: 9px; color: var(--accent);
+  opacity: 0; pointer-events: none; transition: opacity .2s;
+  z-index: 999; white-space: nowrap;
+}
+#toast.show { opacity: 1; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <h1>PIXEL QUEST</h1>
+  <span class="sep">//</span>
+  <span style="color:var(--accent2);font-size:10px">MAP EDITOR</span>
+  <div style="flex:1"></div>
+  <button id="nav-back" onclick="window.location='pixel-quest.html'">BACK TO GAME</button>
+</div>
+
+<div id="layout">
+
+  <!-- LEFT: Tiles + Meta -->
+  <div id="left-panel">
+
+    <div class="panel-section">
+      <div class="panel-label">Tile Palette</div>
+      <div id="palette">
+        <div class="tile-btn t-dot  active" data-tile="." onclick="setTile(this)">.<div class="tip">Empty</div></div>
+        <div class="tile-btn t-hash"        data-tile="#" onclick="setTile(this)">#<div class="tip">Ground</div></div>
+        <div class="tile-btn t-B"           data-tile="B" onclick="setTile(this)">B<div class="tip">Brick</div></div>
+        <div class="tile-btn t-P"           data-tile="P" onclick="setTile(this)">P<div class="tip">Player start</div></div>
+        <div class="tile-btn t-S"           data-tile="S" onclick="setTile(this)">S<div class="tip">Goal flag</div></div>
+        <div class="tile-btn t-C"           data-tile="C" onclick="setTile(this)">C<div class="tip">Coin</div></div>
+        <div class="tile-btn t-E"           data-tile="E" onclick="setTile(this)">E<div class="tip">Enemy</div></div>
+        <div class="tile-btn t-H"           data-tile="H" onclick="setTile(this)">H<div class="tip">Spike</div></div>
+        <div class="tile-btn t-Q"           data-tile="Q" onclick="setTile(this)">Q<div class="tip">Boss spawn</div></div>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-label">Brush</div>
+      <div id="brushes">
+        <div class="brush-btn active" data-brush="1" onclick="setBrush(this)">1x1</div>
+        <div class="brush-btn"       data-brush="2" onclick="setBrush(this)">2x2</div>
+        <div class="brush-btn"       data-brush="3" onclick="setBrush(this)">3x3</div>
+        <div class="brush-btn"       data-brush="fill" onclick="setBrush(this)">Fill</div>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-label">Grid Size</div>
+      <div id="size-display">30 x 16</div>
+      <div id="size-controls">
+        <button class="size-btn" onclick="resizeGrid(-10,0)">W-10</button>
+        <button class="size-btn" onclick="resizeGrid(10,0)">W+10</button>
+        <button class="size-btn" onclick="resizeGrid(0,-2)">H-2</button>
+        <button class="size-btn" onclick="resizeGrid(0,2)">H+2</button>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-label">Level Meta</div>
+      <div class="meta-field">
+        <label>Title</label>
+        <input type="text" id="meta-title" value="My Level" maxlength="30">
+      </div>
+      <div class="meta-field">
+        <label>Background</label>
+        <select id="meta-bg">
+          <option value="sky">Sky</option>
+          <option value="cave">Cave</option>
+          <option value="clouds">Clouds</option>
+          <option value="mirror">Mirror</option>
+        </select>
+      </div>
+      <div class="meta-field">
+        <label>Time Limit</label>
+        <input type="number" id="meta-time" value="300" min="30" max="999" step="10">
+      </div>
+      <div class="meta-field">
+        <label>Boss</label>
+        <select id="meta-boss">
+          <option value="">None</option>
+          <option value="mirror">Mirror Mage</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-label">Actions</div>
+      <button class="action-btn danger" onclick="clearGrid()">CLEAR GRID</button>
+      <button class="action-btn" onclick="fillBorder()">FILL BORDER #</button>
+      <button class="action-btn" onclick="exportMd()">EXPORT .MD</button>
+    </div>
+
+  </div>
+
+  <!-- CENTER: Canvas -->
+  <div id="canvas-area">
+    <div id="canvas-toolbar">
+      <div class="toolbar-item">Tile: <span id="tile-indicator" class="t-dot">.</span></div>
+      <div class="toolbar-item">Pos: <span id="cursor-pos">--, --</span></div>
+      <div class="toolbar-item">
+        <button id="undo-btn" onclick="undo()">UNDO</button>
+        <button id="redo-btn" onclick="redo()">REDO</button>
+      </div>
+      <div class="toolbar-item" style="margin-left:auto;color:var(--dim);font-size:7px">
+        Left-drag: paint &nbsp;|&nbsp; Right-click: erase &nbsp;|&nbsp; Middle/Alt+drag: pan
+      </div>
+    </div>
+    <div id="canvas-scroll">
+      <canvas id="editor-canvas"></canvas>
+    </div>
+  </div>
+
+  <!-- RIGHT: Save/Load -->
+  <div id="right-panel">
+
+    <div class="panel-section">
+      <div class="panel-label">Slot Name</div>
+      <div class="meta-field">
+        <input type="text" id="slot-name-input" value="My Level" maxlength="24" placeholder="Slot name...">
+      </div>
+      <button class="action-btn primary" onclick="saveToSlot()">SAVE TO SLOT</button>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-label">Saved Levels</div>
+      <div id="slot-list" class="slot-list"></div>
+    </div>
+
+    <div class="panel-section" style="margin-top:auto">
+      <div class="panel-label" style="color:var(--accent2)">Danger Zone</div>
+      <button class="action-btn danger" onclick="deleteActiveSlot()">DELETE SLOT</button>
+      <button class="action-btn danger" onclick="deleteAllSlots()">DELETE ALL</button>
+    </div>
+
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ============================================================
+// PIXEL QUEST MAP EDITOR
+// ============================================================
+
+const STORAGE_KEY = 'pq_custom_levels';
+const TILE = 24; // px per tile in the editor canvas
+const MAX_COLS = 96, MAX_ROWS = 24, MIN_COLS = 16, MIN_ROWS = 8;
+
+// Editor state
+let cols = 30, rows = 16;
+let grid = [];          // grid[row][col] = char
+let currentTile = '.';
+let brushSize = 1;
+let isPainting = false;
+let isErasing = false;
+let undoStack = [];
+let redoStack = [];
+let activeSlot = null;  // index into saves array
+
+// Canvas refs
+const canvas = document.getElementById('editor-canvas');
+const ctx = canvas.getContext('2d');
+
+// ---- Tile color map for the editor canvas ----
+const TILE_COLORS = {
+  '.': { bg: '#0e0e14', fg: null },
+  '#': { bg: '#3d6b2c', fg: '#6aaa40', label: '#' },
+  'B': { bg: '#8B3000', fg: '#e05a20', label: 'B' },
+  'P': { bg: '#1a3a8a', fg: '#5599ff', label: 'P' },
+  'S': { bg: '#6a1a00', fg: '#e63232', label: 'S' },
+  'C': { bg: '#3a2800', fg: '#f0bc3c', label: 'C' },
+  'E': { bg: '#3a1800', fg: '#c87040', label: 'E' },
+  'H': { bg: '#1c1c1c', fg: '#aaaaaa', label: 'H' },
+  'Q': { bg: '#1a0030', fg: '#aa44ff', label: 'Q' },
+};
+
+// ---- Init ----
+function initGrid() {
+  grid = Array.from({ length: rows }, () => Array(cols).fill('.'));
+}
+
+function init() {
+  initGrid();
+  resizeCanvas();
+  renderAll();
+  renderSlots();
+  syncTileIndicator();
+}
+
+function resizeCanvas() {
+  canvas.width  = cols * TILE;
+  canvas.height = rows * TILE;
+  document.getElementById('size-display').textContent = `${cols} x ${rows}`;
+}
+
+// ---- Render ----
+const FONT_SIZE = Math.max(8, Math.floor(TILE * 0.52));
+
+function renderAll() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      renderTile(r, c);
+    }
+  }
+  renderGrid();
+}
+
+function renderTile(r, c) {
+  const ch = grid[r][c];
+  const tc = TILE_COLORS[ch] || TILE_COLORS['.'];
+  const x = c * TILE, y = r * TILE;
+
+  ctx.fillStyle = tc.bg;
+  ctx.fillRect(x, y, TILE, TILE);
+
+  if (tc.fg && tc.label) {
+    ctx.fillStyle = tc.fg;
+    ctx.font = `bold ${FONT_SIZE}px "Press Start 2P", monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(tc.label, x + TILE / 2, y + TILE / 2 + 1);
+  }
+
+  // Subtle inner border for solid tiles
+  if (ch !== '.') {
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x + 0.5, y + 0.5, TILE - 1, TILE - 1);
+  }
+}
+
+function renderGrid() {
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 0.5;
+  for (let c = 0; c <= cols; c++) {
+    ctx.beginPath(); ctx.moveTo(c * TILE, 0); ctx.lineTo(c * TILE, rows * TILE); ctx.stroke();
+  }
+  for (let r = 0; r <= rows; r++) {
+    ctx.beginPath(); ctx.moveTo(0, r * TILE); ctx.lineTo(cols * TILE, r * TILE); ctx.stroke();
+  }
+  // Every 5 tiles: slightly brighter grid line
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  for (let c = 0; c <= cols; c += 5) {
+    ctx.beginPath(); ctx.moveTo(c * TILE, 0); ctx.lineTo(c * TILE, rows * TILE); ctx.stroke();
+  }
+  for (let r = 0; r <= rows; r += 4) {
+    ctx.beginPath(); ctx.moveTo(0, r * TILE); ctx.lineTo(cols * TILE, r * TILE); ctx.stroke();
+  }
+}
+
+// ---- Tile painting ----
+function paintAt(r, c, tile) {
+  if (r < 0 || r >= rows || c < 0 || c >= cols) return;
+  if (brushSize === 'fill') {
+    floodFill(r, c, grid[r][c], tile);
+    return;
+  }
+  const half = Math.floor(brushSize / 2);
+  for (let dr = -half; dr <= half; dr++) {
+    for (let dc = -half; dc <= half; dc++) {
+      const nr = r + dr, nc = c + dc;
+      if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+        grid[nr][nc] = tile;
+        renderTile(nr, nc);
+      }
+    }
+  }
+  renderGrid();
+}
+
+function floodFill(r, c, fromTile, toTile) {
+  if (fromTile === toTile) return;
+  const stack = [[r, c]];
+  const visited = new Set();
+  while (stack.length) {
+    const [cr, cc] = stack.pop();
+    const key = cr * 1000 + cc;
+    if (visited.has(key)) continue;
+    if (cr < 0 || cr >= rows || cc < 0 || cc >= cols) continue;
+    if (grid[cr][cc] !== fromTile) continue;
+    visited.add(key);
+    grid[cr][cc] = toTile;
+    renderTile(cr, cc);
+    stack.push([cr-1,cc],[cr+1,cc],[cr,cc-1],[cr,cc+1]);
+  }
+  renderGrid();
+}
+
+// ---- Undo/Redo ----
+function pushUndo() {
+  undoStack.push(grid.map(r => [...r]));
+  if (undoStack.length > 30) undoStack.shift();
+  redoStack = [];
+}
+
+function undo() {
+  if (!undoStack.length) return;
+  redoStack.push(grid.map(r => [...r]));
+  grid = undoStack.pop();
+  renderAll();
+  toast('Undone');
+}
+
+function redo() {
+  if (!redoStack.length) return;
+  undoStack.push(grid.map(r => [...r]));
+  grid = redoStack.pop();
+  renderAll();
+  toast('Redone');
+}
+
+// ---- Mouse interaction ----
+function getCell(e) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width  / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const x = (e.clientX - rect.left)  * scaleX;
+  const y = (e.clientY - rect.top)   * scaleY;
+  return [Math.floor(y / TILE), Math.floor(x / TILE)];
+}
+
+canvas.addEventListener('mousedown', e => {
+  e.preventDefault();
+  if (e.button === 2) { isErasing = true; isPainting = false; }
+  else                { isPainting = true; isErasing = false; }
+  pushUndo();
+  const [r, c] = getCell(e);
+  paintAt(r, c, isErasing ? '.' : currentTile);
+  updateCursorPos(r, c);
+});
+
+canvas.addEventListener('mousemove', e => {
+  const [r, c] = getCell(e);
+  updateCursorPos(r, c);
+  if (!isPainting && !isErasing) return;
+  paintAt(r, c, isErasing ? '.' : currentTile);
+});
+
+canvas.addEventListener('mouseup',    () => { isPainting = false; isErasing = false; });
+canvas.addEventListener('mouseleave', () => { isPainting = false; isErasing = false; });
+canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+function updateCursorPos(r, c) {
+  document.getElementById('cursor-pos').textContent = `col ${String(c).padStart(2,'0')}, row ${String(r).padStart(2,'0')}`;
+}
+
+// ---- Tile / brush selection ----
+function setTile(btn) {
+  document.querySelectorAll('.tile-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentTile = btn.dataset.tile;
+  syncTileIndicator();
+}
+
+function setBrush(btn) {
+  document.querySelectorAll('.brush-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  brushSize = btn.dataset.brush === 'fill' ? 'fill' : parseInt(btn.dataset.brush);
+}
+
+function syncTileIndicator() {
+  const el = document.getElementById('tile-indicator');
+  el.textContent = currentTile;
+  // copy class from palette btn
+  const palBtn = document.querySelector(`.tile-btn[data-tile="${currentTile}"]`);
+  el.className = 'tile-indicator';
+  if (palBtn) {
+    const cls = [...palBtn.classList].find(c => c.startsWith('t-'));
+    if (cls) el.style.color = getComputedStyle(palBtn).color;
+  }
+}
+
+// ---- Grid resize ----
+function resizeGrid(dCols, dRows) {
+  pushUndo();
+  const newCols = Math.max(MIN_COLS, Math.min(MAX_COLS, cols + dCols));
+  const newRows = Math.max(MIN_ROWS, Math.min(MAX_ROWS, rows + dRows));
+  const newGrid = Array.from({ length: newRows }, (_, r) =>
+    Array.from({ length: newCols }, (_, c) =>
+      (r < rows && c < cols) ? grid[r][c] : '.'
+    )
+  );
+  cols = newCols; rows = newRows; grid = newGrid;
+  resizeCanvas();
+  renderAll();
+}
+
+// ---- Clear / Fill border ----
+function clearGrid() {
+  if (!confirm('Clear entire grid?')) return;
+  pushUndo();
+  grid = Array.from({ length: rows }, () => Array(cols).fill('.'));
+  renderAll();
+}
+
+function fillBorder() {
+  pushUndo();
+  for (let c = 0; c < cols; c++) { grid[0][c] = '#'; grid[rows-1][c] = '#'; }
+  for (let r = 0; r < rows; r++) { grid[r][0] = '#'; grid[r][cols-1] = '#'; }
+  renderAll();
+}
+
+// ---- Markdown export ----
+function gridToMarkdown() {
+  const title = document.getElementById('meta-title').value.trim() || 'Custom Level';
+  const bg    = document.getElementById('meta-bg').value;
+  const time  = parseInt(document.getElementById('meta-time').value) || 300;
+  const boss  = document.getElementById('meta-boss').value;
+
+  let md = `# ${title}\n\n## Meta\n- title: ${title}\n- background: ${bg}\n- time: ${time}\n`;
+  if (boss) md += `- boss: ${boss}\n`;
+  md += `\n## Map\n\`\`\`\n`;
+  for (let r = 0; r < rows; r++) {
+    md += grid[r].join('') + '\n';
+  }
+  md += `\`\`\`\n`;
+  return md;
+}
+
+function exportMd() {
+  const md = gridToMarkdown();
+  const title = document.getElementById('meta-title').value.trim() || 'custom-level';
+  const safe = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const blob = new Blob([md], { type: 'text/markdown' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${safe}.md`;
+  a.click();
+  toast('Exported ' + safe + '.md');
+}
+
+// ---- Save / Load (localStorage) ----
+function getSlots() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; }
+}
+function setSlots(s) { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+
+function saveToSlot() {
+  const name = document.getElementById('slot-name-input').value.trim() || 'Untitled';
+  const md = gridToMarkdown();
+  const slots = getSlots();
+
+  // If we have an active slot, overwrite it; otherwise push new
+  const record = {
+    name,
+    md,
+    cols, rows,
+    savedAt: new Date().toLocaleString(),
+    meta: {
+      title: document.getElementById('meta-title').value.trim(),
+      background: document.getElementById('meta-bg').value,
+      time: document.getElementById('meta-time').value,
+      boss: document.getElementById('meta-boss').value,
+    }
+  };
+
+  if (activeSlot !== null && activeSlot < slots.length) {
+    slots[activeSlot] = record;
+    toast('Saved to slot ' + (activeSlot + 1));
+  } else {
+    slots.push(record);
+    activeSlot = slots.length - 1;
+    toast('Saved as new slot');
+  }
+
+  setSlots(slots);
+  renderSlots();
+}
+
+function loadSlot(idx) {
+  const slots = getSlots();
+  if (!slots[idx]) return;
+  const s = slots[idx];
+
+  // Parse md back into grid
+  const lines = s.md.split('\n');
+  let mapLines = [], inMap = false;
+  let meta = {};
+  for (const line of lines) {
+    if (line.startsWith('- ') && !inMap) {
+      const m = line.match(/^- (\w+):\s*(.+)/);
+      if (m) meta[m[1]] = m[2].trim();
+    }
+    if (line.includes('```') && !inMap)  { inMap = true;  continue; }
+    if (line.includes('```') &&  inMap)  { inMap = false; continue; }
+    if (inMap) mapLines.push(line);
+  }
+
+  if (!mapLines.length) { toast('Could not parse level'); return; }
+
+  pushUndo();
+  rows = s.rows || mapLines.length;
+  cols = s.cols || Math.max(...mapLines.map(l => l.length));
+  grid = Array.from({ length: rows }, (_, r) =>
+    Array.from({ length: cols }, (_, c) => (mapLines[r] || '')[c] || '.')
+  );
+
+  // Restore meta fields
+  document.getElementById('meta-title').value = meta.title || s.name;
+  document.getElementById('meta-bg').value    = meta.background || 'sky';
+  document.getElementById('meta-time').value  = meta.time || '300';
+  document.getElementById('meta-boss').value  = meta.boss || '';
+  document.getElementById('slot-name-input').value = s.name;
+
+  activeSlot = idx;
+  resizeCanvas();
+  renderAll();
+  renderSlots();
+  toast('Loaded: ' + s.name);
+}
+
+function deleteActiveSlot() {
+  if (activeSlot === null) { toast('No slot selected'); return; }
+  const slots = getSlots();
+  if (!slots[activeSlot]) return;
+  if (!confirm(`Delete "${slots[activeSlot].name}"?`)) return;
+  slots.splice(activeSlot, 1);
+  setSlots(slots);
+  activeSlot = null;
+  renderSlots();
+  toast('Slot deleted');
+}
+
+function deleteAllSlots() {
+  if (!confirm('Delete ALL saved levels? This cannot be undone.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  activeSlot = null;
+  renderSlots();
+  toast('All slots cleared');
+}
+
+function renderSlots() {
+  const slots = getSlots();
+  const list = document.getElementById('slot-list');
+  if (!slots.length) {
+    list.innerHTML = '<div style="font-size:7px;color:var(--dim);padding:8px 0">No saved levels yet.<br><br>Build something and hit<br>SAVE TO SLOT.</div>';
+    return;
+  }
+  list.innerHTML = slots.map((s, i) => `
+    <div class="slot-item ${activeSlot === i ? 'active-slot' : ''}" onclick="loadSlot(${i})">
+      <div class="slot-name">${s.name}</div>
+      <div class="slot-meta">${s.cols || '?'}x${s.rows || '?'} &middot; ${s.meta?.background || 'sky'}</div>
+      <div class="slot-meta" style="font-size:5px;margin-top:2px">${s.savedAt || ''}</div>
+    </div>
+  `).join('');
+}
+
+// ---- Toast ----
+let toastTimer = null;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+// ---- Keyboard shortcuts ----
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'y') { e.preventDefault(); redo(); }
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveToSlot(); }
+  // Number keys 1-9 for tile selection
+  const tileKeys = { '1':'.','2':'#','3':'B','4':'P','5':'S','6':'C','7':'E','8':'H','9':'Q' };
+  if (tileKeys[e.key]) {
+    const btn = document.querySelector(`.tile-btn[data-tile="${tileKeys[e.key]}"]`);
+    if (btn) setTile(btn);
+  }
+});
+
+// Sync slot name with meta title
+document.getElementById('meta-title').addEventListener('input', e => {
+  document.getElementById('slot-name-input').value = e.target.value;
+});
+
+// ---- Boot ----
+init();
+</script>
+</body>
+</html>
