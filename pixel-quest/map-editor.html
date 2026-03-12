@@ -94,21 +94,22 @@ body {
 .tile-btn:hover { border-color: var(--accent); transform: scale(1.05); }
 .tile-btn.active { border-color: var(--accent); background: #2a2000; color: var(--accent); box-shadow: 0 0 6px var(--accent); }
 .tile-btn .tip {
-  display: none;
-  position: absolute;
-  left: calc(100% + 6px);
-  top: 50%;
-  transform: translateY(-50%);
+  display: none; /* shown via JS to escape overflow:auto clipping */
+}
+/* Fixed tooltip shown by JS */
+#tooltip {
+  position: fixed;
   background: #000;
   border: 1px solid var(--accent);
-  padding: 4px 8px;
+  padding: 5px 10px;
+  font-family: 'Press Start 2P', monospace;
   font-size: 7px;
   white-space: nowrap;
-  z-index: 99;
+  z-index: 9999;
   pointer-events: none;
   color: var(--accent);
+  display: none;
 }
-.tile-btn:hover .tip { display: block; }
 
 /* Tile colors */
 .t-dot  { color: var(--dim); }
@@ -294,11 +295,23 @@ body {
     <div class="panel-section">
       <div class="panel-label">Grid Size</div>
       <div id="size-display">30 x 16</div>
-      <div id="size-controls">
-        <button class="size-btn" onclick="resizeGrid(-10,0)">W-10</button>
-        <button class="size-btn" onclick="resizeGrid(10,0)">W+10</button>
-        <button class="size-btn" onclick="resizeGrid(0,-2)">H-2</button>
-        <button class="size-btn" onclick="resizeGrid(0,2)">H+2</button>
+      <div class="meta-field">
+        <label>Columns (16–96)</label>
+        <div style="display:flex;gap:4px;align-items:center">
+          <input type="number" id="cols-input" value="30" min="16" max="96" step="1"
+            style="flex:1" onchange="applyColsInput()">
+          <button class="size-btn" onclick="resizeGrid(-1,0)" style="flex:0 0 24px;padding:5px 2px">-</button>
+          <button class="size-btn" onclick="resizeGrid(1,0)"  style="flex:0 0 24px;padding:5px 2px">+</button>
+        </div>
+      </div>
+      <div class="meta-field">
+        <label>Rows (8–24)</label>
+        <div style="display:flex;gap:4px;align-items:center">
+          <input type="number" id="rows-input" value="16" min="8" max="24" step="1"
+            style="flex:1" onchange="applyRowsInput()">
+          <button class="size-btn" onclick="resizeGrid(0,-1)" style="flex:0 0 24px;padding:5px 2px">-</button>
+          <button class="size-btn" onclick="resizeGrid(0,1)"  style="flex:0 0 24px;padding:5px 2px">+</button>
+        </div>
       </div>
     </div>
 
@@ -384,6 +397,7 @@ body {
 </div>
 
 <div id="toast"></div>
+<div id="tooltip"></div>
 
 <script>
 // ============================================================
@@ -439,6 +453,10 @@ function resizeCanvas() {
   canvas.width  = cols * TILE;
   canvas.height = rows * TILE;
   document.getElementById('size-display').textContent = `${cols} x ${rows}`;
+  const ci = document.getElementById('cols-input');
+  const ri = document.getElementById('rows-input');
+  if (ci) ci.value = cols;
+  if (ri) ri.value = rows;
 }
 
 // ---- Render ----
@@ -620,6 +638,19 @@ function syncTileIndicator() {
 }
 
 // ---- Grid resize ----
+function applyColsInput() {
+  const v = parseInt(document.getElementById('cols-input').value);
+  if (isNaN(v)) return;
+  const clamped = Math.max(MIN_COLS, Math.min(MAX_COLS, v));
+  resizeGrid(clamped - cols, 0);
+}
+function applyRowsInput() {
+  const v = parseInt(document.getElementById('rows-input').value);
+  if (isNaN(v)) return;
+  const clamped = Math.max(MIN_ROWS, Math.min(MAX_ROWS, v));
+  resizeGrid(0, clamped - rows);
+}
+
 function resizeGrid(dCols, dRows) {
   pushUndo();
   const newCols = Math.max(MIN_COLS, Math.min(MAX_COLS, cols + dCols));
@@ -825,6 +856,32 @@ document.getElementById('meta-title').addEventListener('input', e => {
 
 // ---- Boot ----
 init();
+
+// ---- Tooltip (fixed-position to escape overflow:auto panels) ----
+const tooltipEl = document.getElementById('tooltip');
+document.querySelectorAll('.tile-btn').forEach(btn => {
+  const tip = btn.querySelector('.tip');
+  if (!tip) return;
+  btn.addEventListener('mouseenter', e => {
+    tooltipEl.textContent = tip.textContent;
+    tooltipEl.style.display = 'block';
+    positionTooltip(e);
+  });
+  btn.addEventListener('mousemove', positionTooltip);
+  btn.addEventListener('mouseleave', () => { tooltipEl.style.display = 'none'; });
+});
+
+function positionTooltip(e) {
+  const pad = 10;
+  let x = e.clientX + pad;
+  let y = e.clientY - tooltipEl.offsetHeight / 2;
+  // Keep on screen
+  if (x + tooltipEl.offsetWidth > window.innerWidth - 4) x = e.clientX - tooltipEl.offsetWidth - pad;
+  if (y < 4) y = 4;
+  if (y + tooltipEl.offsetHeight > window.innerHeight - 4) y = window.innerHeight - tooltipEl.offsetHeight - 4;
+  tooltipEl.style.left = x + 'px';
+  tooltipEl.style.top  = y + 'px';
+}
 </script>
 </body>
 </html>
