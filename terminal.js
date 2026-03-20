@@ -1,4 +1,4 @@
-    (function(){
+    document.addEventListener('DOMContentLoaded', function(){
         const tOut   = document.getElementById('term-to');
         const tInp   = document.getElementById('term-ti');
         const tLayer = document.getElementById('term-layer');
@@ -78,7 +78,7 @@
                 ['WARRANTY: expired','tD'],['STATUS: overly caffeinated','tD'],
                 'blank',['loading…','tD'],'blank'
             ],120);
-            tInp.disabled=false; tInp.focus();
+            tAnimating=false; tInp.disabled=false; tInp.focus();
         }
 
         function tStartX(){
@@ -119,6 +119,7 @@
                 ['  startx           launch graphical interface','tL'],
                 ['  history          command history','tL'],
                 ['  clear            clear screen','tL'],
+                ['  matrix [--color]  go full cyberpunk','tL'],
                 ['...and some not listed here','tM'],'blank'
             ],
             bio: ()=>['__bio__','blank'],
@@ -212,9 +213,78 @@
             date:  ()=>[[new Date().toString().replace(/\(.*\)/,'').trim(),'tD'],'blank'],
             uname: ()=>[['nik-os 11.0.0-lts #1 SMP Army Veteran Made in Baltimore','tD'],'blank'],
             exit:  ()=>[['there is no exit. only more terminal.','tD'],'blank'],
+            matrix: (flag)=>{ tMatrix(flag||''); return []; },
             ski:   ()=>{ tStartX(); setTimeout(()=>{ const el=document.getElementById('skifree-trigger'); if(el) el.click(); },600); return [['launching ski...','tD'],'blank']; },
             shoot: ()=>{ tStartX(); setTimeout(()=>{ const el=document.getElementById('easter-egg-trigger'); if(el) el.click(); },600); return [['launching shoot...','tD'],'blank']; },
         };
+
+
+        // ── Matrix rain ──────────────────────────────────────────────────
+        function tMatrix(flag) {
+            const COLORS = {
+                '':        { head: '#ffaa00', trail: '#3d2200', bg: 'rgba(8,8,8,0.06)' },
+                '--green': { head: '#00ff41', trail: '#003b00', bg: 'rgba(0,0,0,0.06)'  },
+                '--cyan':  { head: '#00ffff', trail: '#003b3b', bg: 'rgba(0,8,8,0.06)'  },
+                '--red':   { head: '#ff4444', trail: '#3b0000', bg: 'rgba(8,0,0,0.06)'  },
+                '--white': { head: '#ffffff', trail: '#444444', bg: 'rgba(8,8,8,0.06)'  },
+                '--blue':  { head: '#4488ff', trail: '#00003b', bg: 'rgba(0,0,8,0.06)'  },
+                '--rainbow': null,
+            };
+            const scheme = COLORS.hasOwnProperty(flag) ? COLORS[flag] : COLORS[''];
+            const isRainbow = flag === '--rainbow';
+            const rainbowCols = ['#ffaa00','#00ff41','#00ffff','#ff4444','#aa44ff','#ff44cc','#ffffff'];
+            const dpr = window.devicePixelRatio || 1;
+            const W = window.innerWidth;
+            const H = window.innerHeight;
+            const cvs = document.createElement('canvas');
+            cvs.style.cssText = 'position:fixed;top:0;left:0;width:'+W+'px;height:'+H+'px;z-index:99999;display:block;';
+            cvs.width  = Math.floor(W * dpr);
+            cvs.height = Math.floor(H * dpr);
+            document.body.appendChild(cvs);
+            const ctx = cvs.getContext('2d');
+            ctx.scale(dpr, dpr);
+            const FONT_SIZE = 16;
+            const COLS = Math.floor(W / FONT_SIZE);
+            const drops = Array.from({length: COLS}, () => Math.random() * -80 | 0);
+            const colColors = isRainbow
+                ? Array.from({length: COLS}, () => rainbowCols[Math.random() * rainbowCols.length | 0])
+                : null;
+            const CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@#$%^&*()+-=[]{}|<>?/~';
+            let raf;
+            function draw() {
+                ctx.fillStyle = isRainbow ? 'rgba(8,8,8,0.06)' : scheme.bg;
+                ctx.fillRect(0, 0, W, H);
+                ctx.font = 'bold ' + FONT_SIZE + 'px monospace';
+                for (let i = 0; i < COLS; i++) {
+                    const ch = CHARS[Math.random() * CHARS.length | 0];
+                    const x = i * FONT_SIZE;
+                    const y = drops[i] * FONT_SIZE;
+                    const baseColor = isRainbow ? colColors[i] : scheme.head;
+                    ctx.fillStyle = isRainbow ? baseColor + '66' : scheme.trail;
+                    ctx.fillText(ch, x, y - FONT_SIZE);
+                    ctx.shadowColor = baseColor;
+                    ctx.shadowBlur = 8;
+                    ctx.fillStyle = baseColor;
+                    ctx.fillText(ch, x, y);
+                    ctx.shadowBlur = 0;
+                    if (isRainbow && Math.random() < 0.003) {
+                        colColors[i] = rainbowCols[Math.random() * rainbowCols.length | 0];
+                    }
+                    if (y > H && Math.random() > 0.975) drops[i] = 0;
+                    drops[i]++;
+                }
+                raf = requestAnimationFrame(draw);
+            }
+            function stop() {
+                cancelAnimationFrame(raf);
+                cvs.remove();
+                document.removeEventListener('keydown', stop);
+                tInp.focus();
+            }
+            cvs.addEventListener('click', stop);
+            setTimeout(() => document.addEventListener('keydown', stop), 250);
+            raf = requestAnimationFrame(draw);
+        }
 
         // ── Common linux command responses ──────────────────────────
         const tLinuxCmds = {
@@ -281,7 +351,7 @@
             return [['cat: '+args+': no such file','tE'],'blank'];
         }
 
-        window.tRun = async function(raw){
+        async function tRun(raw){
             const trimmed=raw.trim();
             if(!trimmed||tAnimating) return;
             tHistory.unshift(trimmed); tHistIdx=-1;
@@ -291,7 +361,8 @@
             tOut.appendChild(pr); tOut.scrollTop=tOut.scrollHeight;
             const lower=trimmed.toLowerCase();
             let lines;
-            if(lower.startsWith('rm')) lines=[['get out of here with that.','tE'],'blank'];
+            if(lower==='matrix'||lower.startsWith('matrix --')) { tMatrix(lower.slice(6).trim()); lines=[]; }
+            else if(lower.startsWith('rm')) lines=[['get out of here with that.','tE'],'blank'];
             else if(lower==='sudo hire-me') lines=TCMDS['sudo hire-me']();
             else if(lower.startsWith('sudo')) lines=tLinuxCmds.sudo();
             else if(lower.startsWith('cd')) lines=tCdHandler(trimmed.slice(2).trim());
@@ -312,6 +383,8 @@
             tOut.scrollTop=tOut.scrollHeight;
         };
 
+        window.tRun = tRun;
+
         tInp.addEventListener('keydown', e=>{
             if(e.key==='Enter'){ const v=tInp.value; tInp.value=''; tRun(v); }
             if(e.key==='ArrowUp'){ e.preventDefault(); if(tHistIdx<tHistory.length-1){ tHistIdx++; tInp.value=tHistory[tHistIdx]; } }
@@ -321,6 +394,6 @@
         document.getElementById('term-layer').addEventListener('click', ()=>{ if(!tLayer.classList.contains('hidden')) tInp.focus(); });
 
         const saved=tLoad();
-        if(saved){ tOut.innerHTML=saved; tOut.scrollTop=tOut.scrollHeight; tInp.focus(); }
+        if(saved){ tOut.innerHTML=saved; tOut.scrollTop=tOut.scrollHeight; tAnimating=false; tInp.disabled=false; tInp.focus(); }
         else tBoot();
-    })();
+    });
