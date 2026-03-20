@@ -4,9 +4,10 @@
         const tLayer = document.getElementById('term-layer');
         const gLayer = document.getElementById('gui-layer');
         const gBack  = document.getElementById('gui-back-btn');
-        let tHistory = [], tHistIdx = -1, tAnimating = false;
+        let tHistory = [], tHistIdx = -1, tAnimating = false, tCwd = '~';
 
         const BDAY_MS = 354326400000;
+        function tUpdatePrompt(){ document.getElementById('term-pl').textContent = tCwd + '$ '; }
         function uptimeStr(){ return Math.floor((Date.now()-BDAY_MS)/(1000*60*60*24*365.25))+' YEARS'; }
 
         const TSK = 'nik_term_v4';
@@ -93,6 +94,7 @@
             gLayer.classList.remove('visible'); gBack.style.display='none';
             tLayer.classList.remove('hidden');
             requestAnimationFrame(()=>{ tLayer.classList.remove('hiding'); });
+            tCwd='~'; tUpdatePrompt();
             setTimeout(()=>{ tInp.focus(); },420);
         };
 
@@ -181,7 +183,7 @@
             ],
 
             'sudo hire-me':  ()=>[['[sudo] password for recruiter:','tE'],'blank',['access granted.','tG'],['excellent taste. let\'s talk.','tB'],['→ nik@iliadis.cc','tL'],'blank',['[secret found]','tS'],'blank'],
-            'sudo rm -rf /': ()=>[['sudo: you wish.','tE'],['nice try.','tD'],'blank',['[secret found]','tS'],'blank'],
+
             vim:             ()=>[['opening vim...','tD'],'blank',['you are now trapped.','tL'],['(i use neovim.)','tM'],'blank',['[secret found]','tS'],'blank'],
             neofetch: ()=>[
                 'blank',
@@ -194,11 +196,9 @@
                 'blank',['[secret found]','tS'],'blank'
             ],
             'man nik': ()=>[
-                ['NIK(1)               User Commands              NIK(1)','tB'],'blank',
-                ['NAME','tB'],['     nik — technology leader, veteran, chaos agent','tL'],'blank',
-                ['SYNOPSIS','tB'],['     nik [--build | --break] [--lead | --code] organization','tL'],'blank',
-                ['BUGS','tB'],['     strong opinions. difficulty suffering fools. arch evangelist.','tL'],'blank',
-                ['[secret found]','tS'],'blank'
+                ['undocumented. by design.','tD'],
+                ['¯\_(ツ)_/¯','tL'],
+                'blank'
             ],
             'ping nik': ()=>[
                 ['PING nik@iliadis.cc','tD'],
@@ -216,28 +216,46 @@
             shoot: ()=>{ tStartX(); setTimeout(()=>{ const el=document.getElementById('easter-egg-trigger'); if(el) el.click(); },600); return [['launching shoot...','tD'],'blank']; },
         };
 
+        // ── Common linux command responses ──────────────────────────
+        const tLinuxCmds = {
+            grep:  ()=>[["nothing matches the pattern you're looking for. story of my life.",'tD'],'blank'],
+            chmod: ()=>[["you don't have permission to change permissions here.",'tE'],'blank'],
+            mv:    ()=>[["i'm not moving anything. i just got comfortable.",'tD'],'blank'],
+            cp:    ()=>[["this is a personal website, not a copy shop.",'tD'],'blank'],
+            kill:  ()=>[["bold choice. nothing to kill here but time.",'tD'],'blank'],
+            ssh:   ()=>[["nice try.",'tE'],'blank'],
+            top:   ()=>[["process list: coffee, tabs, opinions. all running at 100%.",'tD'],'blank'],
+            apt:   ()=>[["wrong machine.",'tE'],'blank'],
+            brew:  ()=>[["wrong machine.",'tE'],'blank'],
+            yay:   ()=>[["wrong machine. (nice try though)",'tE'],'blank'],
+            sudo:  ()=>[["i'm going to need you to calm down.",'tE'],'blank'],
+        };
+
         function tCdHandler(args){
             const p=(args||'~').trim().replace(/\/$/,'');
-            if(p==='~'||p==='/home/nik'||p==='') return [['you\'re already home.','tD'],'blank'];
-            if(p==='/') return [['everything is / if you think about it.','tD'],'blank'];
-            if(p==='..') return [['there is nowhere behind you.','tD'],'blank'];
+            if(p==='~'||p==='/home/nik'||p==='') { tCwd='~'; tUpdatePrompt(); return [['~','tD'],'blank']; }
+            if(p==='/') { return [['everything is / if you think about it.','tD'],'blank']; }
+            if(p==='..') {
+                if(tCwd==='~') return [['already at root.','tD'],'blank'];
+                tCwd='~'; tUpdatePrompt(); return [['~','tD'],'blank'];
+            }
             if(p==='/dev/null') return [['bold choice. nothing to see there.','tD'],'blank'];
-            if(p==='projects'||p==='./projects') return [
+            if(p==='projects'||p==='./projects') { tCwd='~/projects'; tUpdatePrompt(); return [
                 ['projects/','tB'],'blank',
                 ['  <a class="tlink" href="https://killscreen.bar" target="_blank">Killscreen</a>              a modern third place concept','tL'],
                 ['  <a class="tlink" href="https://unusual.website" target="_blank">unusual.website</a>          ?????????????','tL'],
                 ['  <a class="tlink" href="https://machine.monster" target="_blank">AETHERA ASU-1</a>           user manual for the AETHERA ASU MODEL ONE','tL'],
                 ['  <a class="tlink" href="https://nik.iliadis.cc/SIGNAL_LOST" target="_blank">SIGNAL_LOST</a>             mind the gap','tL'],
                 'blank'
-            ];
-            if(p==='contact'||p==='./contact') return [
+            ]; }
+            if(p==='contact'||p==='./contact') { tCwd='~/contact'; tUpdatePrompt(); return [
                 ['contact/','tB'],'blank',
                 ['  <a class="tlink" href="mailto:nik@iliadis.cc">email</a>             nik@iliadis.cc','tL'],
                 ['  <a class="tlink" href="https://linkedin.com/in/nik-iliadis" target="_blank">linkedin</a>          linkedin.com/in/nik-iliadis','tL'],
                 ['  <a class="tlink" href="https://letterboxd.com/nik_iliadis/" target="_blank">letterboxd</a>        letterboxd.com/nik_iliadis','tL'],
                 ['  <a class="tlink" href="https://github.com/everythingisok-ithink" target="_blank">github</a>            everythingisok-ithink','tL'],
                 'blank'
-            ];
+            ]; }
             if(p==='.secrets'||p==='.secrets/') return [['permission denied','tE'],'blank',['[secret found]','tS'],'blank'];
             return [['cd: '+p+': no such directory','tE'],'blank'];
         }
@@ -269,12 +287,25 @@
             tHistory.unshift(trimmed); tHistIdx=-1;
             const pr=document.createElement('span');
             pr.className='tL';
-            pr.innerHTML='<span style="color:#c87c00;text-shadow:0 0 5px rgba(200,124,0,.65)">nik.iliadis.cc &gt; </span>'+trimmed;
+            pr.innerHTML='<span style="color:#c87c00;text-shadow:0 0 5px rgba(200,124,0,.65)">~$ </span>'+trimmed;
             tOut.appendChild(pr); tOut.scrollTop=tOut.scrollHeight;
             const lower=trimmed.toLowerCase();
             let lines;
-            if(lower.startsWith('cd')) lines=tCdHandler(trimmed.slice(2).trim());
+            if(lower.startsWith('rm')) lines=[['get out of here with that.','tE'],'blank'];
+            else if(lower==='sudo hire-me') lines=TCMDS['sudo hire-me']();
+            else if(lower.startsWith('sudo')) lines=tLinuxCmds.sudo();
+            else if(lower.startsWith('cd')) lines=tCdHandler(trimmed.slice(2).trim());
             else if(lower.startsWith('cat')) lines=tCatHandler(trimmed.slice(3).trim());
+            else if(lower.startsWith('grep')) lines=tLinuxCmds.grep();
+            else if(lower.startsWith('chmod')) lines=tLinuxCmds.chmod();
+            else if(lower.startsWith('mv')) lines=tLinuxCmds.mv();
+            else if(lower.startsWith('cp')) lines=tLinuxCmds.cp();
+            else if(lower.startsWith('kill')) lines=tLinuxCmds.kill();
+            else if(lower.startsWith('ssh')) lines=tLinuxCmds.ssh();
+            else if(lower.startsWith('top')) lines=tLinuxCmds.top();
+            else if(lower.startsWith('apt')) lines=tLinuxCmds.apt();
+            else if(lower.startsWith('brew')) lines=tLinuxCmds.brew();
+            else if(lower==='yay') lines=tLinuxCmds.yay();
             else if(TCMDS[lower]) lines=TCMDS[lower]();
             else lines=[['command not found: '+trimmed,'tE'],["type 'help' to see available commands",'tM'],'blank'];
             if(lines&&lines.length) await tPrint(lines,38);
