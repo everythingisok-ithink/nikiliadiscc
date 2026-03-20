@@ -1,0 +1,1016 @@
+        /* ─── Base ─── */
+        body {
+            background: #0d0d0d;
+            color: #e5e5e5;
+            margin: 0;
+            padding: 0;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+            cursor: default;
+            touch-action: manipulation;
+            user-select: none;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* ─── Two-layer background ─── */
+        #bg-gray,
+        #bg-color {
+            position: fixed;
+            inset: 0;
+            background: url('bg.jpg') top left / 256px 256px repeat;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        #bg-gray {
+            filter: grayscale(1) contrast(0.45);
+            opacity: 0.22;
+        }
+
+        #bg-color {
+            /* color layer is revealed through a radial mask centered on cursor */
+            filter: brightness(0.7);
+            -webkit-mask-image: radial-gradient(circle 280px at var(--mx, -999px) var(--my, -999px),
+                    black 0%,
+                    transparent 100%);
+            mask-image: radial-gradient(circle 280px at var(--mx, -999px) var(--my, -999px),
+                    black 0%,
+                    transparent 100%);
+        }
+
+        /* ─── Interactive Gradient Card ─── */
+        #gradient-card {
+            background: radial-gradient(circle 800px at var(--local-mx, 100%) var(--local-my, 100%), #c026d3 0%, #3b82f6 40%, #0891b2 100%);
+            /* default fallbacks to bottom right (100% 100%) to look like the original static gradient when mouse is offscreen */
+        }
+
+        /* ─── Win95 Easter Egg Theme ─── */
+        body.win95-theme {
+            background: #008080 !important;
+            font-family: 'MS Sans Serif', Tahoma, Arial, sans-serif !important;
+            -webkit-font-smoothing: none;
+            cursor: default;
+        }
+
+        body.win95-theme * {
+            text-shadow: none !important;
+        }
+
+        body.win95-theme #bg-gray,
+        body.win95-theme #bg-color,
+        body.win95-theme .card-glow-bg {
+            display: none !important;
+        }
+
+        /* Hide the hidden-by-default title bars unless the theme is active */
+        .win95-title-bar {
+            display: none !important;
+        }
+
+        body.win95-theme .win95-title-bar {
+            display: flex !important;
+        }
+
+        body.win95-theme .win95-btn {
+            box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #dfdfdf, inset 2px 2px #fff !important;
+        }
+
+        body.win95-theme .win95-btn:active {
+            box-shadow: inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #808080 !important;
+            padding-top: 2px !important;
+            padding-left: 1px !important;
+        }
+
+        /* Container overriding */
+        body.win95-theme #gradient-card {
+            background: transparent !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            gap: 10px !important;
+        }
+
+        /* Left Card Override */
+        body.win95-theme .win95-left-card {
+            background: #c0c0c0 !important;
+            border-radius: 0 !important;
+            border: 2px solid;
+            border-top-color: #dfdfdf !important;
+            border-left-color: #dfdfdf !important;
+            border-right-color: #0a0a0a !important;
+            border-bottom-color: #0a0a0a !important;
+            box-shadow: inset -1px -1px #808080, inset 1px 1px #fff !important;
+            padding-top: 36px !important;
+            /* space for title bar */
+            overflow: visible !important;
+        }
+
+        body.win95-theme .win95-left-card * {
+            color: black !important;
+        }
+
+        /* Right Card Override (MS-DOS Prompt) */
+        body.win95-theme #right-card {
+            background: #000000 !important;
+            border-radius: 0 !important;
+            border: 2px solid;
+            border-top-color: #dfdfdf !important;
+            border-left-color: #dfdfdf !important;
+            border-right-color: #0a0a0a !important;
+            border-bottom-color: #0a0a0a !important;
+            box-shadow: inset -1px -1px #808080, inset 1px 1px #fff !important;
+            padding-top: 36px !important;
+            /* space for title bar */
+            overflow: visible !important;
+        }
+
+        body.win95-theme #right-card h1,
+        body.win95-theme #right-card p,
+        body.win95-theme #right-card span {
+            font-family: 'JetBrains Mono', 'Courier New', monospace !important;
+            color: #c0c0c0 !important;
+            letter-spacing: normal !important;
+        }
+
+        body.win95-theme #right-card h1 {
+            font-size: 2rem !important;
+            margin-bottom: 20px !important;
+            font-weight: normal !important;
+        }
+
+        body.win95-theme .easter-egg-word {
+            text-decoration: underline;
+            text-decoration-style: dotted;
+            color: #ffffff !important;
+        }
+
+
+        a,
+        a *,
+        button,
+        [role="button"],
+        #easter-egg-trigger {
+            cursor: pointer;
+        }
+
+        .cd-trigger,
+        .easter-egg-word {
+            cursor: default;
+        }
+
+        /* ─── Evil Twin Theme ─── */
+        body.evil-twin-theme #gradient-card {
+            filter: hue-rotate(160deg) saturate(1.5);
+            transition: filter 0.5s ease;
+        }
+
+        /* ─── Pixel Dissolve Overlay ─── */
+        #pixel-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            pointer-events: none;
+        }
+
+        #pixel-overlay canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+        }
+
+        /* ─── Icon row (easter egg hidden among decorative icons) ─── */
+        .icon-row {
+            position: absolute;
+            bottom: 1.1rem;
+            right: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            z-index: 20;
+        }
+
+        .icon-row .icon-glyph {
+            width: 1rem;
+            height: 1rem;
+            color: #6366f1;
+            opacity: 0.29;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        /* ─── Glyph click animations ─── */
+        @keyframes glyph-spin {
+            0% {
+                transform: rotate(0deg) scale(1);
+                opacity: 0.29;
+            }
+
+            50% {
+                transform: rotate(360deg) scale(3);
+                opacity: 1;
+                color: #22d3ee;
+            }
+
+            100% {
+                transform: rotate(720deg) scale(1);
+                opacity: 0.29;
+            }
+        }
+
+        @keyframes glyph-pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.29;
+            }
+
+            40% {
+                transform: scale(4);
+                opacity: 1;
+                color: #f472b6;
+            }
+
+            70% {
+                transform: scale(2.5);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes glyph-bounce {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 0.29;
+            }
+
+            20% {
+                transform: translateY(-25px) scale(2.5);
+                opacity: 1;
+                color: #34d399;
+            }
+
+            50% {
+                transform: translateY(5px) scale(1.5);
+                opacity: 0.7;
+            }
+
+            70% {
+                transform: translateY(-10px) scale(1.8);
+                opacity: 0.9;
+            }
+        }
+
+        @keyframes glyph-wiggle {
+
+            0%,
+            100% {
+                transform: rotate(0) scale(1);
+                opacity: 0.29;
+            }
+
+            15% {
+                transform: rotate(35deg) scale(2.5);
+                opacity: 1;
+                color: #fbbf24;
+            }
+
+            30% {
+                transform: rotate(-30deg) scale(3);
+                opacity: 1;
+            }
+
+            50% {
+                transform: rotate(25deg) scale(2);
+                opacity: 0.8;
+            }
+
+            70% {
+                transform: rotate(-15deg) scale(1.5);
+                opacity: 0.6;
+            }
+
+            85% {
+                transform: rotate(8deg) scale(1.2);
+                opacity: 0.4;
+            }
+        }
+
+        @keyframes glyph-flip {
+            0% {
+                transform: perspective(200px) rotateY(0) scale(1);
+                opacity: 0.29;
+            }
+
+            50% {
+                transform: perspective(200px) rotateY(180deg) scale(3);
+                opacity: 1;
+                color: #a78bfa;
+            }
+
+            100% {
+                transform: perspective(200px) rotateY(360deg) scale(1);
+                opacity: 0.29;
+            }
+        }
+
+        @keyframes glyph-ping {
+            0% {
+                transform: scale(1);
+                opacity: 0.29;
+            }
+
+            35% {
+                transform: scale(4);
+                opacity: 1;
+                color: #fb923c;
+            }
+
+            50% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            65% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0.29;
+            }
+        }
+
+        .glyph-animate {
+            animation-duration: 0.8s;
+            animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            animation-fill-mode: both;
+        }
+
+        .anim-spin {
+            animation-name: glyph-spin;
+        }
+
+        .anim-pulse {
+            animation-name: glyph-pulse;
+        }
+
+        .anim-bounce {
+            animation-name: glyph-bounce;
+        }
+
+        .anim-wiggle {
+            animation-name: glyph-wiggle;
+        }
+
+        .anim-flip {
+            animation-name: glyph-flip;
+        }
+
+        .anim-ping {
+            animation-name: glyph-ping;
+        }
+
+        .icon-row .icon-glyph svg {
+            width: 100%;
+            height: 100%;
+            fill: currentColor;
+        }
+
+        #easter-egg-trigger {
+            display: inline-flex;
+            width: 1rem;
+            height: 1rem;
+            flex-shrink: 0;
+            cursor: pointer;
+            animation: subtle-pulse 2.5s infinite ease-in-out;
+        }
+
+        @keyframes subtle-pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+        }
+
+        #skifree-trigger {
+            animation: subtle-pulse 2.5s infinite ease-in-out;
+            cursor: default;
+        }
+
+        #easter-egg-trigger .icon-glyph {
+            width: 100%;
+            height: 100%;
+            opacity: 0.29;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        #easter-egg-trigger:hover {
+            animation: none;
+            /* Stop subtle pulse on hover, let hover scale take over */
+        }
+
+        #easter-egg-trigger:hover .icon-glyph {
+            opacity: 0.55;
+            transform: scale(1.25);
+        }
+
+        /* ─── Neon Cursor Halo (text proximity effect) ─── */
+
+        .hosting-note {
+            opacity: 0.29;
+            font-size: 0.75em;
+            color: #6366f1;
+        }
+
+        /* ─── Crab Morph Transition ─── */
+        .baltimore-btn {
+            position: relative;
+        }
+
+        .baltimore-btn .skyline-group,
+        .baltimore-btn .crab-group {
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .baltimore-btn .crab-group {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 130px;
+            height: 130px;
+            transform: translate(-50%, -50%) scale(0) rotate(-45deg);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .baltimore-btn .crab-group svg {
+            width: 100%;
+            height: 100%;
+            fill: none;
+            stroke: #f97316;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.5));
+        }
+
+        /* Active Morph State */
+        .baltimore-btn.is-morphed .skyline-group {
+            transform: scale(0);
+            opacity: 0;
+        }
+
+        .baltimore-btn.is-morphed .crab-group {
+            transform: translate(-50%, -50%) scale(1.2) rotate(0deg);
+            opacity: 1;
+        }
+
+        /* ─── Achievement Icons ─── */
+        .achievement-icon {
+            width: 22px;
+            height: 22px;
+            opacity: 0.15;
+            filter: grayscale(1);
+            transition: all 0.3s ease;
+        }
+
+        .achievement-icon.unlocked {
+            opacity: 1;
+            filter: grayscale(0) drop-shadow(0 0 6px currentColor);
+            animation: achievement-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes achievement-pop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.8);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .achievement-toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: rgba(14, 165, 233, 0.15);
+            border: 1px solid rgba(14, 165, 233, 0.4);
+            color: #7dd3fc;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 50;
+            animation: toast-in 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes toast-in {
+            10% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+
+            70% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-10px);
+            }
+        }
+
+        /* ─── Game Container ─── */
+        #game-container {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            overflow: hidden;
+            background-color: #020617;
+            touch-action: none;
+        }
+
+        #gameCanvas {
+            display: block;
+        }
+
+        /* ─── SkiFree Game Container ─── */
+        #skifree-container {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            overflow: hidden;
+            background-color: #f8fafc;
+            touch-action: none;
+            color: #334155;
+        }
+
+        #skifreeCanvas {
+            display: block;
+        }
+
+        .neon-text {
+            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #0ea5e9, 0 0 30px #0ea5e9;
+        }
+
+        .glow-canvas {
+            filter: drop-shadow(0 0 8px rgba(14, 165, 233, 0.8));
+        }
+
+        /* ─── Compact Disc Animation ─── */
+        .cd-animation {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            pointer-events: none;
+            z-index: 200;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0) rotate(0deg);
+            animation: cd-pop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes cd-pop {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0) rotate(-180deg);
+            }
+
+            30% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.5) rotate(90deg);
+            }
+
+            80% {
+                opacity: 0.8;
+                transform: translate(-50%, -50%) scale(1.2) rotate(360deg);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(2) rotate(450deg);
+            }
+        }
+
+        /* ─── Accumulation Tetris ─── */
+        .tetris-word {
+            display: inline-block;
+            transition: transform 0.1s linear, top 0.1s linear, left 0.1s linear;
+        }
+
+        #tetris-reset {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            background: rgba(14, 165, 233, 0.2);
+            border: 1px solid rgba(14, 165, 233, 0.5);
+            color: #38bdf8;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease, background 0.2s ease;
+        }
+
+        #tetris-reset:hover {
+            background: rgba(14, 165, 233, 0.4);
+        }
+
+        #tetris-reset.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* ─── Calcified Freeze ─── */
+        #freeze-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(226, 232, 240, 0.4);
+            backdrop-filter: blur(10px) contrast(1.2);
+            -webkit-backdrop-filter: blur(10px) contrast(1.2);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 2s ease-in;
+            /* Use a mask to reveal the page underneath the cursor */
+            mask-image: radial-gradient(circle 80px at var(--mouse-x, -100%) var(--mouse-y, -100%), transparent 0%, black 100%);
+            -webkit-mask-image: radial-gradient(circle 80px at var(--mouse-x, -100%) var(--mouse-y, -100%), transparent 0%, black 100%);
+        }
+
+        #freeze-overlay.frozen {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Ice crystals effect layer */
+        #freeze-overlay::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10L20 20M80 10L70 20M10 90L20 80M80 90L70 80M50 0V20M50 100V80M0 50H20M100 50H80M35 35L65 65M65 35L35 65' stroke='rgba(255,255,255,0.4)' stroke-width='1' fill='none'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            filter: blur(2px);
+        }
+
+        /* ─── Terminal Automation ─── */
+        #retro-terminal {
+            position: fixed;
+            top: -400px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
+            height: 300px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid #38bdf8;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.2);
+            z-index: 150;
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #4ade80;
+            overflow: hidden;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: top 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        #retro-terminal.active {
+            top: 40px;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #retro-terminal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        .term-line {
+            margin-bottom: 8px;
+            text-shadow: 0 0 4px rgba(74, 222, 128, 0.5);
+        }
+
+        /* ─── Projects Terminal ─── */
+        #projects-btn {
+            position: absolute;
+            bottom: 1.1rem;
+            left: 1.2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: #4ade80;
+            opacity: 0.45;
+            cursor: pointer;
+            z-index: 30;
+            letter-spacing: 0.02em;
+            transition: opacity 0.2s ease, text-shadow 0.2s ease;
+            user-select: none;
+            border: none;
+            background: none;
+            padding: 4px 0;
+            pointer-events: all;
+        }
+        #projects-btn:hover {
+            opacity: 1;
+            text-shadow: 0 0 8px rgba(74, 222, 128, 0.7);
+        }
+        #projects-terminal {
+            position: fixed;
+            bottom: -420px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
+            background: rgba(15, 23, 42, 0.97);
+            border: 2px solid #38bdf8;
+            border-radius: 8px;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.8), 0 0 20px rgba(56,189,248,0.2);
+            z-index: 150;
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: #4ade80;
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transition: bottom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease, visibility 0.3s ease;
+        }
+        #projects-terminal.active {
+            bottom: 40px;
+            opacity: 1;
+            visibility: visible;
+        }
+        #projects-terminal::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.25) 50%),
+                        linear-gradient(90deg, rgba(255,0,0,0.06), rgba(0,255,0,0.02), rgba(0,0,255,0.06));
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+        .project-link {
+            color: #38bdf8;
+            text-decoration: none;
+            text-shadow: 0 0 6px rgba(56,189,248,0.8), 0 0 12px rgba(56,189,248,0.4);
+            transition: text-shadow 0.2s ease;
+        }
+        .project-link:hover {
+            text-shadow: 0 0 10px rgba(56,189,248,1), 0 0 20px rgba(56,189,248,0.6);
+        }
+        #projects-terminal-close {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            color: #4ade80;
+            opacity: 0.5;
+            cursor: pointer;
+            font-size: 12px;
+            z-index: 2;
+            transition: opacity 0.2s;
+        }
+        #projects-terminal-close:hover { opacity: 1; }
+
+        /* ─── Change Gravity Flip ─── */
+        body {
+            transition: transform 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        body.gravity-flipped {
+            transform: rotate(180deg);
+        }
+
+        /* ─── Pressure Squeeze ─── */
+        .pressure-squeeze {
+            transform: scaleY(0.01);
+            filter: blur(4px);
+        }
+
+        /* ─── AI Integration Assistant ─── */
+        #ai-assistant {
+            position: fixed;
+            bottom: -150px;
+            right: 40px;
+            z-index: 200;
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        #ai-assistant.visible {
+            bottom: 40px;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .ai-robot {
+            width: 60px;
+            height: 60px;
+            background: #1e293b;
+            border: 2px solid #94a3b8;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .ai-robot::before,
+        .ai-robot::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            background: #38bdf8;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #38bdf8;
+            animation: blink 4s infinite;
+        }
+
+        .ai-robot::before {
+            left: 12px;
+        }
+
+        .ai-robot::after {
+            right: 12px;
+        }
+
+        @keyframes blink {
+
+            0%,
+            96%,
+            98%,
+            100% {
+                transform: scaleY(1);
+            }
+
+            97%,
+            99% {
+                transform: scaleY(0.1);
+            }
+        }
+
+        .ai-speech {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #38bdf8;
+            padding: 15px 20px;
+            border-radius: 20px 20px 0 20px;
+            color: #e2e8f0;
+            font-size: 14px;
+            max-width: 250px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            transform-origin: bottom right;
+            transform: scale(0);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition-delay: 0.3s;
+        }
+
+        #ai-assistant.visible .ai-speech {
+            transform: scale(1);
+        }
+
+        /* ─── Windows Upgrade Screen ─── */
+        #windows-upgrade-screen {
+            position: fixed;
+            inset: 0;
+            background-color: #0078D7;
+            /* Classic Windows 10 blue */
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            cursor: none;
+        }
+
+        #windows-upgrade-screen.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .win-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: win-spin 1s linear infinite;
+            margin-bottom: 30px;
+        }
+
+        @keyframes win-spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .win-text-large {
+            font-size: 24px;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .win-text-small {
+            font-size: 16px;
+            font-weight: 300;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+
+        .win-snarky {
+            position: absolute;
+            bottom: 40px;
+            font-size: 14px;
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+        /* ─── Profile Picture Red Pulse ─── */
+        .profile-red-pulse {
+            animation: profile-red-pulse-anim 0.3s ease-out;
+        }
+
+        @keyframes profile-red-pulse-anim {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+                border-color: rgba(239, 68, 68, 1);
+            }
+
+            70% {
+                box-shadow: 0 0 0 20px rgba(239, 68, 68, 0);
+                border-color: rgba(239, 68, 68, 0.5);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+                border-color: rgba(255, 255, 255, 0.2);
+            }
+        }
